@@ -1,0 +1,209 @@
+# intsvyを使う {#sec-intsvy}
+
+理論編ではPISAを例に，LSAで一般的に利用されている技術
+（標本ウェイト・Replication Method・項目反応理論・推算値法）について
+解説してきました。
+これらの説明を聞いて面倒だと思った人も多いでしょう。
+幸い，こうした処理はPISAやTIMSSを分析するだけならば，
+それほど大きな壁ではありません。
+基本的な分析（平均や相関，あるいは回帰）であれば，
+Replication MethodsやPVsの統合を自動化してくれるソフトウェアがあるからです。
+ここでは，RでPISAやTIMSSといったLSAを分析するためのパッケージである
+[intsvy](https://cran.r-project.org/web/packages/intsvy/index.html)を紹介します。
+
+## intsvyのインストール
+
+以下のコマンドを入力すると，
+colab上でintsvyが使えるようになります。
+
+```{r}
+#| eval: false
+# R on Colab上でintsvyを使う
+# ダウンロード
+system("curl -L -o library.tar.gz https://github.com/kawa5902/LSAdata/raw/refs/heads/main/202502library.tar.gz")
+# 解凍
+system("tar -xzf /content/library.tar.gz -C /content")
+.libPaths("library")
+```
+
+なお，この方法は一般的なRのパッケージのインストール方法ではありません。
+通常のRでは，パッケージを追加する際`install.packages`関数を使います。
+たとえば`intsvy`をインストールする際は，以下のように行います。
+
+```{r}
+#| eval: false
+# インストール
+install.packages("intsvy")
+```
+
+Colab上でも`install.packages`関数を利用してパッケージをインストールすることは可能です。
+ただColabを終了すると，インストールしたパッケージはすべて消えてしまいます。
+そのため再びColabを起動した際は，あらためて`install.packages`を実行する必要があります。
+`intsvy`のインストールには10分程度必要なので，1〜2回ならともかく
+分析のたびに`install.packages`を実行するのは苦痛です。
+
+そこで本書では，あらかじめColab上にインストールしたパッケージの塊（`library.tar.gz`）を
+別の場所（[github](https://github.com/kawa5902/LSAdata)）[^1]に保存しておき，
+それをダウンロードしてきて使うという方法を採用しています。
+この方法なら1分弱で`intsvy`を利用可能になります。
+ただし裏技に近い使い方なので，Colab以外では使用しないでください。
+
+[^1]: 筆者のgithubです。PISAやTIMSSの日本のデータセットを置いています。
+
+
+## 平均や分散の計算（PVを使わない場合）
+ここではPISA2012の日本のデータを例に，いくつかintsvyを使った分析をしてみましょう。
+
+```{r}
+# データの読み込み
+url <- "https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/pisa2012stuJPN.csv"
+jpn2012 <- read.csv(url)
+```
+
+最初に，ESCSの平均値を計算することを考えましょう。
+まず，ESCSは欠測値として9999が設定されているので，
+事前にNAに変換しておく必要があります。
+続いて`pisa.mean`関数を使うことで，平均を求めることができます。
+この関数は，標本ウェイトやreplication weightを考慮した計算を行ってくれるので，
+引数を設定するだけで適切な推定値や標準誤差が算出されます。
+なお，本書では`pisa.mean`関数が`intsvy`パッケージに含まれていることを明示するため，
+`intsvy::pisa.mean`という具合に，関数の前にパッケージ名を示す記法を採用しています。
+引数の`variable`に与えるのは文字なので，ダブルクオーテーション（\"\"）で囲むことを忘れないでください。
+
+```{r}
+# 欠測をNAに変換
+jpn2012$ESCS[jpn2012$ESCS == 9999] <- NA
+intsvy::pisa.mean(variable = "ESCS", data = jpn2012)
+```
+
+度数分布は`pisa.table`関数です。
+この関数は度数（Freq）と標本ウェイトを考慮した割合（Percentage），
+および割合の標準誤差（Std.err）を算出します。
+`pisa.mean`関数の場合と同じく，`intsvy::pisa.table`として利用します。
+
+```{r}
+intsvy::pisa.table(variable = "ST03Q01", data = jpn2012)
+```
+
+いずれの関数も引数`by`を設定することで，
+下位集団ごとの推定値を得ることが可能です。
+引数`by`に与えるのも文字なので，ダブルクオーテーション（\"\"）で囲んでください。
+ここでは，
+男女（`ST04Q01`）別の`ESCS`の平均値と，
+男女（`ST04Q01`）別の生まれ月（`ST03Q01`）の度数分布を示しています。
+
+
+
+```{r}
+intsvy::pisa.mean(variable = "ESCS", by = "ST04Q01", data = jpn2012)
+intsvy::pisa.table(variable = "ST03Q01", by = "ST04Q01", data = jpn2012)
+```
+
+`pisa.rho`関数を使うと，指定した変数間の相関係数（およびその標準誤差）を算出できます。
+ここでは，`PV1READ`・`PV1MATH`・`ESCS`の3つの変数間の相関係数を出力しています。
+
+```{r}
+intsvy::pisa.rho(variables = c("PV1READ", "PV1MATH", "ESCS"), data = jpn2012)
+```
+
+## 平均や分散の計算（PVを使う場合）
+前の節で取り上げた関数のうち，`pisa.mean`関数にはPVを考慮した
+`pisa.mean.pv`という関数が存在します。
+この関数では，読解リテラシーや数学リテラシーの平均値と標準偏差を算出することが可能です。
+PVの設定にはやや癖があり，`paste0`関数を使うことになっています。
+また，引数`by`を設定することで，男女別の平均値などを出力することもできます。
+ここでは，数学リテラシー（`paste0("PV", 1:5, "MATH")`）の平均値の出力と，
+それをさらに男女（`ST04Q01`）別に計算する方法を示します。
+`paste0`内の数値（1:5）は，PVの数に対応しています。
+PISA2012ではPV1からPV5までが存在するので，`paste0("PV", 1:5, "MATH")`というわけです。
+PISA2015以降ではPVが10個になりますので，`paste0("PV", 1:10, "MATH")`とします。
+
+```{r}
+intsvy::pisa.mean.pv(pvlabel = paste0("PV", 1:5, "MATH"), data = jpn2012)
+intsvy::pisa.mean.pv(
+  pvlabel = paste0("PV", 1:5, "MATH"), by = "ST04Q01", data = jpn2012
+)
+```
+
+## 回帰分析
+
+回帰分析を行う関数として，`pisa.reg`，`pisa.reg.pv`関数が用意されています。
+前者がPVを使わない場合，後者はPVを使う場合の関数です。
+ここでは，`PV1READ`を従属変数，`ESCS`を独立変数とした場合の回帰分析の例を示します。
+式で言うと，$PV1READ = \beta_0 + \beta_1 ESCS + \epsilon$という状態です。
+
+```{r}
+intsvy::pisa.reg(y = "PV1READ", x = "ESCS", data = jpn2012)
+```
+
+出力は，`Estimate`の列が推定値，`Std.Err`の列が標準誤差を示します。
+`t value`の列やは`R-squared`の行は気にしなくて構いません[^2]。
+ここでは，`(Intercept)`が$\beta_0$，`ESCS`が$\beta_1$に該当しますので，
+`ESCS`が1単位上昇すると`PV1READ`が39.24ポイント上昇するという関係があることになります[^3]。
+`intsvy`を使うと，回帰係数にも標準誤差を算出してくれます。
+標準誤差の解釈は，平均値の標準誤差とほぼ同様で
+「母集団で`PV1READ`を従属変数・`ESCS`を独立変数とする回帰分析を行った場合，
+ESCSの係数は39.24±3.69のどこかにある」（と信じよう）
+という意味になります[^4]。
+
+[^2]: 興味のある方は，回帰係数の検定／R2乗値について調べてみてください。
+[^3]: 回帰分析については，[単回帰分析](stat_basics.qmd#単回帰分析)をご覧ください。
+[^4]: 標準誤差の解釈については，[標準誤差](sampling_basic2.qmd#標準誤差)をご覧ください。
+
+PVを使う場合は，以下のようになります。
+PVの書き方は，`pisa.mean.pv`の場合と同じです。
+
+```{r}
+intsvy::pisa.reg.pv(
+  x = "ESCS", pvlabel = paste0("PV", 1:5, "READ"), data = jpn2012
+)
+```
+
+出力の読み方は，先ほどとほぼ同じです。
+PV1からPV5までを考慮すると，
+`ESCS`が1単位上昇すると読解リテラシーが37.99ポイント上昇するという関係があることになります。
+標準誤差もPV1のみの場合は3.69だったのに対し，PV1からPV5を使うと3.91になっています。
+[推算値の使い方](pvs.qmd#推算値の使い方)でも説明しましたが，
+一般的な傾向として，PVをすべて使うと，PVが1つの場合に比べて標準誤差が大きくなります。
+
+`pisa.reg`関数・`pisa.reg.pv`関数のいずれについても，重回帰分析を行うことも可能です。
+重回帰分析を行う場合は，引数`x`に独立変数（仮にA・B・Cとします）を
+`c("A", "B", "C")`の形で指定します。
+ここでは，`pisa.reg.pv`関数で読解リテラシーを従属変数，
+性別（`ST04Q01`）とESCS（`ESCS`）を独立変数とした場合の重回帰分析の例を示します。
+式で言うと，$読解リテラシー = \beta_0 + \beta_1 性別 + \beta_2 ESCS + \epsilon$という状態です。
+
+```{r}
+intsvy::pisa.reg.pv(
+  x = c("ST04Q01", "ESCS"), pvlabel = paste0("PV", 1:5, "READ"), data = jpn2012
+)
+```
+
+出力の読み方は，`pisa.reg`関数と同じです。
+この場合，「性別（`ST04Q01`）が同じ集団で比べると，
+`ESCS`が1単位上昇すると読解リテラシーが38.00上昇する」という関係があることになります[^5]。
+
+[^5]: 重回帰分析の解釈については，[重回帰分析](stat_basics.qmd#重回帰分析)をご覧ください。
+
+
+## 相関係数（PVを使う場合）
+
+2025年1月時点では，intsvyでPVを使った場合の相関係数は計算できません。
+理由は不明ですが，`pisa.rho.pv`関数が実装されていないからです。
+PV1からPV5を使って相関係数を算出する場合は，
+`pisa.rho`関数を使って自分で推定値を計算する必要があります。
+たとえば，読解リテラシー（PV1READからPV5READ）とESCSの相関係数が計算したい場合は，
+次のように入力し，`ESCS Rho`の列の出力を見る必要があります。
+
+```{r}
+intsvy::pisa.rho(
+  variables = c("PV1READ", "PV2READ", "PV3READ", "PV4READ", "PV5READ", "ESCS"),
+  data = jpn2012
+)
+```
+
+`ESCS Rho`の列を見ると，PV1READからPV5READとESCSの相関係数が出力されています。
+この5つの値をRubinのルールに従って平均したものが読解リテラシーとESCSの相関係数になります[^6]。
+同様に，`ESCS s.e.`の列を使えば，相関係数の標準誤差を算出することも可能です。
+
+[^6]: Rubinのルールについては，[推算値の使い方](pvs.qmd#推算値の使い方)をご覧ください。

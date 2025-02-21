@@ -1,0 +1,295 @@
+# Replication Method
+
+ここまでの説明は，単純な無作為抽出（SRS）を前提にしていました。
+しかしLSAで単純な無作為抽出が採用されることはまずありません。
+そのため，ここまで説明してきた母集団の推定方法をそのままLSAに適用することはできないのです。
+とくに問題になるのが，標準誤差の算出です。
+一般的な傾向として，LSAで利用されている標本抽出法で得られた標本に対して，
+SRSを前提とした標準誤差を算出すると小さめの値が得られます。
+この問題に対処するため，LSAではReplication Method（反復法）と総称される技術が採用されます。
+
+## 複雑な調査設計における標準誤差
+
+最初に複雑な調査設計における標準誤差の問題を理解するため，
+2段階抽出で100校からそれぞれ20人の生徒を抽出し，生徒の学力を調べたという状況を
+シミュレーションしてみましょう。
+ここでは，各学校の平均点は平均50・標準偏差10の正規分布から抽出したランダムな値とします。
+また，各学校の生徒の成績はその学校の平均点に，平均0・標準偏差5の正規分布から抽出した
+ランダムな値を加えたものとします。
+なお，母集団における学校数・各校の生徒数を無限とするなら，母平均は50になります[^4]。
+
+[^4]: 普通は学校数・生徒数ともに有限ですから，
+  [標本ウェイト](sampling_weight.qmd)で説明したように，
+  学校・生徒の抽出確率を考慮して母平均（及び母分散）を推定する必要があります。
+
+```{r}
+# シミュレーションの設定
+set.seed(1234)
+n_sch <- 100 # 学校数
+n_std <- 20 # 各学校の生徒数
+mean_s <- 50 # 学校の平均点
+sd_sch <- 10 # 学校の平均点の標準偏差
+sd_std <- 5 # 生徒の成績の標準偏差
+
+# データ生成
+sch_score <- rnorm(n_sch, mean_s, sd_sch) # 学校平均
+sch_id <- rep(1:n_sch, n_std) # 学校のID
+std_err <- rnorm(n_sch * n_std, 0, sd_std) # 学校平均に加える生徒の得点
+
+# 生徒のスコアを計算
+score <- sch_score[sch_id] + std_err
+
+# データフレームの作成
+data <- data.frame(
+  sch_id = sch_id,
+  score = score
+)
+```
+
+得られた標本から，SRSを仮定した平均と標準誤差を計算してみます。
+標準誤差を忘れてしまった人は，
+[標本調査の基礎知識2](sampling_basic2.qmd)を読んでみましょう。
+
+```{r}
+mean(data$score) # 平均
+sd(data$score) / sqrt(nrow(data)) # 標準誤差
+```
+
+平均48.45・標準誤差は0.25になりました。
+（約）95\%信頼区間を考えてみると，
+48.45±2×0.25≒48.9〜47.95で，母平均（=50）を捉えそこねています。
+
+次に，各学校ごとに平均点が異なるという設定を踏まえて標準誤差を算出してみましょう。
+ここでは，マルチレベルモデルという統計技法を利用して標準誤差を算出します。
+マルチレベルモデルは難しいので，覚える必要はありません。
+なお，Colabでマルチレベルモデルをするには，以下のコマンドを実行する必要があります。
+コマンドの意味については，[intsvyを使う](intsvy.qmd)で解説します。
+
+```{r}
+#| eval: false
+# R on Colab上でlme4を使う
+# ダウンロード
+system("curl -L -o library.tar.gz https://github.com/kawa5902/LSAdata/raw/refs/heads/main/202502library.tar.gz")
+# 解凍
+system("tar -xzf /content/library.tar.gz -C /content")
+.libPaths("library")
+```
+
+```{r}
+mod <- lme4::lmer(score ~ 1 + (1 | sch_id), data = data)
+summary(mod)$coefficients["(Intercept)", c("Estimate", "Std. Error")]
+```
+
+平均は同じく48.45ですが，標準誤差は1.01と4倍以上の値になっています。
+（約）95\%信頼区間を考えると，
+48.45±2×1.01≒50.45〜46.45なので，こちらは母平均を捉えています。
+
+SRSが標準誤差を過小評価する理由は，
+[標本抽出の方法](sampling_basic1.qmd#標本抽出の方法)で指摘した
+「個々の学校から抽出された生徒は似ている」ことを踏まえていないからです。
+今回利用したデータは，
+個々の学校の平均点に差がある（≒平均点の高い学校の生徒はおしなべて成績がよい）
+という状況のもとで生成されています。
+そのため個々の学校の生徒の成績が似通っており，
+SRSが仮定するほど多くの情報量が得られない（≒標準誤差が大きくなる）のです。
+
+加えて本書では詳しく解説しませんが，
+通常の社会調査において母集団は有限であり，
+さらに母集団から抽出した個体を母集団に戻す（≒調査対象になった個体を
+再び調査対象に選ぶこと。復元抽出と言います）こともありません。
+このような状況下（有限母集団かつ非復元抽出）では
+標準誤差の算出はさらに複雑になります[^1]。
+
+[^1]: 詳しくは標本調査の入門書[@date2020]を参考にしてください。
+  なお初学者向けの入門書では，
+  簡単のため無限母集団かつ復元抽出を前提に説明が行われていることもあります。
+
+適切な標準誤差を得るには，母集団情報と
+標本抽出法も踏まえた標準誤差の算出が必要です[^2]。
+ただ，この方法は標本抽出に詳しく，
+かつ詳細な調査設計を知る人間でないと設定することが困難です。
+加えて詳細な調査設計を公開してしまうと，
+調査対象となった学校や個人が特定されてしまう危険も生じます。
+そこでLSAで利用されている方法が，Replication Methodです。
+
+[^2]: Rでこの作業を行うには，[survey](https://cran.r-project.org/web/packages/survey/index.html)
+  というパッケージが必要になります。
+
+
+## Replication Methodとは
+
+Replication Methodとは，標本から新たな標本を複数回サンプリング（＝リサンプリング）し，
+各回で得られた推定値から母集団の推定値を求めようとする方法の総称です。
+もっとも有名な手法はブートストラップ法（Bootstrap method）だと思いますが，
+本書で紹介するLSAでは，BRR法（Balanced Repeated Replication method）や
+JK法（JackKnife method）といったReplication Methodが利用されています。
+
+ここではシンプルなReplication Methodの例として，
+層化抽出でない場合のジャックナイフ法（JK1法）による
+標準誤差の算出法を紹介します。
+JK1法では「標本を一つずつ順に除外する」ことで新たな標本を生成します。
+先ほどの例のように，学校ごとに生徒を抽出していた場合は
+「標本の学校を1つずつ順に除外する」という手順で標本を作成します。
+標準誤差は，以下の式で算出されます。
+$$JK法の標準誤差 = \sqrt{(\frac{作成した標本数-1}{作成した標本数}) * \sum{(作成した標本の推定値 - 標本の推定値) ^ 2}}$$
+
+```{r}
+# JK1で標準誤差を計算
+# 標本の平均を計算
+all_mean <- mean(data$score)
+
+# 学校を1つずつ除外して平均を計算
+# unique関数はベクトル内にある学校IDを数える
+jk_mean <- sapply(unique(data$sch_id), function(id) {
+  mean(data$score[data$sch_id != id])
+})
+
+# ジャックナイフ標準誤差の計算
+se <- sqrt(
+  (length(jk_mean) - 1) / length(jk_mean) * sum((jk_mean - all_mean)^2)
+)
+
+# 平均と標準誤差
+c(mean = all_mean, se = se)
+```
+
+先ほどのマルチレベルモデルと同じ推定値が得られています。
+
+
+## Replication Weightsとは
+
+Replication Methodでは，
+先ほど紹介したJK1法のように何らかのルールに従って標本の一部を除外したり，
+あるいは逆に標本を2倍にしたりといった方法を使って新たな標本を作成します。
+ここで標本の一部を除外する，
+あるいは標本を2倍にするといった作業は，
+個々の標本のウェイトを0にする，あるいはウェイトを2にすることと同義です。
+そしてウェイトを使えば，個々の標本のウェイトを0.5にするといった，
+さらに複雑な標本作成も可能です。
+
+この発想を利用して，
+LSAでは新たな標本の作成法と作成回数をウェイトで表現します。
+このとき利用されるウェイトを，Replication Weightsと呼びます。
+Replication Weightsを利用すれば，Replication Methodの詳細は知らなくても
+標準誤差が算出できます。
+
+たとえばPISAは，FayのBRRというReplication Methodが採用され，
+標準誤差の算出の際は80個の標本を作ることになっています[^3]。
+ただ，分析者がBRR法に詳しい必要はありません。
+PISAのデータセットには`W_FSTR1`から`W_FSTR80`という80個のReplication weightsが存在し，
+分析者はこれを使って標本を作成することができるからです。
+
+[^3]: 実際はFayのBRRをさらに修正した手法が利用されています[@horo2019]が，
+  本書の範囲を超えるので省略します。
+
+PISA2012のデータを使い，
+Replication Weightsの利用方法を見てみましょう。
+具体的には，読解リテラシー`PV1READ`の平均を計算することを考えます。
+平均と標準誤差を計算する場合は，
+最初に標本ウェイト`W_FSTUWT`を使った推定値を計算します。
+これが`PV1READ`の平均値となります。
+その後に，Replication Weightsを使った推定値を計算します。
+PISAの場合は80個のReplication weightsが存在するので，80回の計算が必要になります。
+
+
+```{r}
+url <- "https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/pisa2012stuJPN.csv"
+jpn2012 <- read.csv(url)
+
+fin_m <- weighted.mean(jpn2012$PV1READ, jpn2012$W_FSTUWT) # 最終的な標本ウェイト
+fin_m
+
+weighted.mean(jpn2012$PV1READ, jpn2012$W_FSTR1) # 1個目の標本作成
+weighted.mean(jpn2012$PV1READ, jpn2012$W_FSTR2) # 2個目の標本作成
+```
+
+上記の例では`W_FSTR1`と`W_FSTR2`だけを計算してみましたが，
+Replication weightsを使った推定値を一つずつ計算していくのは明らかに手間です。
+せっかくコンピュータを使っているので，計算を簡略化することを考えましょう。
+
+ここで注目したいことは，
+PISAのReplication Weightsの変数名は
+`W_FSTR1`から`W_FSTR80`であるという点です。
+最初の`W_FSTR`は共通していますから，これを利用します。
+[データフレームの取り扱い](dataframe.qmd#データフレームの取り扱い)で触れたように，
+データフレームの変数にアクセスする方法は`$`を使う方法だけでなく，
+`[[ ]]`を使う方法もあります。
+つまり，`jpn2012$W_FSTR1`と`jpn2012[["W_FSTR1"]]`は同じ意味です。
+
+さらにRの`paste0`関数を利用します。
+`paste0`は引数とした文字を結合する関数で，
+`paste0("W_FSTR", 1)`は`"W_FSTR1"`となります。
+
+以上の知識を使うと，次の3つは同じことになります。
+
+```{r}
+summary(jpn2012$W_FSTR1)
+summary(jpn2012[["W_FSTR1"]])
+summary(jpn2012[[paste0("W_FSTR", 1)]])
+```
+
+さて，`paste0("W_FSTR", 1)`は数値`1`を含んでいます。
+ですから，`i`が1から80まで変わるとき，
+`weighted.mean(jpn2012$PV1READ, jpn2012[[paste0("W_FSTR", i)]])`
+の値がどう変わるか計算すれば，
+80個のReplication weightsを使った推定値を一気に得ることができます。
+この計算を`sapply`を使って書くと，次のようになります。
+計算結果は，`rep_m`というオブジェクトに保存しました。
+
+```{r}
+rep_m <- sapply(1:80, function(i) {
+  weighted.mean(jpn2012$PV1READ, jpn2012[[paste0("W_FSTR", i)]])
+})
+rep_m
+```
+
+PISAで利用されているBRR法において，
+標準誤差は以下の式で算出されます。
+
+$$最終的な標準誤差 = \sqrt{\frac{1}{20}\sum_{i=1}^{80}((\hat{\theta}_i - \hat{\theta}) ^ 2)}$$
+
+ここで$\hat{\theta}$は最終的な推定値，
+$\hat{\theta_i}$は$i$番目のReplication weightsを使った推定値です。
+Rで次のように計算すれば，`PV1READ`の平均値の標準誤差が得られます。
+
+```{r}
+c(Mean = fin_m, SE = sqrt(sum((rep_m - fin_m)^2) / 20))
+```
+
+ちなみに，単純な無作為抽出を前提に
+`PV1READ`の標準誤差を計算すると1.25になり，
+本来の推定値（3.67）に比べ過小になります。
+
+```{r}
+# 単純な無作為抽出を前提に計算した標準誤差
+sd(jpn2012$PV1READ) / sqrt(nrow(jpn2012))
+```
+
+`PV1READ`の分散や分散の標準誤差も，ウェイトを使って計算します。
+以下では，ウェイトを考慮した分散を計算する`weighted.var`関数を自作し，
+Replication Weightsと組み合わせて，`PV1READ`の分散とその標準誤差を算出しています。
+
+```{r}
+weighted_var <- function(x, w) {
+  sum(w * (x - weighted.mean(x, w))^2) / sum(w)
+}
+
+fin_s <- sqrt(weighted_var(jpn2012$PV1READ, jpn2012$W_FSTUWT))
+rep_s <- sapply(1:80, function(i) {
+  sqrt(weighted_var(jpn2012$PV1READ, jpn2012[[paste0("W_FSTR", i)]]))
+})
+
+c(SD = fin_s, SE = sqrt(sum((rep_s - fin_s)^2) / 20))
+```
+
+ここまでの説明を聞くと非常に煩雑な操作だと思うでしょうが，実際に分析を行う際は
+[intsvy](https://cran.r-project.org/web/packages/intsvy/index.html)という
+パッケージを使えば容易に計算できます。
+
+```{r}
+# intsvyを使った場合のPV1READの平均と分散の推定値（標準誤差を含む）
+intsvy::pisa.mean("PV1READ", data = jpn2012)
+```
+
+出力が，これまで計算してきた推定値と一致していることを確認してください。
+intsvyについては，[intsvyを使う](intro_lsa.qmd)で解説します。

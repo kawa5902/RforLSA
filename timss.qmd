@@ -1,0 +1,317 @@
+# TIMSSの分析
+
+`intsvy`を使えば，TIMSSもPISAと同じように分析することが可能です。
+ただ，いくつか違う点もあります。
+
+## ファイル名
+TIMSSのデータファイルは，国ごとに分割され，命名規則に従ってファイル名が付けられています。
+分析者にとって重要になるのは，主として以下のファイルです。
+ここでは第4学年（ファイル名がAで始まる）のファイルを例に説明します。
+第8学年のファイルは，ファイル名がBで始まることと，
+BTM（数学の教員質問）・BTS（理科の教員質問）の二種類が存在する点が違います。
+
+- ACG: 第4学年・学校質問（school context data）
+- ASG: 第4学年・生徒質問（student context data）
+- ASH: 第4学年・家庭質問（home context data）
+- AST: 第4学年・生徒教員リンク（student-teacher linkage）
+- ATG: 第4学年・教員質問（teacher context data）
+
+## intsvyによるTIMSSの分析
+ここでは最新のTIMSS2019を例に，intsvyによる分析方法を示します。
+最初にデータを読み込みます。
+TIMSSのデータファイルはSPSSというソフトウェア向けのファイルフォーマットで
+公開されているので，Rの`foreign`というパッケージにある
+`read.spss`関数を使って読み込みます。
+後に`intsvy`を使う関係上，`read.spss`関数の設定は，
+以下のようにしてください。
+
+```{r}
+url_stu <- "https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/timss2019/asgjpnm7.sav"
+jpn09g4stu <- foreign::read.spss(url_stu,
+  use.value.labels = FALSE,
+  to.data.frame = TRUE, use.missings = FALSE
+)
+```
+
+まず児童に尋ねた家庭のある本の冊数（`ASBG04`変数）の回答と，
+男女（`ITSEX`変数）の人数を確認してみましょう。
+いずれの処理も，`timss.table`関数で実行できます。
+出力は，`pisa.table`の場合と同じです。
+
+```{r}
+# 家庭にある本の冊数
+intsvy::timss.table("ASBG04", data = jpn09g4stu)
+# 性別
+intsvy::timss.table("ITSEX", data = jpn09g4stu)
+```
+
+続いて算数・理科の平均値を計算します。
+`timss.mean.pv`関数を使うと，5つのPVを使い，
+平均値の計算とJK法による標準誤差の算出まで行ってくれます。
+`pisa.mean.pv`関数と同じく，引数`by`を指定することで男女（`ITSEX`）別や
+本の冊数（`ASBG04`）別の平均値も計算してくれます。
+
+```{r}
+# 算数の平均点
+intsvy::timss.mean.pv(paste0("ASMMAT0", 1:5), data = jpn09g4stu)
+# 理科の平均点
+intsvy::timss.mean.pv(paste0("ASSSCI0", 1:5), data = jpn09g4stu)
+
+# 男女別
+intsvy::timss.mean.pv(paste0("ASMMAT0", 1:5), by = "ITSEX", data = jpn09g4stu)
+# 家にある本の冊数別
+intsvy::timss.mean.pv(paste0("ASSSCI0", 1:5), by = "ASBG04", data = jpn09g4stu)
+```
+
+## 学校票の結合
+
+学校票を結合する方法もPISAとほぼ同様です。
+以下では，学校票のデータを`jpn09g4sch`に格納し，生徒票のデータと`merge`関数で結合しています。
+
+```{r}
+url_sch <- "https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/timss2019/acgjpnm7.sav"
+jpn09g4sch <- foreign::read.spss(url_sch,
+  use.value.labels = FALSE,
+  to.data.frame = TRUE, use.missings = FALSE
+)
+
+jpn09g4v1 <- merge(jpn09g4stu, jpn09g4sch,
+  by = c(
+    "IDCNTRY", "IDSCHOOL", "IDPOP", "IDGRADER", "IDGRADE",
+    "WGTADJ1", "WGTFAC1", "VERSION", "SCOPE"
+  )
+)
+```
+
+結合した後は，`timss.table`関数などを使って分析が可能です。
+以下の例では，経済的に恵まれない家庭の児童の割合（`ACBG03A`変数）の回答について，
+学校票の回答割合（`table`関数を使って度数分布のみ出力）と，
+`timss.table`関数を使った児童の割合を出力しています。
+
+```{r}
+# ACBG03Aの回答（学校単位）
+table(jpn09g4sch$ACBG03A)
+round(prop.table(table(jpn09g4sch$ACBG03A)) * 100, 1)
+# ACBG03Aの回答（児童単位）
+intsvy::timss.table("ACBG03A", data = jpn09g4v1)
+```
+
+回答は「1: 0〜10\%」「2: 11〜25\%」「3: 26〜50\%」「4: 50\%より多い」の4択です。
+度数分布を見ると，1が77校（52.4\%）・2が56校（38.1\%）・・・であることがわかります。
+また`timss.table`の結果から，1の学校に所属する児童の割合が51.69\%でもっとも多いことがわかります。
+
+
+## 保護者票の結合
+
+TIMSSでは保護者票を結合することも可能です。
+ここでは先ほど学校票を結合したデータフレーム`jpn09g4v1`にさらに保護者票を結合します。
+
+```{r}
+url_par <- "https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/timss2019/ashjpnm7.sav"
+jpn09g4home <- foreign::read.spss(url_par,
+  use.value.labels = FALSE,
+  to.data.frame = TRUE, use.missings = FALSE
+)
+jpn09g4v2 <- merge(jpn09g4v1, jpn09g4home,
+  by = c(
+    "IDCNTRY", "IDSCHOOL", "IDCLASS", "IDSTUD", "IDPOP", "IDGRADER",
+    "IDGRADE", "ASDAGE", "ASBGHRL", "ASDGHRL", "VERSION", "SCOPE"
+  )
+)
+```
+
+母親の学歴（`ASBH15B`変数）の回答割合に注目してみましょう。
+ここでは回答者の母親学歴の分布（`table`関数で出力），
+母親学歴ごとの児童の分布（`timss.table`関数で出力），
+母親学歴ごとの児童の数学の平均値（`timss.mean.pv`関数で出力）のそれぞれを出力します。
+
+```{r}
+# 母親の学歴
+table(jpn09g4home$ASBH15B)
+intsvy::timss.table("ASBH15B", data = jpn09g4v2)
+
+intsvy::timss.mean.pv(paste0("ASMMAT0", 1:5), by = "ASBH15B", data = jpn09g4v2)
+```
+
+母親の学歴の回答は，
+「1:学校に行っていない」
+「2:小学校」
+「3:中学校」
+「4:高等学校」
+「5:高等学校の専攻科」
+「6:短期大学，高等専門学校，専門学校」
+「7:大学」
+「8:大学院」
+「9:あてはまらない」
+の9択です。
+回答者の人数を見ると，
+6（短期大学，高等専門学校，専門学校）が1672人でもっとも多く，
+ついで4（高等学校）が1205人です。
+児童の割合に注目すると，6（短期大学，高等専門学校，専門学校）の母親のいる児童が
+全体の40.85\%ということになります。
+数学の成績に着目すると，基本的に母親の学歴が高いほど（＝回答番号が3から8になるにつれて）
+児童の成績が高くなることがわかります。
+ただし，8（大学院）は保護者の数が少ないこともあって標準誤差（s.e.）が9.00と大きくなっています。
+
+## 教員票の結合
+
+TIMSSでは，児童を教えている教員に対しても質問票が配布されています。
+教員票を使う場合，ATGで始まる教員票に加え，ASTで始まるリンクファイルもダウンロードする必要があります。
+
+なお，今回のように複数のデータフレームを結合する場合，`merge`関数ではどうしても書きにくくなります。
+そこで，`dplyr`パッケージを使った結合を行っています。
+`dplyr`はRの処理を円滑に行うために開発されたパッケージの一つです。
+現代のRプログラミングでは必須とも言えるものなので，
+Rに関心のある方は学んでみるとよいでしょう。
+`dplyr`を使った場合は，データフレーム間で共通する変数が自動的に認識されて結合されます。
+
+以下では分析例として，教員の学歴（`ATBG04`変数）の度数分布を表示しています。
+
+
+```{r}
+url_l1 <- "https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/timss2019/astjpnm7.sav"
+url_l2 <- "https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/timss2019/atgjpnm7.sav"
+
+jpn09g4link <- foreign::read.spss(url_l1,
+  use.value.labels = FALSE,
+  to.data.frame = TRUE, use.missings = FALSE
+)
+jpn09g4tea <- foreign::read.spss(url_l2,
+  use.value.labels = FALSE,
+  to.data.frame = TRUE, use.missings = FALSE
+)
+
+# dplyrを使うと簡単にマージ可能
+suppressMessages(library(dplyr))
+jpn09g4v3 <- jpn09g4stu |>
+  inner_join(jpn09g4link) |>
+  inner_join(jpn09g4tea)
+
+# ATBG04: 教員の学歴
+table(jpn09g4tea$ATBG04)
+round(prop.table(table(jpn09g4tea$ATBG04)) * 100, 1)
+```
+
+ほとんどの教員が「5: 大卒」であることがわかります。
+「4: 短大卒」や「6: 大学院卒」もわずかにいます。
+
+教員票を使った分析をする際に注意することは，標本ウェイトが変わるという点です。
+TIMSSでは，児童を担当している教員はすべて教員票の対象になっています。
+そのため算数や理科で複数の担任が担当していた場合，
+児童1人に対して2名以上の教員票があるということも珍しくありません。
+そのため教員票を結合すると，個々の教員に担当している児童が接続され，
+データセット内に同じ児童のデータが複数存在することになるのです。
+このまま平均値などを計算すると，児童がダブルカウント（場合によってはトリプルカウント）されるため，
+標本ウェイトを調整し，ダブルカウントの児童のウェイトは半分にするといった処理が行われています。
+このウェイトをTIMSSでは教員ウェイト（`TCHWGT`）と呼んでいます。
+`intsvy`では，引数の`timss4_conf`を設定することでウェイトを変更可能です。
+ただしこの場合は，`timss.mean.pv`ではなく，`intsvy.mean.pv`関数を使う必要があります。
+以下の例では，ウェイトを変更しなかった場合と変更した場合の推定値を比較しています。
+度数（Freq）が`jpn09g4v3`では変わっていることも確認してください。
+
+```{r}
+# 正しい推定値（児童票のみ）
+intsvy::timss.mean.pv(paste0("ASMMAT0", 1:5), data = jpn09g4stu)
+# 正しい推定値（学校票・保護者票を追加しても問題ない）
+intsvy::timss.mean.pv(paste0("ASMMAT0", 1:5), data = jpn09g4v2)
+# ウェイトを変更せずに教員票を含むデータセットを使うと間違った推定値が出力される
+intsvy::timss.mean.pv(paste0("ASMMAT0", 1:5), data = jpn09g4v3)
+
+# timss09g4_tchconfでウェイトを変更
+timss09g4_tchconf <- intsvy::timss4_conf
+timss09g4_tchconf$variables$weight <- "TCHWGT"
+# ウェイトを変更すると適切な推定値が得られる
+intsvy::intsvy.mean.pv(
+  pvnames = paste0("ASMMAT0", 1:5),
+  data = jpn09g4v3, config = timss09g4_tchconf
+)
+
+# 教員の学歴別に算数の平均値を計算
+intsvy::intsvy.mean.pv(
+  pvnames = paste0("ASMMAT0", 1:5), by = "ATBG04",
+  data = jpn09g4v3, config = timss09g4_tchconf
+)
+```
+
+## 第8学年のデータを扱う
+
+第8学年のデータも第4学年のデータと同様に分析可能です。
+違いはファイル名と，教員票が数学と理科のそれぞれに存在する点です。
+
+```{r}
+url_g8s <- "https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/timss2019/bsgjpnm7.sav"
+jpn09g8stu <- foreign::read.spss(
+  url_g8s, to.data.frame = TRUE, use.value.labels = FALSE, use.missings = FALSE
+)
+intsvy::timss.mean.pv(paste0("BSMMAT0", 1:5), data = jpn09g8stu)
+```
+
+以下の例では，第8学年の数学の平均値を教員の学歴（`BTBG04`変数）別に出力しています。
+最初に，複数のデータファイルを`lapply`関数を使って一気にダウンロードしています。
+その上で`purrr`の`reduce`関数を使って複数のデータフレームを結合し，`intsvy.mean.pv`関数で分析しています。
+数学の教員ウェイトを使う必要があるので，標本ウェイトは`MATWGT`に変更しています。
+出力を見ると，標準誤差（s.e.）がNaNになっている箇所がありますが，
+これは該当する教員が1名しかいないので標準誤差が計算できなかったためです。
+
+```{r}
+# 複数のファイルを一気にダウンロード
+url_g8 <- "https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/timss2019/b"
+jpn09g8data <- lapply(c("sg", "st", "tm"), function(x) {
+  foreign::read.spss(paste0(url_g8, x, "jpnm7.sav"),
+    use.value.labels = FALSE,
+    to.data.frame = TRUE, use.missings = FALSE
+  )
+})
+# データフレームを結合
+jpn09g8 <- jpn09g8data |>
+  purrr::reduce(inner_join)
+# timss8_confを修正
+timss09g8m_tchconf <- intsvy::timss8_conf
+timss09g8m_tchconf$variables$weight <- "MATWGT"
+# 教員の学歴（BTBG04）ごとの数学の平均値を出力
+intsvy::intsvy.mean.pv(
+  pvnames = paste0("BSMMAT0", 1:5), by = "BTBG04",
+  data = jpn09g8, config = timss09g8m_tchconf
+)
+
+# SEがNAなのは該当する教員が1名しかいないため
+table(jpn09g8data[[3]]$BTBG04, exclude = NULL)
+
+intsvy::intsvy.mean.pv(
+  pvnames = paste0("BSMMAT0", 1:5),
+  data = jpn09g8, config = timss09g8m_tchconf
+)
+```
+
+## 過去のTIMSS
+
+TIMSS2019の分析方法は，過去のTIMSSにも適用可能です。
+たとえばTIMSS2003で，第4学年の日本の平均値を出力する方法は，以下のようになります。
+
+```{r}
+url_03 <- "https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/timss2003/ASGJPNm3.sav"
+jpn03g4stu <- foreign::read.spss(url_03,
+  use.value.labels = FALSE,
+  to.data.frame = TRUE, use.missings = FALSE
+)
+intsvy::timss.mean.pv(paste0("ASSSCI0", 1:5), data = jpn03g4stu)
+```
+
+ただし，TIMSS1995だけは現在のTIMSSと調査設計が違うので注意が必要です。
+SPSSファイルの場合，JRRの計算に必要な`JKREP`変数が小文字になっているので，
+そのままだと`intsvy`が動きません。
+PVの変数名も小文字なので，引数も`paste0("asssci0", 1:5)`になります。
+さらにTIMSS1995では第3学年も調査対象になっていたので，
+第4学年のデータを得るには引数`by`に学年（`IDGRADE`変数）を指定する必要もあります。
+
+```{r}
+url_95 <- "https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/timss1995/ASGJPNm1.sav"
+jpn95stu <- foreign::read.spss(url_95,
+  use.value.labels = FALSE,
+  to.data.frame = TRUE, use.missings = FALSE
+)
+# jkrepをJKREPに変更
+names(jpn95stu)[names(jpn95stu) == "jkrep"] <- "JKREP"
+# byにIDGRADEを指定し，学年ごとに結果を出力
+intsvy::timss.mean.pv(paste0("asssci0", 1:5), by = "IDGRADE", data = jpn95stu)
+```

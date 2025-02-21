@@ -1,0 +1,315 @@
+# まとめ
+
+## 「なぜLSAを学ぶのか」への回答
+
+本書では，LSAに採用されている技術を学ぶとともに，
+PISAやTIMSSといったLSAのデータをRを使って分析してきました。
+最後に，ここまでに学んだ知識を使い
+「[なぜLSAを学ぶのか](intro_lsa.qmd)」
+という本書冒頭の問いに答えてみましょう。
+
+LSAを学ぶ理由は，
+そこで使われている技術を知らなければ
+日本の学力実態やその変化を知ることができないからです。
+学力の変化を捉えることができないということは，
+社会の変化や教育政策の変化によって，
+子どもたちがどのような影響を受けているか把握できないということです。
+LSAが知られていない状況で日本の教育の問題点やその改善策を論じても意味はなく，
+「いきあたりばったり」の教育政策にならざるを得ません。
+日本の教育政策の問題点を指摘した書籍はいくつもありますが[@koba2018; @tera2020; @matsu2021; @kawa2022]，
+問題を生み出す要因の一つに，そもそも本書で論じてきたような
+適切に学力を把握する方法が知られていないことがあると言ってもよいでしょう。
+教育政策の現状を医療に例えるなら，
+「検査をせずに治療を進め，さらに治療の結果も確認していない」状態です。
+これで日本の教育が良くなったとしても，それはただの偶然です。
+
+そして本書で私が言いたいことは，教育の検査（その一つがLSAです）は，
+**「それなりに難しい」**ということです。
+[項目反応理論（IRT）](irt.qmd)を学ぶと理解できるようになりますが，
+私たちが慣れ親しんだ「100点満点のテスト」（≒古典的テスト理論）では，
+学力の変化を捉えることができません。
+日本の教育界では，2020年頃から「学力の変化を捉えることができる」を謳い文句に，
+IRTがにわかに注目を集めています。
+しかしIRTを導入したら，学力テストが自動的にLSAになるわけではありません。
+[推算値法（PVs）](pvs.qmd)で学んだように，
+IRTの一般的な能力推定法（MLEやEAP）には母集団の能力推定に偏りが生じるという欠点があります。
+この欠点を改善するにはテストの項目数を増やす必要がありますが，
+180を超える項目を出題するのは，現実的な方法ではありません。
+ですから，LSAでは条件づけたPVsを導入することが重要になります。
+LSAを設計・実施する人はもちろんですが，
+分析・解釈する人もPVsの適切な利用法を知っておく必要があるのです。
+
+IRTやPVsといった複雑な手法を組み込んだ調査を，毎年度，
+しかも全国のすべての児童生徒を対象に実施することはほぼ不可能です。
+[項目反応理論](irt.qmd)の章で説明したように，
+IRTを活かすには事前に十分な数の項目を用意しておく必要があります。
+100を超える項目を用意し，項目の困難度や識別力といったパラメータを分析する作業には
+1年でも短すぎるでしょう。
+さらにIRTでは項目の秘匿が条件になるので，
+不必要に多数の児童生徒を調査してしまうとせっかく用意した項目が漏洩し，
+IRTの前提が崩れる危険があります。
+そのためLSAでは，標本抽出が有力な選択肢となるのです。
+
+もちろん，学校を対象とした調査で標本抽出を行うのは容易なことではありません。
+さまざまな標本抽出法が存在しますし，
+標本抽出に伴う推定値のズレや誤差をどうやって算出するかも難しい問題です。
+[標本ウェイト](sampling_weight.qmd)や[Replication Methods](replication.qmd)は，
+こうした問題に対処するために考案されてきた技術です。
+
+要するに，現代のLSAを理解するには
+（そしてPISAやTIMSS，あるいは全国学力・学習状況調査について発言するなら）
+[標本ウェイト](sampling_weight.qmd)・
+[Replication Method](replication.qmd)・
+[項目反応理論](irt.qmd)・
+[推算値法](pvs.qmd)の4つの技術に関する知識が必要なのです。
+そして，これらの知識は調査を実施する人はもちろんですが，
+調査を分析する人や調査結果を解釈する人たちにも必要です。
+そうでないと，誤った分析や解釈をしてしまうでしょう。
+誤った分析や解釈は，当然ながら誤った教育政策につながっていきます。
+日本の学校教育や教育政策について学力調査の結果をもとに論じる人は，
+本書で示したような知識を身に着けておくべきなのです[^1]。
+
+[^1]: LSAを学ぶのは大変すぎるという方は，***学力調査には言及せず，***
+  日本の学校教育の在り方について論じればよいと思います。
+  もっともTIMSSはともかく，PISAや全国学力・学習状況調査に触れずに日本の学校教育を論じるというのは
+  かなり難しい気もしますが・・・。
+
+断っておきますが，本書はLSAの入門書に過ぎず，
+本書が説明していない内容は多岐にわたります。
+本書で示した最低限の内容を知らない人たちが教育政策を論じる
+（さらには教育政策を変更する）ところに，
+日本の教育の大きな難点があるように私は思います。
+
+## さらに学ぶために
+
+本書はLSAについて学ぶための「とっかかり」に過ぎません。
+そこで最後に，さらにLSAを学ぶためのヒントになる書籍をいくつか紹介しておきます。
+トピックごとに紹介しますので，自身の興味・関心に合わせて学ぶとよいでしょう。
+
+## 社会調査について
+
+::: {.grid}
+
+::: {.g-col-6}
+### 入門・社会調査法
+[![](https://www.hou-bun.com/image/book/ISBN978-4-589-04141-8.jpg){width=130px}](https://www.hou-bun.com/cgi-bin/search/detail.cgi?c=ISBN978-4-589-04141-8){target="_blank"}
+
+- **著者**: 轟亮・ 杉野勇・ 平沢和司（編）
+- **出版社**: 法律文化社
+- **発売日**: 2021年（第4版）
+
+主に量的調査法を使った社会調査の入門書です。
+第4版ではインターネット調査や研究倫理にも触れており，社会調査の基本を学べる良書です。
+
+:::
+
+::: {.g-col-6}
+### 入門・社会統計学
+[![](https://www.hou-bun.com/image/book/ISBN978-4-589-03846-3.jpg){width=130px}](https://www.hou-bun.com/cgi-bin/search/detail.cgi?c=ISBN978-4-589-03846-3){target="_blank"}
+
+- **著者**: 杉野勇
+- **出版社**: 法律文化社
+- **発売日**: 2017年
+
+Rを使って社会調査法の知識を学ぶテキストです。
+同じ著者が書いた『入門・社会調査法』と合わせて読むと良いと思います。
+
+:::
+
+::: {.g-col-6}
+### 社会調査法
+[![](https://www.gakujutsu.co.jp/cms/wp-content/uploads/2020/03/isbn978-4-7806-0704-8.jpg){width=130px}](https://www.gakujutsu.co.jp/product/978-4-7806-0704-8/){target="_blank"}
+
+- **著者**: 伊達平和・高田聖治
+- **出版社**: 学術図書出版社
+- **発売日**: 2020年
+
+社会調査の入門書で，層化抽出や多段抽出，及び標準誤差の算出法について解説している点がポイントです。
+
+:::
+
+::: {.g-col-6}
+### 概説 標本調査法
+[![](https://www.asakura.co.jp/user_data/product_image/12791/1.jpg){width=130px}](https://www.asakura.co.jp/detail.php?book_code=12791){target="_blank"}
+
+- **著者**: 土屋隆裕
+- **出版社**: 朝倉書店
+- **発売日**: 2009年
+
+層化や多段抽出といった標本抽出法について解説しています。数式多めなので詳しく知りたい人向け。
+
+:::
+
+::: {.g-col-6}
+### Analyzing Complex Survey Data
+[![](https://stpltrsrcscmnprdwus001.blob.core.windows.net/rsrcs/srm/images/analyzing-complex-survey-data/9781412983341-bookcover.jpg){width=130px}](https://methods.sagepub.com/book/mono/analyzing-complex-survey-data/toc){target="_blank"}
+
+- **著者**: Eun Sul Lee & Ronald N. Forthofer
+- **出版社**: Sage
+- **発売日**: 2006年（2nd ed）
+
+SageのQuantitative Applications in the Social Sciences シリーズ（いわゆる「緑本」）。
+Complex Surveyについて学ぶ場合，英語の方が早いです。
+
+:::
+
+::: {.g-col-6}
+### Complex Surveys: A Guide to Analysis Using R
+[![](https://www.wiley.com/storefront-pdp-assets/_next/image?url=https%3A%2F%2Fmedia.wiley.com%2Fproduct_data%2FcoverImage300%2F07%2F04702843%2F0470284307.jpg&w=384&q=75){width=130px}](https://www.wiley.com/en-us/Complex+Surveys%3A+A+Guide+to+Analysis+Using+R-p-9780470284308){target="_blank"}
+
+- **著者**: Thomas Lumley
+- **出版社**: Wiley
+- **発売日**: 2010年
+
+Rのsurveyパッケージ開発者の本。RでComplex Surveyを分析する場合は必読。
+いきなり読むと挫折するので注意。
+ちなみに読まなくてもPISAやTIMSSは分析できます。
+
+:::
+
+::: {.g-col-6}
+### データ分析の力
+[![](https://hondana-image.s3.amazonaws.com/book/image/10124787/78dc44e7-b159-4f6d-9c2e-9123efbaca9f.jpg){width=130px}](https://books.kobunsha.com/book/b10124787.html){target="_blank"}
+
+- **著者**: 伊藤公一朗
+- **出版社**: 光文社新書
+- **発売日**: 2017年
+
+データから因果関係を見極める方法についてわかりやすく解説した新書。
+数式なしで因果推論の概要を掴むために。
+
+:::
+
+::: {.g-col-6}
+### 欠測データ処理
+[![](https://hondana-image.s3.amazonaws.com/book/image/10003896/normal_cd6c18ba-7db3-4303-89cc-fe5c694b39ed.jpg){width=130px}](https://www.kyoritsu-pub.co.jp/book/b10003896.html){target="_blank"}
+
+- **著者**: 高橋将宜・渡辺美智子
+- **出版社**: 共立出版
+- **発売日**: 2017年
+
+多重代入法（Multiple Imputation: MI）のテキスト。Rによるコードも豊富に記載されています。
+推算値を理解するにはMIの知識が必要ですし，調査データの分析で欠測処理は避けて通れないので必読。
+
+:::
+
+:::
+
+## 教育測定について
+
+::: {.grid}
+
+::: {.g-col-6}
+### テストは何を測るのか
+[![](https://hondana-image.s3.amazonaws.com/book/image/278806/1ee5ed45-ac0e-4c27-9c34-f440ed215aae.jpg){width=130px}](https://www.nakanishiya.co.jp/book/b278806.html){target="_blank"}
+
+- **著者**: 光永悠彦
+- **出版社**: ナカニシヤ出版
+- **発売日**: 2017年
+
+項目反応理論の入門書。まずはこの辺から始めると良いと思います。
+
+:::
+
+::: {.g-col-6}
+### Rによる項目反応理論
+[![](https://img.hanmoto.com/bd/img/9784274050176_600.jpg?lastupdated=2016-04-19T20%3A28%3A53%2B09%3A00){width=130px}](https://www01.hanmoto.com/bd/isbn/9784274050176){target="_blank"}
+
+- **著者**: 加藤健太郎・山田剛史・川端一光
+- **出版社**: オーム社
+- **発売日**: 2014年
+
+Rで学ぶ項目反応理論の入門書。Rと項目反応理論の両方を学べます。
+
+:::
+
+::: {.g-col-6}
+### 心理統計学の基礎
+[![](https://www.yuhikaku.co.jp/uploads/images/L12160.jpg){width=130px}](https://www.yuhikaku.co.jp/books/detail/4641121605){target="_blank"}
+
+- **著者**: 南風原朝和
+- **出版社**: 有斐閣
+- **発売日**: 2002年
+
+タイトルそのままに心理統計学の基礎を学べます。
+社会統計学と心理統計学は微妙に違うので，社会調査に関心があるなら後回しでok。
+逆に，個人（集団ではない）の能力測定に関心がある場合はこちらから。
+
+:::
+
+:::
+
+## LSAについて
+
+::: {.grid}
+
+::: {.g-col-6}
+### PISA Data Analysis Manual: SPSS 2nd ed
+[![](data:image/jpeg;base64,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){width=130px}](https://www.oecd.org/en/publications/pisa-data-analysis-manual-spss-second-edition_9789264056275-en.html){target="_blank"}
+
+- **著者**: OECD
+- **出版社**: OECD Publishing
+- **発売日**: 2009年
+
+PISAで利用されている技術と分析方法についてSPSSを使って解説した本（無料でダウンロード可）。
+PISAの技術概要の基礎を知ることができます。
+
+:::
+
+::: {.g-col-6}
+### PISA調査の解剖
+[![](https://www.toshindo-pub.com/wp-content/uploads/2019/09/9784798915883-1.jpg){width=130px}](https://www.toshindo-pub.com/book/91588/){target="_blank"}
+
+- **著者**: 袰岩晶・篠原真子・篠原康正
+- **出版社**: 東信堂
+- **発売日**: 2019年
+
+PISA調査の技術概要について，日本語で解説したおそらく唯一の本。
+初学者には難易度高めだが，LSAを語るための必読書。
+Rによる解説付き。
+
+:::
+
+::: {.g-col-6}
+### Handbook of International Large-Scale Assessment
+[![](https://images.routledge.com/common/jackets/crclarge/978103247/9781032477435.jpg){width=130px}](https://www.routledge.com/Handbook-of-International-Large-Scale-Assessment-Background-Technical-Issues-and-Methods-of-Data-Analysis/Rutkowski-vonDavier-Rutkowski/p/book/9781032477435){target="_blank"}
+
+- **著者**: Leslie Rutkowski, Matthias von Davier, David Rutkowski
+- **出版社**: Routledge
+- **発売日**: 2023年
+
+LSAの概要と2020年以降の話題についてまとめた本。
+LSAでマルチレベルモデルや因果推論をするにはどうすればいいか（そして，標本ウェイトはどう扱うか？）について言及があるので，
+LSAを使って論文を書きたい人に役立ちます。
+初学者には難易度高め。
+
+:::
+
+:::
+
+
+## Rについて
+
+Rについては，ウェブ上に無料の資料が数多くあります。
+むしろ多すぎて，どれを選べばいいのかわからない・・・というレベルかもしれません。
+ここでは私が見つけたサイトを載せておきます。
+
+- [Rによる社会調査データ分析の手引き](https://ryotamugiyama.github.io/seminar_sociology_r/){target="_blank"}：社会調査向けです。
+- [私たちのR](https://www.jaysong.net/RBook/){target="_blank"}：Rについて学びたい人向けです。
+
+::: {.grid}
+
+::: {.g-col-6}
+### Rユーザのための RStudio［実践］入門
+[![](https://gihyo.jp/assets/images/cover/2021/thumb/TH160_9784297121709.jpg){width=130px}](https://gihyo.jp/book/2021/978-4-297-12170-9){target="_blank"}
+
+- **著者**: 松村優哉・湯谷啓明・紀ノ定保礼・前田和寛
+- **出版社**: 技術評論社
+- **発売日**: 2021年
+
+本書ではほとんどスルーしていた[tidyverse](https://www.tidyverse.org/){target="_blank"}の入門書。
+Rを使った現代的なデータ分析をするための本ですが，ある程度Rに慣れた後に学ぶのが吉。
+
+:::
+
+:::

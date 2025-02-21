@@ -1,0 +1,128 @@
+# LSAのデータを入手する
+
+本書では日本のデータを使って話を進めてきましたが，
+せっかくの国際学力調査なのだから他国のデータも使いたいという人はいるでしょう。
+そこで付録として，他国のデータを入手する方法について説明しておきます。
+ただし，この章の作業を実行するには，
+RやPythonを自分のパソコンにインストールして操作する必要があります。
+これは本書の範囲を超えていますので，
+いったんRやPythonを学んだ後に作業をすることをお薦めします[^1]。
+
+[^1]: ウェブ上にはRやPythonの使い方を解説したページが多数存在しますので，
+  いずれかのページを参考にインストールやプログラムの実行方法を学ぶと良いと思います。
+
+
+## TIMSSについて
+
+[PISAとTIMSSの概要](pisa_timss.qmd)で触れたように，
+TIMSSのデータは，IEAのウェブサイトからダウンロード可能です。
+IEAの[Data Repository](https://www.iea.nl/data-tools/repository/timss){target="_blank"}にアクセスし，
+画面下部にある\"I agree to the terms and conditions\"をクリックすれば
+TIMSS1995からTIMSS2023までのデータが取得できます。
+データの種類は，基本的に\"SPSS Data & Documentation\"を選択すればよいでしょう。
+すべての国のデータが一度にダウンロードされるのでファイルサイズは1GB前後になります。
+できるだけ安定した回線でダウンロードしてください。
+
+ダウンロードしたファイル（zipファイルです）を解凍すると，
+DataフォルダにTIMSSのsavファイルが国ごとに保存されています。
+ここから必要なデータを選んで分析に利用します。
+
+おそらく一番簡単な方法は，Colabにファイルをアップロードしてしまうことでしょう。
+Colabへのファイルのアップロード方法を解説しているサイトはいくつかあるので，
+「Colab ファイルのアップロード」といった単語で検索し，必要なファイルをアップロードしてください。
+
+なお，多数のファイルをアップロードするとColabが動かなくなることがあります。
+その場合は，自分のPCにRをインストールして分析してみてください。
+
+
+## PISA
+
+PISAのデータは
+OECDのウェブサイト（[PISA data and methodology](https://www.oecd.org/en/about/programmes/pisa/pisa-data.html)）
+からダウンロード可能です。
+[PISA PUF Users Data Collection](https://survey.oecd.org/index.php?r=survey/index&sid=197663&lang=en){target="_blank"}へ
+アクセスして必要事項を記載したうえで，Public Use Files (PUFs)の利用に同意するとデータをダウンロードできます。
+
+PISAのデータファイルは，TIMSSと違い，すべての国のデータが1つのファイルにまとまっています。
+そのため分析する前に「国ごとにファイルを分割する」という作業が必要になります。
+分割せずに分析してもよいのですが，データのファイルサイズが大きいので，
+それなりにメモリを積んだPCでないとフリーズしてしまいます。
+
+さらに面倒なことに，PISA2012まではデータがtxtファイルで公開されています。
+そのためtxtファイルをSPSSファイルに変換し，その上で国ごとにファイルを分割するという
+作業が必要になります。
+以下では，（1）PISA2012までのtxtファイルをSPSSファイルに分割する方法，
+（2）すべての国のデータを国ごとに分割する方法，の2つを解説します。
+
+### PISA2012までのtxtファイルをSPSSファイルに変換する方法
+
+すべての国のデータが保存された巨大なtxtファイルを扱うという作業は，Rではちょっと面倒です。
+そこで，Pythonを使ってtxtファイルをSPSSファイルに変換します。
+Pythonのインストールについては，たとえば
+[「Windows版Pythonのインストール」](https://www.python.jp/install/windows/install.html)
+を参照してください。
+なお，ColabにPISAのtxtファイルをアップロードしても，
+ファイルサイズが大きすぎてフリーズします。
+そのため作業は自分のPCで行う必要があります。
+
+Pythonをインストールしたら，
+著者の[GitHub](https://github.com/kawa5902/txt2csv_sps){target="_blank"}から
+「spsファイルを使ってtxtファイルをSPSSファイルに変換するプログラム」
+（`txt2csv_sps.py`）をダウンロードし任意のフォルダに配置します。
+さらに同じフォルダに，PISAのtxtファイルと，txtファイルをSPSSに変換するためのspsファイルを配置してください。
+その上で，コマンドプロンプトを開いて以下のようにすると，PISAのcsvファイルを取得することができます。
+ここでは，PISA2012の学校ファイル（INT_SCQ12_DEC03.txt）を例にしています。
+
+```bash
+python txt2csv_sps.py \
+INT_SCQ12_DEC03.txt \
+"SPSS syntax to read in school questionnaire data file.txt" \
+pisa2012sch
+```
+
+コードを実行すると，`pisa2012sch.csv`というcsvファイルが生成されます。
+
+
+### PISAファイルを国ごとに分割する
+
+PISAのデータファイルは，すべての参加国・地域のデータを含んでいます。
+学校ファイルはそれほどでもありませんが，生徒ファイルはサイズが大きく，
+取り回しが厄介です。
+
+そのため国ごとにデータを分割し，必要に応じて利用することを薦めます。
+この作業もColabで実行することは難しいので，自分のPCにRをインストールして作業したほうが良いでしょう。
+
+```{r}
+#| eval: false
+pisa2012sch <- read.csv("pisa2012sch.csv")
+cnts <- unique(pisa2012sch$CNT)
+
+for (cnt in cnts) {
+  dat <- subset(pisa2012sch, CNT == cnt)
+  filename <- paste0("pisa2012", cnt, "sch.csv")
+  write.csv(dat, file = filename, row.names = FALSE)
+}
+```
+
+このコードを実行すると，`pisa2012JPNsch.csv`等の名前のcsvファイルが生成されます。
+
+### PISA2015以降
+
+PISA2015以降はSPSSやSASのファイルが公開されていますので，
+SPSSファイルをダウンロードし`foreign::read.spss`関数を使うことで，データを入手できます。
+ただしファイルサイズが大きいので，Colabでは作業せず，
+自分のPCにRをインストールして操作したほうが良いでしょう。
+ここでは，PISA2015の生徒ファイル（`CY6_MS_CMB_STU_QQQ`）を読み込む操作を示しておきます。
+
+```{r}
+#| eval: false
+pisa2015stu <- foreign::read.spss(
+  "CY6_MS_CMB_STU_QQQ.sav", to.data.frame = TRUE,
+  use.value.labels = FALSE, use.missings = FALSE
+)
+```
+
+いったんファイルを読み込んだら，
+[PISAファイルを国ごとに分割する](data_prep.qmd#pisaファイルを国ごとに分割する)と同じ操作を行い，
+ファイルを国ごとに分割することを薦めます。
+そうでないとファイルサイズが大きすぎて，データを読み込むだけで時間がかかるからです。

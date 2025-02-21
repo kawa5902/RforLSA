@@ -1,0 +1,16 @@
+p {
+    /* Indent the first line of each paragraph by 1em */
+    text-indent: 1em;
+}
+img {
+    /* Add a 20-pixel margin around the image */
+    margin: 20px;
+    /* Apply a 2-pixel solid black border to the image */
+    border: 2px solid black;
+}
+
+/* Rの出力結果用のスタイル */
+.cell-output {
+  background-color: #fff8f8;  /* 薄い赤 */
+  border: 1px solid #ddd;
+}

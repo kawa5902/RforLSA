@@ -1,0 +1,252 @@
+# PISAの分析
+
+ここまでの説明を踏まえれば，十分にPISAを分析することが可能です。
+PISAデータを使った分析例をいくつか挙げていきましょう。
+
+## あらためて家族構成と学力
+
+最初に，[相関係数と回帰分析](stat_basics.qmd)で取り上げた家族構成と学力の関連について，
+標本ウェイトやreplication methods，そしてPVsを踏まえて再検討してみます。
+以下では，ひとり親家庭の変数を作るために，`car`というパッケージの`recode`関数を利用しています。
+[Colabで`intsvy`を使うための設定](intsvy.qmd#intsvyのインストール)をしていれば，`car`は含まれているはずです。
+
+```{r}
+# データのダウンロード
+jpn2012 <- read.csv("https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/pisa2012stuJPN.csv")
+# carパッケージのrecode関数を使う
+jpn2012$single <- car::recode(jpn2012$FAMSTRUC, "1=1; 2:3=0; else = NA")
+intsvy::pisa.table("single", data = jpn2012)
+```
+
+最初に，ひとり親家庭とそれ以外の家庭のあいだにある平均値の差を見てみましょう。
+1がひとり親家庭，0がそれ以外の家庭を表します。
+
+まずは単純な無作為抽出を前提に，平均値と標準誤差を計算します。
+PVはPV1READのみを使用します。
+
+```{r}
+# PV1のみ。単純な無作為抽出を想定
+tapply(jpn2012$PV1READ, jpn2012$single, mean)
+# 標準誤差
+tapply(jpn2012$PV1READ, jpn2012$single, function(x) sd(x) / sqrt(length(x)))
+```
+
+続いて標本ウェイト，replication methodを考慮した上で，
+5つのPVを使った場合の推定値を計算します。
+これには2つの方法があり，`pisa.mean.pv`関数で引数`by`を設定する方法と，
+`pisa.reg.pv`関数の独立変数にsingleを指定する方法が使えます。
+
+```{r}
+# 5つのPVを使い，weightを考慮
+intsvy::pisa.mean.pv(paste0("PV", 1:5, "READ"), by = "single", data = jpn2012)
+# pisa.mean.pvと同じことを回帰分析で実行
+intsvy::pisa.reg.pv("single", paste0("PV", 1:5, "READ"), data = jpn2012)
+```
+
+出力が違うのでわかりにくいかもしれませんが，
+回帰分析の切片（Intercept）の値は，それ以外（single=0）の平均値（545.70）と同じです。
+回帰分析の係数（single）の値は，ひとり親家庭とそれ以外の家庭の平均値の差
+（514.56 - 545.70）と同じになっています。
+いずれにせよ，ひとり親家庭のほうが31.14ポイント成績が低いということです。
+
+単純な無作為抽出を前提にした推定では，
+それ以外の家庭の平均値は545.83・標準誤差1.3，
+ひとり親家庭の平均値は515.31・標準誤差は3.6でした。
+標本ウェイトやreplication methodsを考慮すると，
+それ以外の家庭の平均値は545.70・標準誤差3.6，
+ひとり親家庭の平均値は514.56・標準誤差は6.0になっています。
+平均値はほとんど変わりませんが，
+標準誤差が大きくなることがわかります。
+
+標準誤差が大きいということは，母集団における真の値の範囲が広がるということです。
+（約）95\%信頼区間を考えると，
+単純な無作為抽出の場合，
+それ以外の家庭の平均値は545.83±2×1.3，
+ひとり親家庭の平均値は515.31±2×3.6の範囲にあります。
+他方で適切な推定では，
+それ以外の家庭の平均値は545.70±2×3.6，
+ひとり親家庭の平均値は514.56±2×6.0の範囲にあるということになります。
+今回はいずれの推定でも「ひとり親家庭のほうが平均値が低い」という解釈に違いはありません[^1]が，
+場合によっては推定法によって判断が変わってくることもあるでしょう。
+LSAで単純な無作為抽出を前提とした分析を行うと，標準誤差を小さめに見積もってしまうので注意が必要です。
+
+[^1]: 2つの集団間の平均値に差があるかどうか判定するには，
+  単回帰分析の係数（今回はsingle）の値を見ることが有効です。
+  独立変数が0と1のいずれかを取る単回帰分析の係数は，実質的に集団間の平均値の差を意味します。
+  ですからsingleの係数の信頼区間の最大値がマイナス（-31.14 + 2 * 5.39 = -20.36)ということは，
+  母集団において，ひとり親家庭（single = 1）の平均値がそれ以外の家庭（single = 0）より
+  （小さく見積もっても）約20ポイント低いということを意味します。
+
+続いて重回帰分析を行います。
+ここでは，従属変数に読解リテラシー，独立変数にESCSとsingleを設定します。
+単純な無作為抽出を仮定したモデルでは，PV1READを従属変数に使います。
+
+```{r}
+# 単純な無作為抽出を前提に，重回帰分析の係数と標準誤差を算出
+jpn2012$ESCS[jpn2012$ESCS == 9999] <- NA
+round(summary(lm(PV1READ ~ ESCS + single, data = jpn2012))$coefficients, 2)
+
+# PVやウェイトを考慮した回帰分析
+intsvy::pisa.reg.pv(
+  c("ESCS", "single"), paste0("PV", 1:5, "READ"),
+  data = jpn2012
+)
+```
+
+回帰分析の推定結果を見ると，回帰係数の推定値はそれほど変わりません。
+ただ，単純な無作為抽出を前提にした推定は標準誤差を過小推定しています。
+たとえばsingleの偏回帰係数を比べると，
+単純な無作為抽出の場合は-12.96（標準誤差3.74）に対して，
+適切な推定の場合は-14.63（標準誤差4.49）です。
+それほど大きな差ではありませんが，判断が変わってくる場合もあるでしょうから，
+回帰分析の場合も単純な無作為抽出を前提とした分析は望ましくありません。
+
+## 学校データの結合
+PISAでは生徒質問だけでなく，学校質問も行われています。
+そこで，学校データを利用することを考えてみましょう。
+学校データの分析は，次の3ステップで行うことが可能です。
+
+最初にPISA2012の日本の学校データを`jpn2012sch`に格納し，
+生徒データ（`jpn2012`）とマージすることで
+新しく`jpn2012all`というデータフレームを作成します。
+学校データは，生徒データと同じくgithubにあるものを利用しています。
+続いてマージには，Rの`merge`関数を利用します。
+結合したいデータフレームに加え，
+引数`by`で生徒データ・学校データで共通する変数を指定することで，
+データフレームを結合できます。
+最後にマージしたデータの分析を`intsvy`で行います。
+ここでは，学校が所在する市町村のおよその人口を尋ねた`SC03Q01`変数と
+生徒の数学リテラシーの得点の関連を検討しています。
+
+```{r}
+jpn2012sch <- read.csv("https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/pisa2012schJPN.csv")
+jpn2012all <- merge(
+  jpn2012, jpn2012sch,
+  by = c("CNT", "SUBNATIO", "STRATUM", "SCHOOLID", "OECD", "NC")
+)
+
+# SC03Q01
+intsvy::pisa.mean.pv(paste0("PV", 1:5, "MATH"), "SC03Q01", data = jpn2012all)
+```
+
+SC03Q01の選択肢は，
+「1:人口3000人未満の市町村」
+「2:人口3000人〜約1万5000人未満の市町村」
+「3:人口1万5000人〜約10万人未満の市町村」
+「4:人口10万〜約100万人未満の都市」
+「5:人口100万人以上の大都市」の5つです。
+1に該当する生徒の数は0人（出力なし），
+2に該当する生徒の数はわずか95人ですから，
+3・4・5のいずれかに該当する生徒がほとんどです。
+数学リテラシーの平均値を見ると，3が518.73，4が539.58，5が557.88なので，
+都市規模が大きいほど数学リテラシーが高いという結果になっていることがわかります。
+
+もっとも標準誤差（s.e.）も大きいので，母集団では差がないかもしれません。
+（約）95\%信頼区間を考えてみると，
+3は502.2〜535.24，4は527.88〜551.28，5は536.30〜579.46となります。
+3の「人口1万5000〜約10万人未満の市町村」の生徒の平均値が
+5の「人口100万人以上の大都市」の生徒の平均値より低いとは言えそうですが，
+4の「人口10万人〜約100万人未満の都市」の生徒の平均値が
+5の「人口100万人以上の大都市」の生徒の平均値より低いかどうかはわかりません。
+
+## PISA2012以外のデータを扱う
+ここまで説明してきた内容は，PISA2012以外のPISAにもほぼ同様に当てはめることが可能です。
+注意が必要な点は，PISA2015以降はPVが10個に増えていること，
+PISA2000はウェイトの変数名が異なることなどです。
+データセットによってESCSの欠測値も異なっており，
+PISA2000に至ってはそもそもESCS変数が存在しません。
+
+ここでは，PISA2012以外のPISAデータを使って，
+平均値を算出する手順とESCSを独立変数とした回帰分析を行う手順を示します。
+
+### PISA2000の場合
+PISA2000のデータを分析する場合，ウェイト変数が小文字になっている点に注意が必要です。
+変数名を大文字にする処理は面倒で，`dplyr`パッケージの`rename_with`関数を使うことで対処します。
+さらにPVsの変数名も小文字なので，PVの指定が`paste0("pv", 1:5, "read")`になります。
+PISA2000の日本のデータにはESCS変数が存在しませんので，回帰分析は省略します。
+
+```{r}
+jpn2000read <- read.csv("https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/pisa2000stu_readJPN.csv")
+# dplyrの導入
+suppressMessages(library(dplyr)) # suppressMessagesでログを抑制
+
+jpn2000read <- jpn2000read |>
+  rename_with(toupper, matches("^w_"))
+intsvy::pisa.mean.pv(paste0("pv", 1:5, "read"), data = jpn2000read)
+```
+
+### PISA2003からPISA2009の場合
+
+ダウンロードするデータが違うだけで，他の操作はPISA2012と共通です。
+ただしESCSの欠測値が2003年と2006年は999，2009年は9997と9999になっている点に注意が必要です。
+以下の分析では，PISA2009のESCSについて「999より上の値をNAにする」という処理を施しました。
+
+```{r}
+jpn2003 <- read.csv("https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/pisa2003stuJPN.csv")
+intsvy::pisa.mean.pv(paste0("PV", 1:5, "READ"), data = jpn2003)
+jpn2003$ESCS[jpn2003$ESCS == 999] <- NA
+intsvy::pisa.reg.pv(x = "ESCS", paste0("PV", 1:5, "READ"), data = jpn2003)
+
+jpn2006 <- read.csv("https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/pisa2006stuJPN.csv")
+intsvy::pisa.mean.pv(paste0("PV", 1:5, "READ"), data = jpn2006)
+jpn2006$ESCS[jpn2006$ESCS == 999] <- NA
+intsvy::pisa.reg.pv(x = "ESCS", paste0("PV", 1:5, "READ"), data = jpn2006)
+
+jpn2009 <- read.csv("https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/pisa2009stuJPN.csv")
+intsvy::pisa.mean.pv(paste0("PV", 1:5, "READ"), data = jpn2009)
+jpn2009$ESCS[jpn2009$ESCS > 999] <- NA
+intsvy::pisa.reg.pv(x = "ESCS", paste0("PV", 1:5, "READ"), data = jpn2009)
+```
+
+
+### PISA2015以降の場合
+PISA2015以降はPVが10個になっている点に注意が必要です。
+具体的には，`paste0`関数の書き方が変わり，`1:5`が`1:10`になります。
+またESCSの欠測ははじめからNAが指定されているので，
+PISA2012までのように欠測を気にする必要はありません[^2]。
+
+[^2]: PISA2015からはSPSSという統計ソフトのデータを直接にRで読み込めます。
+  欠測の情報もSPSSで指定されていたものを読み取れるため，最初からNAになっているのです。
+
+```{r}
+jpn2015 <- read.csv("https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/pisa2015stuJPN.csv")
+intsvy::pisa.mean.pv(paste0("PV", 1:10, "READ"), data = jpn2015)
+intsvy::pisa.reg.pv(x = "ESCS", paste0("PV", 1:10, "READ"), data = jpn2015)
+
+jpn2018 <- read.csv("https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/pisa2018stuJPN.csv")
+intsvy::pisa.mean.pv(paste0("PV", 1:10, "READ"), data = jpn2018)
+intsvy::pisa.reg.pv(x = "ESCS", paste0("PV", 1:10, "READ"), data = jpn2018)
+
+jpn2022 <- read.csv("https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/pisa2022stuJPN.csv")
+intsvy::pisa.mean.pv(paste0("PV", 1:10, "READ"), data = jpn2022)
+intsvy::pisa.reg.pv(x = "ESCS", paste0("PV", 1:10, "READ"), data = jpn2022)
+```
+
+### 異なるPISAの結果を比較する場合
+異なるPISAの得点を比較する場合，統計的検定を行う必要があります。
+本書の範囲を超えるので詳細は省略しますが，
+PISAで異なるサイクルの得点を比較する場合は，標準誤差に加えて，
+Link Errorと呼ばれる誤差を考慮する必要があります。
+
+PISAでは，尺度調整にIRTが利用されています。
+尺度調整では，[異なるサイクル間での能力比較](irt.qmd#異なるサイクル間での能力比較)で
+説明したように，共通項目への受検者の反応が手がかりになります。
+このとき共通項目の数や性質によって，調整に若干の誤差が生じます。
+これを，Link Errorと呼びます。
+異なるサイクル間で平均値を比較する場合，
+Link Errorも付加して標準誤差を計算しなければなりません。
+詳細はTechnical ReportやData Analysis Manualに記載されていますので，参照してください。
+
+なお，個々のサイクルで平均値の（約）95\%信頼区間を計算すれば，
+（ある程度ですが）学力が上がった／下がったという判断は可能です。
+たとえばPISA2000とPISA2022の読解リテラシーを比べると，
+前者は522.23（標準誤差5.21），後者は515.85（標準誤差3.18）です。
+ここで信頼区間を考えると，
+前者は522.23 ± 2 * 5.21 = 532.65〜511.81，
+後者は515.85 ± 2 * 3.18 = 522.21〜509.49なので，
+日本の読解リテラシーは2000年と2022年調査を比べると，
+上がったとも下がったとも言えないと判断できます[^3]。
+
+[^3]: これは簡便な方法であり，正確ではありません。
+  詳しく知りたい方は「平均値の差の検定」について学んだ上で，
+  [PISA Data Analysis Manual](https://www.oecd.org/en/publications/pisa-data-analysis-manual-spss-second-edition_9789264056275-en.html){target="_blank"}の第13章を読んでください。

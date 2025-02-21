@@ -1,0 +1,57 @@
+project:
+  type: book
+
+book:
+  title: "Rで学ぶ大規模学力調査（Version 1.0）"
+  author: "川口 俊明"
+  date: today
+  favicon: image/bookcover.png
+  twitter-card: true
+  page-footer:
+    center: |
+      Built with [Quarto](https://quarto.org/){target="_blank"}  |  [Source on GitHub](https://github.com/kawa5902/RforLSA){target="_blank"}
+  chapters:
+    - index.qmd
+    - part: "導入"
+      chapters:
+        - intro_lsa.qmd
+        - r_colab.qmd
+        - r_basics.qmd
+        - sampling_basic1.qmd
+        - sampling_basic2.qmd
+        - dataframe.qmd
+        - stat_basics.qmd
+    - part: "理論編"
+      chapters:
+        - sampling_weight.qmd
+        - replication.qmd
+        - irt.qmd
+        - pvs.qmd
+    - part: "実践編"
+      chapters:
+        - intsvy.qmd
+        - pisa_timss.qmd
+        - pisa.qmd
+        - timss.qmd
+    - part: "補足"
+      chapters:
+        - data_prep.qmd
+    - summary.qmd
+    - references.qmd
+
+bibliography: style/ref.bib
+csl: style/apa-numeric-superscript-brackets.csl
+
+lang: ja
+anchor-section: true
+toc: true
+number-sections: true
+toc-depth: 3
+
+format:
+  html:
+    theme: cosmo
+    cover-image: image/bookcover.png
+    css: style/styles.css
+    fig-width: 5
+    fig-height: 5
