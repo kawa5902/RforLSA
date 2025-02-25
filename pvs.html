@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.6">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>11&nbsp; 推算値法 – Rで学ぶ大規模学力調査（Version 1.0）</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./intsvy.html" rel="next">
+<link href="./irt.html" rel="prev">
+<link href="./image/bookcover.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-6c21014d9765ba549c6ebad95917e4d7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-e78aeb9f0bd9243cf33a09e7acbda6f9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "一致なし",
+    "search-matching-documents-text": "一致した文書",
+    "search-copy-link-title": "検索へのリンクをコピー",
+    "search-hide-matches-text": "追加の検索結果を非表示",
+    "search-more-match-text": "追加の検索結果",
+    "search-more-matches-text": "追加の検索結果",
+    "search-clear-button-title": "消去",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "検索",
+    "search-label": "サーチ"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-YPY43001RV"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="style/styles.css">
+<meta name="twitter:title" content="11&nbsp; 推算値法 – Rで学ぶ大規模学力調査（Version 1.0）">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sampling_weight.html">理論編</a></li><li class="breadcrumb-item"><a href="./pvs.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">推算値法</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="サーチ" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Rで学ぶ大規模学力調査（Version 1.0）</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/kawa5902/RforLSA" title="ソースコード" class="quarto-navigation-tool px-1" aria-label="ソースコード"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="サーチ"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">はじめに</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">導入</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro_lsa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">なぜLSAを学ぶのか</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_colab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">R on Colab</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Rの基本操作</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sampling_basic1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">標本調査の基礎知識1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sampling_basic2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">標本調査の基礎知識2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dataframe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">データフレーム</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stat_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">相関係数と回帰分析</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">理論編</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sampling_weight.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">標本ウェイト</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./replication.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Replication Method</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./irt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">項目反応理論</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pvs.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">推算値法</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">実践編</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intsvy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">intsvyを使う</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pisa_timss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">PISAとTIMSSの概要</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pisa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">PISAの分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./timss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">TIMSSの分析</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">補足</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_prep.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">LSAのデータを入手する</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">まとめ</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">参考文献</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目次</h2>
+   
+  <ul>
+  <li><a href="#mleやeapの課題" id="toc-mleやeapの課題" class="nav-link active" data-scroll-target="#mleやeapの課題"><span class="header-section-number">11.1</span> MLEやEAPの課題</a></li>
+  <li><a href="#rによる確認" id="toc-rによる確認" class="nav-link" data-scroll-target="#rによる確認"><span class="header-section-number">11.2</span> Rによる確認</a></li>
+  <li><a href="#推算値の条件付" id="toc-推算値の条件付" class="nav-link" data-scroll-target="#推算値の条件付"><span class="header-section-number">11.3</span> 推算値の条件付</a></li>
+  <li><a href="#推算値の使い方" id="toc-推算値の使い方" class="nav-link" data-scroll-target="#推算値の使い方"><span class="header-section-number">11.4</span> 推算値の使い方</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sampling_weight.html">理論編</a></li><li class="breadcrumb-item"><a href="./pvs.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">推算値法</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-pvs" class="quarto-section-identifier"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">推算値法</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="mleやeapの課題" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="mleやeapの課題"><span class="header-section-number">11.1</span> MLEやEAPの課題</h2>
+<p>前の章で見たように， IRTの能力推定法としてよく利用されるMLEやEAPには， 母集団の能力推定に利用すると推定値が偏るという欠点があります。 なぜ偏りが生じるか，簡単に説明しておきましょう。</p>
+<p>無限に項目を用意できれば別ですが，普通はテストに出題できる項目数には限りがあります。 そのためテストの結果から推定された能力値には，必ず受検者の真の能力値（<span class="math inline">\(\theta\)</span>）とのズレ（＝測定誤差）があります。 MLEやWLEによって推定された個人の能力値<span class="math inline">\(\hat{\theta}_i\)</span>は， 真の能力値<span class="math inline">\(\theta_i\)</span>に測定誤差<span class="math inline">\(\epsilon_i\)</span>を加えたもの （<span class="math inline">\(\hat{\theta}_i = \theta_i + \epsilon_i\)</span>）になっていると考えられます<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>。 このとき，母集団における能力の分散は， 個々人の能力の分散に測定誤差の分散を加えたものとして推定されます。 つまり，<span class="math inline">\(Var(\hat{\theta}_i) = Var(\theta_i) + Var(\epsilon_i)\)</span>なので， MLEやWLEで推定された能力値の分散は，実際の分散より大きくなってしまうのです。</p>
+<p>EAPはどうかというと， 前の章で少し触れたように，EAPは受検者の能力分布に正規分布などの分布を仮定します。 事前に能力分布を仮定しているので分散が過大推定されることはないのですが， 今度は事前に想定した分布に推定された能力値が引き寄せられます。 一般的には，測定誤差が大きいほどEAPは母集団の分散を過小推定するそうです<span class="citation" data-cites="horo2019"><sup>[<a href="references.html#ref-horo2019" role="doc-biblioref">1</a>]</sup></span>。</p>
+<p>以上のような現象は測定誤差の問題なので，項目数を増やしていけば， いずれの推定法も同じような推定値に近づいていきます。 先行研究によると，だいたい180項目ほど出題すれば，MLE・WLE・EAPの差は無視できるそうです<span class="citation" data-cites="horo2019"><sup>[<a href="references.html#ref-horo2019" role="doc-biblioref">1</a>]</sup></span>。 ただ180項目というのは相当な量で，あまり現実的ではありません。</p>
+<p>要するに，MLEやEAP（あるいはWLE）といった能力推定法では， 母集団の特性を適切に推定することは難しいということです。 ここで登場する手法が，推算値（Plausible Values: PVs）です。</p>
+<p>PVsは，あらかじめ受検者の能力値に正規分布などの分布を仮定します。 その意味では，EAPとよく似た手法と言えます。 PVsとEAPの違いは， EAPが唯一の受検者の能力を推定するのに対し， PVsは推定された受検者の能力分布から無作為に受検者の「あり得る能力」を抽出するという点です。 PISAやTIMSSでは，個々人の受検者に対して5個（PISAは2015以降は10個）の能力値が推定されています。</p>
+<p>欠測値の処理に詳しい方の中には，多重代入法（Multiple Imputation: MI）<span class="citation" data-cites="takahashi2017"><sup>[<a href="references.html#ref-takahashi2017" role="doc-biblioref">2</a>]</sup></span>という手法をご存じの方もいるでしょう。 MIは，データに含まれる欠測に伴う推定の偏りを補正するため， 欠測データの分布から無作為に複数の値を取り出し欠測値を置き換えるという手法です。 ここで重複テスト分冊法を思い出してほしいのですが， LSAでは受検者は出題された一部の項目にしか答えていません。 つまり全体としてみれば，個々の受検者の回答データは多数の欠測を含んだ不完全なものになっています。 ここで受検者の能力<span class="math inline">\(\theta\)</span>を推定しようという試みは， 多数の欠測を含んだデータから適切な推定値を得ようとする試みと同義です。 受検者の能力分布から複数の「あり得る能力」を抽出するというPVsの考え方は， 欠測データを処理するためのMIの枠組みを教育測定に応用したものなのです。</p>
+<p>なお，PVsが有効なのは重複テスト分冊法のように，受検者のデータが多数の欠測を含む場合に限りません。 テストの項目数が少ない場合や，テストの難易度が受検者の能力値に対して低すぎる（あるいは高すぎる） ような場合であっても，PVsを使うことで母集団の特性を適切に推定できることが明らかになっています<span class="citation" data-cites="wu2005"><sup>[<a href="references.html#ref-wu2005" role="doc-biblioref">3</a>]</sup></span>。</p>
+</section>
+<section id="rによる確認" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="rによる確認"><span class="header-section-number">11.2</span> Rによる確認</h2>
+<p>実際にPVsが有効かどうか，シミュレーションで確認してみましょう。 最初に仮の受検者の回答データとして，<code>resp</code>を作成します。 母集団における能力値の分布は，実際の学力調査を意識して，以下のような複雑な状況を設定します。 まず，受検者のサンプルサイズは4000とし，うち男子2000名・女子2000名とします。 さらに能力値の平均と分散は男女で違い， 男子は平均-0.2・分散1に対し，女子は平均0.2・分散1になっています。 また能力値以外にSESという変数があると仮定し， 能力値とSESの相関係数は，男子0.5，女子0.4としています。 状況設定が複雑なので，コードは閉じています。</p>
+<p>なお，コード実行のためには<code>MIRT</code>や<code>TAM</code>が必要です。 インストールしていない場合は，<a href="./irt.html">項目反応理論</a>の章を参考に設定を済ませてください。</p>
+<div class="cell">
+<details class="code-fold">
+<summary>コード</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># sample size</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>size <span class="ot">&lt;-</span> <span class="dv">4000</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Item parameters</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>item_n <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="at">length.out =</span> item_n)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Population parameters</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>sig1 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="fl">1.0</span>, <span class="fl">0.4</span>, <span class="fl">0.4</span>, <span class="fl">1.0</span>), <span class="at">nrow =</span> <span class="dv">2</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>sig2 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="fl">1.0</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">1.0</span>), <span class="at">nrow =</span> <span class="dv">2</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>sex <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, size <span class="sc">/</span> <span class="dv">2</span>), <span class="fu">rep</span>(<span class="sc">-</span><span class="dv">1</span>, size <span class="sc">/</span> <span class="dv">2</span>))</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>sim1 <span class="ot">&lt;-</span> mvtnorm<span class="sc">::</span><span class="fu">rmvnorm</span>(<span class="at">n =</span> size <span class="sc">/</span> <span class="dv">2</span>, <span class="at">mean =</span> <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="dv">0</span>), <span class="at">sigma =</span> sig1)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>sim2 <span class="ot">&lt;-</span> mvtnorm<span class="sc">::</span><span class="fu">rmvnorm</span>(<span class="at">n =</span> size <span class="sc">/</span> <span class="dv">2</span>, <span class="at">mean =</span> <span class="fu">c</span>(<span class="sc">-</span>.<span class="dv">2</span>, <span class="dv">0</span>), <span class="at">sigma =</span> sig2)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">&lt;-</span> <span class="fu">rbind</span>(sim1, sim2)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>theta <span class="ot">&lt;-</span> sim[, <span class="dv">1</span>]</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>ses <span class="ot">&lt;-</span> sim[, <span class="dv">2</span>]</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># resp pattern</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>resp <span class="ot">&lt;-</span> mirt<span class="sc">::</span><span class="fu">simdata</span>(</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">a =</span> <span class="fu">rep</span>(<span class="fl">1.7</span> <span class="sc">*</span> a, item_n),</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">d =</span> <span class="sc">-</span>b <span class="sc">*</span> <span class="fl">1.7</span> <span class="sc">*</span> a,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">Theta =</span> theta,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">itemtype =</span> <span class="st">"2PL"</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>それでは生成した<code>resp</code>に対して，TAMで能力値を推定してみましょう。 Rのコードは，次のようになります。 なお，通常はPVsは複数の値を生成するのですが， 処理が重くなるのでここでは1つの値だけを生成（<code>nplausible = 1</code>）しています。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimation</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> TAM<span class="sc">::</span><span class="fu">tam.mml.2pl</span>(resp, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ability estimation</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>mle <span class="ot">&lt;-</span> TAM<span class="sc">::</span><span class="fu">tam.wle</span>(mod, <span class="at">progress =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>theta</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>eap <span class="ot">&lt;-</span> mod<span class="sc">$</span>person<span class="sc">$</span>EAP</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>pv <span class="ot">&lt;-</span> TAM<span class="sc">::</span><span class="fu">tam.pv</span>(mod, <span class="at">nplausible =</span> <span class="dv">1</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>pv<span class="sc">$</span>PV1.Dim1</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 能力推定</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>ability <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"theta"</span> <span class="ot">=</span> theta,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"MLE"</span> <span class="ot">=</span> mle,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"EAP"</span> <span class="ot">=</span> eap,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PV"</span> <span class="ot">=</span> pv</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>続いて，TAMを使って推定した能力値が， 適切に母集団の値を復元しているかどうか検討してみましょう。 最初に，母集団の平均と分散を見てみます。 なお以下の出力では， <code>theta</code>が真の値，<code>MLE</code>・<code>EAP</code>・<code>PV</code>はそれぞれの推定法による推定値を示します。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 平均値</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(ability, mean), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>theta   MLE   EAP    PV 
+ 0.01  0.00  0.00  0.01 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 分散</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(ability, var), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>theta   MLE   EAP    PV 
+ 1.01  1.21  0.82  0.96 </code></pre>
+</div>
+</div>
+<p>先の章と同じく，MLEやEAPの推定値は，平均は適切に推定していますが， 分散を過大推定しています。 これに対してPVの推定値は，やや過小推定（0.96）ではあるものの， MLEやEAPに比べればthetaに近い分散を推定しています。</p>
+<p>続いて，男女別の平均と分散，そして能力値とSESの相関を検討してみましょう。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 男女別のスコア，SESとの相関を計算する関数</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>calc_stats <span class="ot">&lt;-</span> <span class="cf">function</span>(ability, stat) {</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">identical</span>(stat, cor)) {</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sapply</span>(ability, <span class="cf">function</span>(x) {</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">cor</span>(x, ses)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sapply</span>(ability, <span class="cf">function</span>(x) {</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tapply</span>(x, sex, stat)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability, mean), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   theta   MLE   EAP    PV
+-1 -0.20 -0.21 -0.17 -0.16
+1   0.21  0.21  0.17  0.17</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability, var), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   theta  MLE  EAP   PV
+-1  0.97 1.16 0.79 0.93
+1   0.96 1.18 0.80 0.93</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability, cor), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>theta   MLE   EAP    PV 
+ 0.42  0.38  0.38  0.34 </code></pre>
+</div>
+</div>
+<p>男女別の能力値の平均を見てみると，MLEはthetaとほぼ同じ（男子-0.21・女子0.21）値になっています。 他方，EAPとPVはいずれもthetaと値がズレています。</p>
+<p>分散の推定値については，母集団の推定と同じく， MLEは過大推定，EAPは過小推定の傾向が見られます。 PVsは0.93とやや過小推定ですが，それでも比較的thetaに近い値が得られています。</p>
+<p>相関係数については，thetaの値が0.42に対し， MLEとEAPは0.38でやや過小推定になっています。 PVsは0.34で更に過小推定であり，母集団の特性を適切に推定しているとは言えません。</p>
+</section>
+<section id="推算値の条件付" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="推算値の条件付"><span class="header-section-number">11.3</span> 推算値の条件付</h2>
+<p>先ほどのシミュレーションから言えることは， PVsは母集団の特性を適切に推定するわけではないということです。 分散はわずかに過小推定するにとどまっていますが， 男女の平均や相関係数の偏りなど，MLEやEAPと比べてPVsが優れているとは言えません。</p>
+<p>それではなぜLSAではPVsが有効だと言われるのでしょうか。 実は先ほどのシミュレーションで推定したPVsが偏った推定値を返したのは， 母集団の能力値の分布について誤った仮定をおいていたからです。 すでに述べたように，EAPやPVsでは事前に母集団の能力分布について， 正規分布などの仮定を起きます。 しかし先のシミュレーションのように，男女で能力値の平均が異なるといった状況はありえます。 この場合，母集団の能力分布は，異なる2つの正規分布が重なった分布になっており， 単純な正規分布とは異なる形状になっています。</p>
+<p>LSAでPVsを利用する場合，性別やSESのような母集団の能力分布に影響を与えるであろう要因を 事前に考慮して能力分布を設定し，項目パラメータや能力値の推定を行わなければなりません。 こうした母集団の要因を考慮することを，一般に「条件づけ（Conditioning）」と呼びます。 なお，LSAのようにサンプルサイズが大きいデータに対して，条件付けを行った推定を行うと， 長い時間がかかったり，推定がうまくいかない場合があります。 そこで一般的なLSAでは，いったん条件付けを行わずに項目パラメータを推定し， そこで得られた推定値を利用しつつ条件付けを行った能力推定を行うという 2段階の推定法が採用されています<span class="citation" data-cites="zheng2024"><sup>[<a href="references.html#ref-zheng2024" role="doc-biblioref">4</a>]</sup></span>。 2段階の推定は，Rの<code>TAM</code>パッケージに実装されており，<code>tam.latreg</code>関数を使うことで実行可能です。</p>
+<p>以下では，条件付けを行って推定したPVs（<code>PV2</code>とします）を使い， 母集団の推定を行ってみましょう。 最初に，母集団の平均と分散を確認します。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>likeli <span class="ot">&lt;-</span> CDM<span class="sc">::</span><span class="fu">IRT.likelihood</span>(mod)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>mod2 <span class="ot">&lt;-</span> TAM<span class="sc">::</span><span class="fu">tam.latreg</span>(likeli, <span class="at">Y =</span> <span class="fu">cbind</span>(sex, ses), <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 後で使うのでPVを5つ生成し，そのうち1つだけを利用</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>pvs <span class="ot">&lt;-</span> TAM<span class="sc">::</span><span class="fu">tam.pv</span>(mod2, <span class="at">nplausible =</span> <span class="dv">5</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>pv2 <span class="ot">&lt;-</span> pvs<span class="sc">$</span>pv<span class="sc">$</span>PV1.Dim1</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>ability2 <span class="ot">&lt;-</span> <span class="fu">c</span>(ability, <span class="fu">list</span>(<span class="st">"PV2"</span> <span class="ot">=</span> pv2))</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 平均値</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(ability2, mean), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>theta   MLE   EAP    PV   PV2 
+ 0.01  0.00  0.00  0.01  0.00 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 分散</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(ability2, var), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>theta   MLE   EAP    PV   PV2 
+ 1.01  1.21  0.82  0.96  1.02 </code></pre>
+</div>
+</div>
+<p>母集団の平均・分散ともに，PV2がthetaに非常に近い値を返していることがわかります。 同様に，男女別の平均と分散，SESとの相関係数も検討してみましょう。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability2, mean), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   theta   MLE   EAP    PV   PV2
+-1 -0.20 -0.21 -0.17 -0.16 -0.21
+1   0.21  0.21  0.17  0.17  0.20</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability2, var), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   theta  MLE  EAP   PV  PV2
+-1  0.97 1.16 0.79 0.93 0.98
+1   0.96 1.18 0.80 0.93 0.97</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability2, cor), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>theta   MLE   EAP    PV   PV2 
+ 0.42  0.38  0.38  0.34  0.41 </code></pre>
+</div>
+</div>
+<p>いずれの値も，PV2がもっともthetaと近い値を返しています。</p>
+</section>
+<section id="推算値の使い方" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="推算値の使い方"><span class="header-section-number">11.4</span> 推算値の使い方</h2>
+<p>ここまでの分析では，簡単のためにPVsは1つだけを生成していました。 シミュレーションの結果からもわかるように，条件づけたPVsは1つの値しか生成しなくても 母集団の推定には有効です。 ただ，より正確な推定のためには複数の値を生成し，それぞれで得られた推定値を合成する必要があります。</p>
+<p>PVsを使った推定値を合成する際は，Rubinのルールと呼ばれる方法を使います。 今，PVsの数を<span class="math inline">\(M\)</span>，<span class="math inline">\(i\)</span>番目のPVを使った推定値を<span class="math inline">\(\theta_i\)</span>，<span class="math inline">\(i\)</span>番目のPVを使った推定値の分散を<span class="math inline">\(V_i\)</span>とすると， PVsを使った推定値（<span class="math inline">\(\theta\)</span>），及びその分散（<span class="math inline">\(V\)</span>）は，以下の式になります。</p>
+<p><span class="math display">\[\theta = \frac{1}{M}\sum_{i=1}^M{\theta_i}\]</span></p>
+<p><span class="math display">\[V = U + (1 + \frac{1}{M})B_m\]</span> <span class="math display">\[U = \frac{1}{M}\sum_{i=1}^M{V_i} \qquad B_m = \frac{1}{M-1}\sum_{i=1}^M(\theta_i - \theta) ^ 2\]</span></p>
+<p>これでは何のことかわからないと思いますが， まず最終的な推定値（<span class="math inline">\(\theta\)</span>）は，単純に個々のPVで得られた推定値（<span class="math inline">\(\theta_i\)</span>）の平均です。 推定値の分散（つまり標準誤差の2乗）は，個々のPVで得られた推定値の分散（<span class="math inline">\(V_i\)</span>）の平均（これが<span class="math inline">\(U\)</span>です）に， <span class="math inline">\((1+\frac{1}{M})B_m\)</span>を足したものになります。 <span class="math inline">\(B_m\)</span>は個々のPVごとの推定値のばらつきを示し， PVが受検者の能力分布から得られたランダムな値であることによる推定値のブレを考慮しています。</p>
+<p>PISA2012を例に，Rubinのルールを使った推定の例を見ておきましょう。 ここでは読解リテラシー（PV1READからPV5READ）の平均値を考えます。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">"https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/pisa2012stuJPN.csv"</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>jpn2012 <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(url)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>pv1 <span class="ot">&lt;-</span> intsvy<span class="sc">::</span><span class="fu">pisa.mean</span>(<span class="st">"PV1READ"</span>, <span class="at">data =</span> jpn2012)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>pv2 <span class="ot">&lt;-</span> intsvy<span class="sc">::</span><span class="fu">pisa.mean</span>(<span class="st">"PV2READ"</span>, <span class="at">data =</span> jpn2012)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>pv3 <span class="ot">&lt;-</span> intsvy<span class="sc">::</span><span class="fu">pisa.mean</span>(<span class="st">"PV3READ"</span>, <span class="at">data =</span> jpn2012)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>pv4 <span class="ot">&lt;-</span> intsvy<span class="sc">::</span><span class="fu">pisa.mean</span>(<span class="st">"PV4READ"</span>, <span class="at">data =</span> jpn2012)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>pv5 <span class="ot">&lt;-</span> intsvy<span class="sc">::</span><span class="fu">pisa.mean</span>(<span class="st">"PV5READ"</span>, <span class="at">data =</span> jpn2012)</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>est <span class="ot">&lt;-</span> <span class="fu">c</span>(pv1<span class="sc">$</span>Mean, pv2<span class="sc">$</span>Mean, pv3<span class="sc">$</span>Mean, pv4<span class="sc">$</span>Mean, pv5<span class="sc">$</span>Mean)</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="co"># s.e.なので注意。s.eは分散の標準誤差</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>se <span class="ot">&lt;-</span> <span class="fu">c</span>(pv1<span class="sc">$</span>s.e., pv2<span class="sc">$</span>s.e., pv3<span class="sc">$</span>s.e., pv4<span class="sc">$</span>s.e., pv5<span class="sc">$</span>s.e.)</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(est, <span class="dv">3</span>) <span class="co"># 5つの推定値</span></span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 538.116 537.872 538.473 538.064 537.732</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(se<span class="sc">^</span><span class="dv">2</span>, <span class="dv">3</span>) <span class="co"># 推定値の分散</span></span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 13.441 13.372 13.082 13.344 13.742</code></pre>
+</div>
+</div>
+<p>5つのPVの推定値は，<code>est</code>および<code>se</code>に格納されています。 これを使って最終的な推定値を計算します。 なお，結果の解釈に必要なのは推定値の分散ではなく標準誤差の方ですので， 最後に<code>v</code>の平方根を取って標準誤差を算出しています。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>f_est <span class="ot">&lt;-</span> <span class="fu">mean</span>(est)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>u <span class="ot">&lt;-</span> <span class="fu">mean</span>(se<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">var</span>(se<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>v <span class="ot">&lt;-</span> u <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">5</span>) <span class="sc">*</span> b</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">c</span>(<span class="at">mean =</span> f_est, <span class="at">var =</span> v), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  mean    var 
+538.05  13.46 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">c</span>(<span class="at">mean =</span> f_est, <span class="at">se =</span> <span class="fu">sqrt</span>(v)), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  mean     se 
+538.05   3.67 </code></pre>
+</div>
+</div>
+<p>得られた推定値（平均538.05，標準誤差3.67）が， PISAの報告書にも記載されている適切な推定値です。 ここでは平均値を例に紹介しましたが，分散や回帰分析の係数など， 他の推定値であっても同じようにRubinのルールを適用して推定値を得ることができます <a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>。</p>
+<p>さて，こうして得られた最終的な推定値（日本のPISA2012の読解リテラシーの平均値）を PV1READから得られた値と比べてみると，実はほとんど違いがありません。 PVを5回も計算するのが面倒だという場合は， とりあえずPV1のみを使って分析を行っても，深刻な解釈ミスにつながることはないと考えられます<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>pv1 <span class="co"># 最終的な推定値とあまり変わらない</span></span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Freq     Mean     s.e.      SD      s.e
+1 6351 538.1164 3.666172 99.1964 2.294498</code></pre>
+</div>
+</div>
+<p>5回もPVを計算するのは面倒だという人も多いでしょうが， 実際は，<code>intsvy</code>を使うことでPVの処理も自動化できます。 <code>intsvy</code>を使った自動化については，後の章で扱います。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">pisa.mean.pv</span>(<span class="fu">paste0</span>(<span class="st">"PV"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="st">"READ"</span>), <span class="at">data =</span> jpn2012)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Freq   Mean s.e.    SD  s.e
+1 6351 538.05 3.67 98.69 2.27</code></pre>
+</div>
+</div>
+<p>なお，PVsを使うときに複数のPVを個人レベルで平均してはいけません。 PVsを個人レベルで平均すると，その値はEAPに近いものになります。 以下では，生成した5つのPVsをを個人レベルで平均したもの（<code>PV3</code>）を使った例を示します。 推定結果を見ると，PV3はEAPと同じように母集団の分散を過小推定していることがわかります<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 5つのPVsをlistに変換</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>pvs_list <span class="ot">&lt;-</span> TAM<span class="sc">::</span><span class="fu">tampv2datalist</span>(pvs)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 5つのPVsを個人レベルで平均</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>pv3 <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">"+"</span>, <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="cf">function</span>(i) pvs_list[[i]]<span class="sc">$</span>PV.Dim1)) <span class="sc">/</span> <span class="dv">5</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>ability3 <span class="ot">&lt;-</span> <span class="fu">c</span>(ability2, <span class="fu">list</span>(<span class="st">"PV3"</span> <span class="ot">=</span> pv3))</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 平均値</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(ability3, mean), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>theta   MLE   EAP    PV   PV2   PV3 
+ 0.01  0.00  0.00  0.01  0.00  0.00 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 分散</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(ability3, var), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>theta   MLE   EAP    PV   PV2   PV3 
+ 1.01  1.21  0.82  0.96  1.02  0.86 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 男女別の平均値</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability3, mean), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   theta   MLE   EAP    PV   PV2   PV3
+-1 -0.20 -0.21 -0.17 -0.16 -0.21 -0.21
+1   0.21  0.21  0.17  0.17  0.20  0.20</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 男女別の分散</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability3, var), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   theta  MLE  EAP   PV  PV2  PV3
+-1  0.97 1.16 0.79 0.93 0.98 0.82
+1   0.96 1.18 0.80 0.93 0.97 0.82</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># SESとの相関係数</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability3, cor), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>theta   MLE   EAP    PV   PV2   PV3 
+ 0.42  0.38  0.38  0.34  0.41  0.44 </code></pre>
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
+<div id="ref-horo2019" class="csl-entry" role="listitem">
+1. 袰岩晶・篠原真子・篠原康正. (2019年). <em>PISA調査の解剖ー能力評価・調査のモデル</em>. 東信堂.
+</div>
+<div id="ref-takahashi2017" class="csl-entry" role="listitem">
+2. 高橋将宜・渡辺美智子. (2017年). <em>欠測データ処理</em>. 共立出版.
+</div>
+<div id="ref-wu2005" class="csl-entry" role="listitem">
+3. Wu, M. (2005年). The role of plausible values in large-scale surveys. <em>Studies in educational Evaluation</em>, <em>31</em>(2-3), 114–128.
+</div>
+<div id="ref-zheng2024" class="csl-entry" role="listitem">
+4. Zheng, X. (2024年). On generating plausible values for multilevel modelling with large-scale-assessment data. <em>British Journal of Mathematical and Statistical Psychology</em>, <em>77</em>(1), 212–236.
+</div>
+</div>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>推定された能力値なので<span class="math inline">\(\theta\)</span>ではなく，<span class="math inline">\(\hat{\theta}\)</span>としています。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Rubinのルールには，推定値の分布が正規分布であるという前提があるため， たとえば相関係数には適用できません<span class="citation" data-cites="takahashi2017"><sup>[<a href="references.html#ref-takahashi2017" role="doc-biblioref">2</a>]</sup></span>。 ただLSAの場合はサンプルサイズが大きいこともあって，相関係数（を含むその他の分析）についても Rubinのルールを適用することが一般的です。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>LSAの分析はReplication MethodとPVsを使うので，それなりに時間がかかります。 たとえばPISAの場合，Replication Methodだけで80回の計算が必要です。 個々のPVについて80回の計算を行うとなると，PVが5つの場合は全部で400回の計算になります。 PISA2015以降はPVが10個になっているので，最終的な推定値を得るまでに800回以上の計算が必要となるのです。 PVを1つだけ使えば，計算回数を大きく抑えることができます。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>通常，LSAのデータセットに含まれるPVsは条件付けを行った能力分布から抽出されていますので， その個人レベルの平均は，通常のEAPではなく条件づけたEAPになります。 これが，シミュレーションでEAP（＝条件づけていないEAP）とPV3（≒条件づけたEAP）の値が微妙に違う理由です。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "コピーしました");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "コピーしました");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/kawa5902\.github\.io\/RforLSA");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./irt.html" class="pagination-link" aria-label="項目反応理論">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">項目反応理論</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./intsvy.html" class="pagination-link" aria-label="intsvyを使う">
+        <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">intsvyを使う</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Built with <a href="https://quarto.org/" target="_blank">Quarto</a></p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

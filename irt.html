@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.6">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>10&nbsp; 項目反応理論 – Rで学ぶ大規模学力調査（Version 1.0）</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./pvs.html" rel="next">
+<link href="./replication.html" rel="prev">
+<link href="./image/bookcover.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-6c21014d9765ba549c6ebad95917e4d7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-e78aeb9f0bd9243cf33a09e7acbda6f9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "一致なし",
+    "search-matching-documents-text": "一致した文書",
+    "search-copy-link-title": "検索へのリンクをコピー",
+    "search-hide-matches-text": "追加の検索結果を非表示",
+    "search-more-match-text": "追加の検索結果",
+    "search-more-matches-text": "追加の検索結果",
+    "search-clear-button-title": "消去",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "検索",
+    "search-label": "サーチ"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-YPY43001RV"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="style/styles.css">
+<meta name="twitter:title" content="10&nbsp; 項目反応理論 – Rで学ぶ大規模学力調査（Version 1.0）">
+<meta name="twitter:description" content="">
+<meta name="twitter:image" content="https://kawa5902.github.io/RforLSA/irt_files/figure-html/fig-irt1-1.png">
+<meta name="twitter:image-height" content="960">
+<meta name="twitter:image-width" content="960">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sampling_weight.html">理論編</a></li><li class="breadcrumb-item"><a href="./irt.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">項目反応理論</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="サーチ" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Rで学ぶ大規模学力調査（Version 1.0）</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/kawa5902/RforLSA" title="ソースコード" class="quarto-navigation-tool px-1" aria-label="ソースコード"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="サーチ"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">はじめに</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">導入</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro_lsa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">なぜLSAを学ぶのか</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_colab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">R on Colab</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Rの基本操作</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sampling_basic1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">標本調査の基礎知識1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sampling_basic2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">標本調査の基礎知識2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dataframe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">データフレーム</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stat_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">相関係数と回帰分析</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">理論編</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sampling_weight.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">標本ウェイト</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./replication.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Replication Method</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./irt.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">項目反応理論</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pvs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">推算値法</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">実践編</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intsvy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">intsvyを使う</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pisa_timss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">PISAとTIMSSの概要</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pisa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">PISAの分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./timss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">TIMSSの分析</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">補足</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_prep.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">LSAのデータを入手する</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">まとめ</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">参考文献</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目次</h2>
+   
+  <ul>
+  <li><a href="#古典的テスト理論の課題" id="toc-古典的テスト理論の課題" class="nav-link active" data-scroll-target="#古典的テスト理論の課題"><span class="header-section-number">10.1</span> 古典的テスト理論の課題</a></li>
+  <li><a href="#項目反応理論とは" id="toc-項目反応理論とは" class="nav-link" data-scroll-target="#項目反応理論とは"><span class="header-section-number">10.2</span> 項目反応理論とは</a></li>
+  <li><a href="#項目反応理論のモデル" id="toc-項目反応理論のモデル" class="nav-link" data-scroll-target="#項目反応理論のモデル"><span class="header-section-number">10.3</span> 項目反応理論のモデル</a></li>
+  <li><a href="#重複テスト分冊法" id="toc-重複テスト分冊法" class="nav-link" data-scroll-target="#重複テスト分冊法"><span class="header-section-number">10.4</span> 重複テスト分冊法</a></li>
+  <li><a href="#異なるサイクル間での能力比較" id="toc-異なるサイクル間での能力比較" class="nav-link" data-scroll-target="#異なるサイクル間での能力比較"><span class="header-section-number">10.5</span> 異なるサイクル間での能力比較</a></li>
+  <li><a href="#rによる推定" id="toc-rによる推定" class="nav-link" data-scroll-target="#rによる推定"><span class="header-section-number">10.6</span> Rによる推定</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sampling_weight.html">理論編</a></li><li class="breadcrumb-item"><a href="./irt.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">項目反応理論</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">項目反応理論</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>PISAに限らず，現代のテストでは項目反応理論 （Item Response Theory: IRT）というテスト理論が使われています。 ここでは，その概要を説明しておきましょう。</p>
+<p>実のところ，一般的なLSAではIRTを利用したスコアは算出済みであり， 分析者がIRT分析を行う必要はありません。 とは言え，ある程度の知識がないと誤った解釈をする危険もあります。 そこで以下では，最低限知っておいたほうがよい点をポイントを絞って解説します。</p>
+<p>なお，本章では教育測定の流儀に倣い，以下の用語を使います。</p>
+<ul>
+<li>受検者：テストを受ける人。受験者ではない。</li>
+<li>項目：テストを構成する個々の設問のこと。あるいはアイテム（item）。</li>
+<li>能力：テストで測定する受検者の潜在的な測定値。いわゆる「学力」。</li>
+</ul>
+<p>また，この章ではIRT分析用のRパッケージ（<code>Mirt</code>・<code>TAM</code>）を利用します。 Colabには<code>Mirt</code>・<code>TAM</code>は含まれていませんので，下記のコマンドを実行するようにしてください。 これは，ColabでIRTを行うための「裏技」です。 コマンドの意味については，<a href="./intsvy.html">intsvyを使う</a>で解説します。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># R on Colab上でMIRTやTAMを使う</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ダウンロード</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(<span class="st">"curl -L -o library.tar.gz https://github.com/kawa5902/LSAdata/raw/refs/heads/main/202502library.tar.gz"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 解凍</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(<span class="st">"tar -xzf /content/library.tar.gz -C /content"</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">.libPaths</span>(<span class="st">"library"</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>本書では，<code>MIRT</code>や<code>TAM</code>の細かい使い方は解説しません。 一般的なLSAでは受検者の能力値は算出済みであり，分析者がIRTを実行する必要はほとんどないからです。 関心のある方は，<code>IRT</code>の入門書を参照してください。</p>
+<p>なお本書で<code>MIRT</code>や<code>TAM</code>に含まれる関数を使う際は， <code>TAM::tam.wle</code>といった具合に関数の前に<code>TAM::</code>あるいは<code>MIRT::</code>を付け， どのパッケージに含まれる関数なのか明示しています。</p>
+<section id="古典的テスト理論の課題" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="古典的テスト理論の課題"><span class="header-section-number">10.1</span> 古典的テスト理論の課題</h2>
+<p>IRTの特徴は，古典的テスト理論（Clasical Test Theory: CTT）との対比で 説明されることが多いようです。 CTTに基づいたテストでは， 受検者がテスト項目に何問正解したか（≒正答率）を，受検者の能力と捉えます。 わかりにくい人は，いわゆる「100点満点のテスト」を想像すればよいでしょう。</p>
+<p>さて，CTTの課題は「受検者の能力とテストの難易度が分離できない」という点です。 「100点満点のテスト」を全国の小学6年生を対象に実施したとき， ある年度のテストの平均点が60点，次の年度が70点だったとしましょう。 このとき，受検者（＝小学6年生）の学力は向上したと考えてよいでしょうか？ 答えはNoです。受検者の能力が向上したのではなく， テストが簡単になっただけかもしれません。 もちろん，まったく同じテストを用意すればCTTでも能力の変化を 測ることはできます。 ただ普通は，まったく同じテストを出題していたらテスト対策が行われ， 受検者の能力が変わらなかったとしても，次第に正答率は向上していくでしょう。</p>
+<p>とくにメディアの発達した現代社会では， 一度出題したテストの項目を秘匿することはなかなか困難です。 そのためCTTでは， 受検者の能力やその変化を捉えることが難しく， それに代わるテスト理論が求められるようになってきたのです。</p>
+</section>
+<section id="項目反応理論とは" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="項目反応理論とは"><span class="header-section-number">10.2</span> 項目反応理論とは</h2>
+<p>先のCTTの課題（受検者の能力とテストの難易度が分離できない）を解決したテスト理論がIRTです。 IRTでは，受検者の能力（一般に<span class="math inline">\(\theta\)</span>で表現されます）と， 項目の難易度（一般に<span class="math inline">\(b\)</span>で表現されます。要は個々の項目の難しさです）を別々に考えます。 この発想により，まったく異なる項目から構成されたテストであっても， その得点を比較できるようになります。</p>
+<p>簡単に説明すると，これは次のようなロジックです。 たとえば，ほぼ同じ「易しい」難易度の二つの項目があるとしたら， その項目は相互に入れ替え可能です。 同様に同じ難易度の項目同士を入れ替えていけば， まったく異なる項目から構成されているにもかかわらず，同じ難しさのテストが作成できます。 これで冒頭のような問い（小学6年生の学力は上がったのか？）にも答えられるようになります。</p>
+<p>ただしIRTも万能ではありません。 ここでは，日本の学校教育にIRTを使ったテストが普及していく上での課題を3つ挙げておきます。</p>
+<p>第一に，IRTを活用するためには事前に難易度の判明した項目が多数用意されている必要があります。 項目がたくさん集められている（≒プールされている）ので， これを項目プールと呼んだりします。 項目プールがないと，同じ難易度のテストを構成するといった作業はできません。 項目プールを作るには，多数の設問を作成し，その難易度を調べる予備調査が必須です。 これには膨大な手間がかかります。</p>
+<p>第二に，IRTでは個々の項目は基本的に秘匿されていることが前提です。 仮に「難しい」とされている項目であっても，それが広く公開されてしまえばテスト対策が行われ， 「易しい」項目に変わってしまう危険があるからです。 大学入学共通テストのように， 日本ではテストをした直後に項目を公開することが広く行われていますが， IRTを前提にしたテストでは項目の公開は基本的にご法度です。</p>
+<p>第三に，IRTによる能力推定は相当に煩雑です。 本書ではごく簡単に説明しますが，IRTで受検者の能力を求めるには， 「項目の難易度などを推定する作業」と 「推定された項目の難易度をもとに受検者の能力を推定する作業」が必要です。 そして，それぞれの作業に複数の異なるモデルや推定法が提案されています。 どのモデル・推定法を採用するかによって，受検者の能力は変わってきます。 これは日本の人たちが慣れ親しんでいる「10問中5問正解したから50点」といった 点数の算出方法に比べ明らかに複雑で，理解するには専門的な知識が必要です。 適切な理解を欠いていると，せっかく学力調査にIRTを導入しても 誤った結論しか得られないということにもなりかねません。</p>
+</section>
+<section id="項目反応理論のモデル" class="level2" data-number="10.3">
+<h2 data-number="10.3" class="anchored" data-anchor-id="項目反応理論のモデル"><span class="header-section-number">10.3</span> 項目反応理論のモデル</h2>
+<p>それではIRTによる能力推定法の概要と， その留意点について簡単にまとめておくことにしましょう。 先ほど述べたように， 一般的なIRTによる能力推定では， 最初に困難度・識別力といった項目パラメータを推定します。 その上で，受検者の回答パターンをもとに受検者の能力を推定します。</p>
+<p>最初の項目パラメータの推定では， 項目への正答確率（<span class="math inline">\(P\)</span>）と 受検者の能力（<span class="math inline">\(\theta\)</span>）・項目の難易度（<span class="math inline">\(b\)</span>）などのあいだに 何らかの関係を仮定して，<span class="math inline">\(b\)</span>などの値を推定していきます。 一例として，次のようなモデルを考えてみましょう。</p>
+<p><span class="math display">\[P_j(\theta) = \frac{1}{1+exp(-Da_j(\theta - b_j))}\]</span></p>
+<p>式中の記号の意味は，次の通りです。</p>
+<ul>
+<li><span class="math inline">\(P_j\)</span>：項目<span class="math inline">\(j\)</span>に対する正答確率（0は100%誤答，1は100%正答になります）</li>
+<li><span class="math inline">\(\theta\)</span>：受検者の能力（0が平均で偏差値で言うと50に相当します。1は偏差値60です）</li>
+<li><span class="math inline">\(b\)</span>：項目困難度（項目の難しさです）</li>
+<li><span class="math inline">\(a\)</span>：項目識別力（説明は後述）</li>
+<li><span class="math inline">\(D\)</span>：尺度因子（通常1.7です。気にしなくて構いません）</li>
+</ul>
+<p>この式では何のことかわからないと思いますので， 横軸に受検者の能力（<span class="math inline">\(\theta\)</span>），縦軸に正答確率（<span class="math inline">\(P\)</span>）をとった グラフを描いてみましょう。 Rのコードはわかりにくいので，覚えなくて構いません。</p>
+<div class="cell">
+<details class="code-fold">
+<summary>コード</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>icc <span class="ot">&lt;-</span> <span class="cf">function</span>(params, <span class="at">tr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">4</span>, <span class="dv">4</span>), <span class="at">np =</span> <span class="dv">100</span>) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 引数チェック</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.list</span>(params) <span class="sc">||</span> <span class="sc">!</span><span class="fu">all</span>(<span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>) <span class="sc">%in%</span> <span class="fu">names</span>(params))) {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"`params` must be a list with named elements `a` and `b`."</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(params<span class="sc">$</span>a) <span class="sc">!=</span> <span class="fu">length</span>(params<span class="sc">$</span>b)) {</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"`params$a` and `params$b` must have the same length."</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 正答確率関数</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  p2pl <span class="ot">&lt;-</span> <span class="cf">function</span>(t, a, b) {</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span> <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(<span class="sc">-</span><span class="fl">1.7</span> <span class="sc">*</span> a <span class="sc">*</span> (t <span class="sc">-</span> b)))</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 能力範囲を生成</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  t_vals <span class="ot">&lt;-</span> <span class="fu">seq</span>(tr[<span class="dv">1</span>], tr[<span class="dv">2</span>], <span class="at">length.out =</span> np)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># プロットの初期化</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="cn">NULL</span>,</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlim =</span> tr, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">type =</span> <span class="st">"n"</span>,</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab =</span> <span class="st">"θ"</span>, <span class="at">ylab =</span> <span class="st">"正答確率"</span>,</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">main =</span> <span class="st">"ICC"</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grid</span>()</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 各項目の特性曲線を描画</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(params<span class="sc">$</span>a)) {</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    a <span class="ot">&lt;-</span> params<span class="sc">$</span>a[i]</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    b <span class="ot">&lt;-</span> params<span class="sc">$</span>b[i]</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    p_vals <span class="ot">&lt;-</span> <span class="fu">p2pl</span>(t_vals, a, b)</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">lines</span>(t_vals, p_vals, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> i) <span class="co"># 番号を色に対応</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">abline</span>(<span class="at">v =</span> b, <span class="at">col =</span> i, <span class="at">lty =</span> <span class="dv">2</span>) <span class="co"># 困難度のライン</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 凡例を追加</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">"bottomright"</span>,</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend =</span> <span class="fu">paste</span>(<span class="st">"a ="</span>, params<span class="sc">$</span>a, <span class="st">", b ="</span>, params<span class="sc">$</span>b),</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">col =</span> <span class="fu">seq_along</span>(params<span class="sc">$</span>a), <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">bg =</span> <span class="st">"white"</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>params1 <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">a =</span> <span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.9</span>, <span class="fl">0.5</span>),</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">b =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a><span class="fu">icc</span>(params1)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-irt1" class="quarto-float quarto-figure quarto-figure-center anchored" width="480">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-irt1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="irt_files/figure-html/fig-irt1-1.png" id="fig-irt1" class="img-fluid figure-img" width="480">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-irt1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+図&nbsp;10.1
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-irt1" class="quarto-xref">図&nbsp;<span>10.1</span></a> は3つの項目（黒・赤・緑）を例に，受検者の能力と正答確率の関係を図示したものです。 いずれの項目も受検者の能力（<span class="math inline">\(\theta\)</span>）が高いほど（＝右へ行くほど）正答確率が上昇しており， <span class="math inline">\(\theta\)</span>が4ともなれば，どの項目もほぼ100%正答になることを示しています。 逆に<span class="math inline">\(\theta\)</span>が低いほど（＝左へ行くほど）正答確率は下がり， <span class="math inline">\(\theta\)</span>が-4の人はどの項目も正答確率はほぼ0%です。 図中の縦線は，正答確率がちょうど50%になるときの<span class="math inline">\(\theta\)</span>の値を示した線です。</p>
+<p>ここで，<span class="math inline">\(b\)</span>は困難度・<span class="math inline">\(a\)</span>は識別力と呼ばれるパラメータです。 <a href="#fig-irt1" class="quarto-xref">図&nbsp;<span>10.1</span></a> を見ると，<span class="math inline">\(b\)</span>の高い項目ほど正答確率が50%になるために 必要な<span class="math inline">\(\theta\)</span>が高いことがわかると思います。 要は<span class="math inline">\(b\)</span>が高いほうが「難しい」項目だということです。 <span class="math inline">\(a\)</span>はわかりにくいかもしれませんが，<span class="math inline">\(a\)</span>が高い項目ほど 曲線の立ち上がりが急激である（≒能力が上昇したときに正答確率が大きく上がる） ことに気づくと思います。</p>
+<p>たとえば，赤の曲線（<span class="math inline">\(a\)</span>が0.9）は<span class="math inline">\(\theta\)</span>が-1のときは正答確率が20%程度ですが， <span class="math inline">\(\theta\)</span>が0で50%，<span class="math inline">\(\theta\)</span>が1で80%程度と，大きく正答確率が上昇しています。 他方，緑の曲線（<span class="math inline">\(a\)</span>が0.5）は<span class="math inline">\(\theta\)</span>が-1のときの正答確率は20%程度で， <span class="math inline">\(\theta\)</span>が3になっても正答確率が80%程度と，正答確率の上昇が緩やかです。</p>
+<p>要は<span class="math inline">\(a\)</span>が高い項目のほうが， 受検者の能力を区別することができる（≒識別できる）ということです。 <span class="math inline">\(a\)</span>が極端に低い項目は，受検者の能力が高かろうが低かろうが正答確率が変わらないわけで， 受検者の能力を知るという観点からは，あまり出題する意味がない（≒「悪問」）ということになります。</p>
+<p>ここまで見てきたような「個々の項目に困難度と識別力というパラメータがある」ことを想定するモデルは， 2PL（2パラメータ・ロジスティックモデル）と呼ばれます。 他にも識別力を考えない1PLや，偶然に正解する確率を考慮する3PLなど， いくつかのモデルが存在します。 さらに今回のモデルは，正答と誤答しか考えていませんが， 部分正答を考える部分得点モデル（Partial Credit Model: PCM）というモデルも存在します。 IRTを利用したテストでは，こうしたモデルからいずれかを設定し（あるいは複数を採用し）， <span class="math inline">\(b\)</span>や<span class="math inline">\(a\)</span>などのパラメータを推定していくことになります。</p>
+<p>パラメータが推定されたら，次は受検者の回答をもとに能力推定を行います。 ここでも複数の能力推定法があり，それぞれ異なる特性を持ちます。 有名な推定法には，MLE（最尤推定）やEAP（期待事後確率）があります。 PISAでは，WLE（重み付け最尤推定）という推定法も使われています。 これら能力推定法を大雑把に分類すると， 受験者の能力分布について仮定を置かないもの（MLEやWLE）と 正規分布などの仮定を置くもの（EAP）に分けられます。 個々の推定法の説明は，かなり難しいので本書では扱いません。 興味のある方は，参考文献<span class="citation" data-cites="mitsu2017 kato2018 horo2019"><sup>[<a href="references.html#ref-mitsu2017" role="doc-biblioref">1</a>–<a href="references.html#ref-horo2019" role="doc-biblioref">3</a>]</sup></span>で勉強してみてください。</p>
+</section>
+<section id="重複テスト分冊法" class="level2" data-number="10.4">
+<h2 data-number="10.4" class="anchored" data-anchor-id="重複テスト分冊法"><span class="header-section-number">10.4</span> 重複テスト分冊法</h2>
+<p>IRTの利点は，受検者が異なるテストを受検しても能力推定が可能であるという点でした。 LSAでは，こうしたIRTの利点を活かした手法が採用されています。 ここではその代表例として，重複テスト分冊法（Matrix Sampling Design）を紹介します。</p>
+<div id="tbl-MatrixSampling" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-MatrixSampling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+表&nbsp;10.1: 重複テスト分冊法の例
+</figcaption>
+<div aria-describedby="tbl-MatrixSampling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">分冊 ID</th>
+<th style="text-align: center;">Block 1<br>（10項目）</th>
+<th style="text-align: center;">Block 2<br>（10項目）</th>
+<th style="text-align: center;">Block 3<br>（10項目）</th>
+<th style="text-align: center;">Block 4<br>（10項目）</th>
+<th style="text-align: center;">Block 5<br>（10項目）</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">分冊 1</td>
+<td style="text-align: center;">○</td>
+<td style="text-align: center;">○</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">分冊 2</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">○</td>
+<td style="text-align: center;">○</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">分冊 3</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">○</td>
+<td style="text-align: center;">○</td>
+<td style="text-align: center;">✗</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">分冊 4</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">○</td>
+<td style="text-align: center;">○</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">分冊 5</td>
+<td style="text-align: center;">○</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">○</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>LSAで受検者の能力を適切に測定するには，できるだけ多くの項目を出題する必要があります。 項目数が少ないと幅広く学力を調べることができず，たまたま得意な問題だった（あるいは苦手な問題だった） という事態が起こりえます。 こうなると，せっかく全国の子どもを調査する意味が薄れます。 その一方，出題する項目数が増えると，今度は受検者の負担が大きくなります。 そこで，幅広い項目を出題しつつ受検者の負担は減らすために， LSAでは項目をいくつかの分冊（分冊）に分けて， 個々の受検者に異なる設問を出題するという手法が取られています。 これを重複テスト分冊法と呼びます。</p>
+<p><a href="#tbl-MatrixSampling" class="quarto-xref">表&nbsp;<span>10.1</span></a>が，その概要です。 Block 1からBlock 5は，項目のグループだと思ってください。 仮に1つのBlockで10項目を出題したとすると，全体で見れば50項目が出題できるというわけです。 もちろんBlockの数を増やせば，さらに多くの項目を出題できます。 ただ，そのままだとBlock 1とBlock 2を受検した受検者の能力を比べることはできません。 Block 1の項目とBlock 2の項目が同じ難しさかどうかわからないからです。 事前に個々のBlockの難易度を完全に同じに保つことができればよいのですが， 項目数が少ないこともあってなかなかに困難です。</p>
+<p>そこで<a href="#tbl-MatrixSampling" class="quarto-xref">表&nbsp;<span>10.1</span></a>のように， Block 1とBlock 2を分冊1，Block 2とBlock 3を分冊2・・・といった具合に， 個々のBlockを対にして分冊を作成します。 そして，この分冊を個々の受検者に配布します。 こうすると分冊1と分冊2を受検した受検者たちは，いずれもBlock 2の項目に回答していますから， Block 2の項目への回答状況を手がかりに， 相互に比較可能な形でBlock 1・Block 2・Block 3の項目の難易度を推定することができます。 Block 1・Block 2・Block 3の項目の難易度がわかれば， 分冊1と分冊3を受検した受検者の能力を比べることもできるというわけです。</p>
+<p>分冊1と分冊3の受検者は重複していませんが， 分冊1と分冊2，分冊2と分冊3にはそれぞれ重複（Block 2とBlock 3）がありますので， まずBlock 1とBlock 2の難易度を比べ，それからBlock 2とBlock 3，Block 3とBlock 4の難易度を比べることで， 相互に比較可能なBlock 1からBlock 4までの難易度を推定することができます。 こうなれば，分冊1と分冊3を受検した受検者の能力を比較することが可能です。</p>
+<p>重複テスト分冊法を利用すれば，幅広い項目を出題しつつ，受検者の負担を抑えることが可能です。 先の例で言うと，個々の受検者は20問しか受検していませんので，個々人の能力推定は正確なものにはなりません （＝測定誤差が大きくなる）。 ただ全体としてみれば100問が出題できていますので，その国（あるいは地域）の子どもの得意・不得意はよくわかります。</p>
+<p>ちなみに，近年のLSAではCBTが導入されるようになってきています。 CBTの利点はいくつかありますが，その一つに受検者の能力をより正確に測定できるというものがあります。 紙のテストでは，どうしてもテストが受検者にとって簡単すぎる／難しすぎるということが起こります。 そこで最初に標準的な設問で構成されたBlockを出題しておき， その反応をもとに能力の高い受検者には難しいBlockを，逆に低い受検者には簡単なBlockを割り当てることで， より正確に受検者の能力を知ることができるようにしているのです。</p>
+</section>
+<section id="異なるサイクル間での能力比較" class="level2" data-number="10.5">
+<h2 data-number="10.5" class="anchored" data-anchor-id="異なるサイクル間での能力比較"><span class="header-section-number">10.5</span> 異なるサイクル間での能力比較</h2>
+<p>多くのLSAでは，異なる年度で実施されたテストであっても，その得点を直接に比較し， 学力が上がった／下がったという判断を下すことができます。 ここにもIRTの技術が使われています。</p>
+<div id="tbl-Linking" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-Linking-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+表&nbsp;10.2: 異なるサイクル間の比較
+</figcaption>
+<div aria-describedby="tbl-Linking-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Year</th>
+<th style="text-align: center;">block A</th>
+<th style="text-align: center;">block B</th>
+<th style="text-align: center;">block C</th>
+<th style="text-align: center;">block D</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2010年調査</td>
+<td style="text-align: center;">○</td>
+<td style="text-align: center;">○</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2015年調査</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">○</td>
+<td style="text-align: center;">○</td>
+<td style="text-align: center;">✗</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2020年調査</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">✗</td>
+<td style="text-align: center;">○</td>
+<td style="text-align: center;">○</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>能力の変化を捉えるための調査デザインは，基本的には重複テスト分冊法の発想と同じです。 たとえば5年おきに実施されるLSAがあったとしましょう。 ここでテスト項目のBlock（A〜D）を<a href="#tbl-Linking" class="quarto-xref">表&nbsp;<span>10.2</span></a>のように配置すれば， 2010年・2015年・2020年の調査の成績を直接に比較できるようになります。 たとえば2010年調査と2015年調査の比較であれば， 両者に共通するBlock Bの項目の難易度を手がかりに， Block Aの項目とBlock Cの項目の難易度を比べることができ， 2010年度調査の受検者と2015年度調査の受検者の能力も比べることができるようになるというわけです。</p>
+<p>ここで重要なことは，Block BやBlock Cのような共通の項目の情報が，受検者に秘匿されていることです。 仮に2010年調査でBlock Bの項目の内容が漏洩してしまったとすると， 2010年調査の受検者にとってのBlock Bの難易度と，2015年調査の受検者にとってBlock Bの難易度が変わってしまいます （おそらく，2015年調査の受検者は2010年調査の受検者に比べ，Block Bを易しく感じるでしょう）。 この場合，2010年調査と2015年調査の得点を調整する作業は失敗します。 PISAやTIMSSでは，調査項目の一部が公開されていますが， これはBlock Aのような今後の調査ではもう使わない項目が対象になっているのです。</p>
+</section>
+<section id="rによる推定" class="level2" data-number="10.6">
+<h2 data-number="10.6" class="anchored" data-anchor-id="rによる推定"><span class="header-section-number">10.6</span> Rによる推定</h2>
+<p>最後に，Rを利用してIRTを行う例を紹介しておきます。 素のRでIRTを行うのは難しいので， <a href="">mirt</a>と<a href="">TAM</a>というパッケージ<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>を利用しました。 IRTの分析は難しいので，以下のコードは理解できなくても構いません。 ここでは，受検者のサンプルサイズが4000，項目数は20問のテストを想定しています。 IRTのモデルは2PL，項目の困難度は-3から3のあいだで均等に分布し， 項目の識別力は0.9としました。</p>
+<p>最初に，受検者の反応パターン（20項目に対する正誤）のデータを生成します。 データの生成は，mirtの<code>simdata</code>関数を使っています。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># パラメータの定義</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>size <span class="ot">&lt;-</span> <span class="dv">4000</span> <span class="co"># サンプルサイズ</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>item_n <span class="ot">&lt;-</span> <span class="dv">20</span> <span class="co"># 項目数</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="at">length.out =</span> item_n) <span class="co"># 項目困難度</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fl">0.9</span> <span class="co"># 項目識別度</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># theta</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>theta <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(size, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># 反応パターンを生成</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>resp <span class="ot">&lt;-</span> mirt<span class="sc">::</span><span class="fu">simdata</span>(</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">a =</span> <span class="fu">rep</span>(<span class="fl">1.7</span> <span class="sc">*</span> a, item_n),</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">d =</span> <span class="sc">-</span>b <span class="sc">*</span> <span class="fl">1.7</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">Theta =</span> theta,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">itemtype =</span> <span class="st">"2PL"</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>続いて，2PLによる分析を行います。 ここでは，TAMの<code>tam.mml.2pl</code>関数による推定を行っています。 引数の<code>verbose = FALSE</code>は出力を抑制する設定です。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> TAM<span class="sc">::</span><span class="fu">tam.mml.2pl</span>(resp, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>TAMで困難度と識別力を出力するのはやや面倒で， 以下のような手順を踏む必要があります。 Colabだと出力が見づらいので，<code>as.data.frame</code>という関数を使い， 出力をデータフレームに変換しています。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 識別力</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>a_param <span class="ot">&lt;-</span> mod<span class="sc">$</span>B[, <span class="dv">2</span>, <span class="dv">1</span>] <span class="sc">/</span> <span class="fl">1.7</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(<span class="fu">round</span>(a_param, <span class="dv">2</span>))</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        round(a_param, 2)
+Item_1               0.88
+Item_2               0.84
+Item_3               0.95
+Item_4               0.92
+Item_5               0.82
+Item_6               0.96
+Item_7               0.95
+Item_8               0.91
+Item_9               0.95
+Item_10              0.90
+Item_11              0.88
+Item_12              0.82
+Item_13              0.90
+Item_14              0.93
+Item_15              0.85
+Item_16              0.93
+Item_17              0.84
+Item_18              0.83
+Item_19              0.95
+Item_20              0.96</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 困難度</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>b_param <span class="ot">&lt;-</span> mod<span class="sc">$</span>xsi[, <span class="dv">1</span>] <span class="sc">/</span> mod<span class="sc">$</span>B[, <span class="dv">2</span>, <span class="dv">1</span>]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(<span class="fu">round</span>(b_param, <span class="dv">1</span>))</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        round(b_param, 1)
+Item_1               -3.3
+Item_2               -3.1
+Item_3               -2.6
+Item_4               -2.3
+Item_5               -2.1
+Item_6               -1.5
+Item_7               -1.2
+Item_8               -0.9
+Item_9               -0.5
+Item_10              -0.2
+Item_11               0.2
+Item_12               0.6
+Item_13               0.9
+Item_14               1.2
+Item_15               1.6
+Item_16               1.9
+Item_17               2.3
+Item_18               2.8
+Item_19               2.9
+Item_20               3.2</code></pre>
+</div>
+</div>
+<p>続いて，受検者の能力推定を行います。 ここでは，EAP・MLE・WLEによる推定方法を示しています。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>eap <span class="ot">&lt;-</span> mod<span class="sc">$</span>person<span class="sc">$</span>EAP <span class="co">#EAP</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>mle <span class="ot">&lt;-</span> TAM<span class="sc">::</span><span class="fu">tam.wle</span>(mod, <span class="at">progress =</span> <span class="cn">FALSE</span>, <span class="at">WLE =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>theta <span class="co"># MLE</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>wle <span class="ot">&lt;-</span> TAM<span class="sc">::</span><span class="fu">tam.wle</span>(mod, <span class="at">progress =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>theta <span class="co">#WLE</span></span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>得られた能力値を，真の能力値と比べてみましょう。 ここではMLEを例に， 真の能力（<span class="math inline">\(\theta\)</span>）と推定された能力を<code>plot</code>で散布図にしてみましょう。 ついでに，<code>cor</code>関数で相関係数も算出します。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(theta, mle, <span class="at">xlab =</span> <span class="st">"真の能力"</span>, <span class="at">ylab =</span> <span class="st">"MLE推定値"</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="irt_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(theta, mle)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.8976524</code></pre>
+</div>
+</div>
+<p>散布図や相関係数を見ると，確かに関連は強いのですが， それでも完全に一致するわけではないことがわかります。 もっとも直感的にはこれは当然で， たった20問のテストですから 1〜2問程度はたまたまできた（あるいは間違えた）項目が存在し， 結果として真の能力と推定された学力に差が生じるということです。</p>
+<p>ただ，このズレが母集団を推定するときには問題になります。 今，MLE，WLE，EAPの各推定値を使い，母集団の平均と分散を計算してみましょう。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>stat <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">round</span>(<span class="fu">c</span>(<span class="at">mean =</span> <span class="fu">mean</span>(x), <span class="at">var =</span> <span class="fu">var</span>(x)), <span class="dv">2</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(<span class="fu">list</span>(<span class="at">theta =</span> theta, <span class="at">mle =</span> mle, <span class="at">wle =</span> wle, <span class="at">eap =</span> eap), stat)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$theta
+mean  var 
+0.01 0.99 
+
+$mle
+mean  var 
+0.00 1.26 
+
+$wle
+mean  var 
+0.00 1.23 
+
+$eap
+mean  var 
+0.00 0.81 </code></pre>
+</div>
+</div>
+<p>平均値（mean）はどの推定法も0.0なので，真の値（0.01）とほとんど同じです。 問題は分散（var）で，真の値（theta）が0.99に対し， いずれの推定法にもズレが生じています。 傾向として，MLEとWLEは過大推定，EAPは過小推定しているようです 分散の推定値がズレるということは，標準誤差にズレが生じます。 そして標準誤差がズレると，母集団に対する誤った推測に゙繋がります。 <a href="./pvs.html">推算値法</a>では，この問題を改善する方法を解説します。</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
+<div id="ref-mitsu2017" class="csl-entry" role="listitem">
+1. 光永悠彦. (2017年). <em>テストは何を測るのか—項目反応理論の考え方</em>. ナカニシヤ出版.
+</div>
+<div id="ref-kato2018" class="csl-entry" role="listitem">
+2. 加藤健太郎・山田剛史・川端一光. (2014年). <em>Rによる項目反応理論</em>. オーム社.
+</div>
+<div id="ref-horo2019" class="csl-entry" role="listitem">
+3. 袰岩晶・篠原真子・篠原康正. (2019年). <em>PISA調査の解剖ー能力評価・調査のモデル</em>. 東信堂.
+</div>
+</div>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>分析のために作成した関数をまとめたものです。 世界中のRユーザによって開発されたパッケージがインターネット上に公開されており， その中から必要なものを選んで使うことができます。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "コピーしました");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "コピーしました");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/kawa5902\.github\.io\/RforLSA");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./replication.html" class="pagination-link" aria-label="Replication Method">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Replication Method</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./pvs.html" class="pagination-link" aria-label="推算値法">
+        <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">推算値法</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Built with <a href="https://quarto.org/" target="_blank">Quarto</a></p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

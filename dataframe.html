@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.6">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>6&nbsp; データフレーム – Rで学ぶ大規模学力調査（Version 1.0）</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./stat_basics.html" rel="next">
+<link href="./sampling_basic2.html" rel="prev">
+<link href="./image/bookcover.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-6c21014d9765ba549c6ebad95917e4d7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-e78aeb9f0bd9243cf33a09e7acbda6f9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "一致なし",
+    "search-matching-documents-text": "一致した文書",
+    "search-copy-link-title": "検索へのリンクをコピー",
+    "search-hide-matches-text": "追加の検索結果を非表示",
+    "search-more-match-text": "追加の検索結果",
+    "search-more-matches-text": "追加の検索結果",
+    "search-clear-button-title": "消去",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "検索",
+    "search-label": "サーチ"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-YPY43001RV"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="style/styles.css">
+<meta name="twitter:title" content="6&nbsp; データフレーム – Rで学ぶ大規模学力調査（Version 1.0）">
+<meta name="twitter:description" content="">
+<meta name="twitter:image" content="https://kawa5902.github.io/RforLSA/dataframe_files/figure-html/unnamed-chunk-19-1.png">
+<meta name="twitter:image-height" content="960">
+<meta name="twitter:image-width" content="960">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./intro_lsa.html">導入</a></li><li class="breadcrumb-item"><a href="./dataframe.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">データフレーム</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="サーチ" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Rで学ぶ大規模学力調査（Version 1.0）</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/kawa5902/RforLSA" title="ソースコード" class="quarto-navigation-tool px-1" aria-label="ソースコード"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="サーチ"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">はじめに</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">導入</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro_lsa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">なぜLSAを学ぶのか</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_colab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">R on Colab</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Rの基本操作</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sampling_basic1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">標本調査の基礎知識1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sampling_basic2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">標本調査の基礎知識2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dataframe.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">データフレーム</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stat_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">相関係数と回帰分析</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">理論編</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sampling_weight.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">標本ウェイト</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./replication.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Replication Method</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./irt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">項目反応理論</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pvs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">推算値法</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">実践編</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intsvy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">intsvyを使う</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pisa_timss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">PISAとTIMSSの概要</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pisa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">PISAの分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./timss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">TIMSSの分析</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">補足</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_prep.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">LSAのデータを入手する</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">まとめ</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">参考文献</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目次</h2>
+   
+  <ul>
+  <li><a href="#データフレームとは" id="toc-データフレームとは" class="nav-link active" data-scroll-target="#データフレームとは"><span class="header-section-number">6.1</span> データフレームとは</a></li>
+  <li><a href="#データフレームの取り扱い" id="toc-データフレームの取り扱い" class="nav-link" data-scroll-target="#データフレームの取り扱い"><span class="header-section-number">6.2</span> データフレームの取り扱い</a></li>
+  <li><a href="#欠測値の扱い方" id="toc-欠測値の扱い方" class="nav-link" data-scroll-target="#欠測値の扱い方"><span class="header-section-number">6.3</span> 欠測値の扱い方</a></li>
+  <li><a href="#lsaのデータファイルを扱う" id="toc-lsaのデータファイルを扱う" class="nav-link" data-scroll-target="#lsaのデータファイルを扱う"><span class="header-section-number">6.4</span> LSAのデータファイルを扱う</a>
+  <ul class="collapse">
+  <li><a href="#データの読み込み" id="toc-データの読み込み" class="nav-link" data-scroll-target="#データの読み込み"><span class="header-section-number">6.4.1</span> データの読み込み</a></li>
+  <li><a href="#データフレームの確認1" id="toc-データフレームの確認1" class="nav-link" data-scroll-target="#データフレームの確認1"><span class="header-section-number">6.4.2</span> データフレームの確認1</a></li>
+  <li><a href="#データフレームの確認2" id="toc-データフレームの確認2" class="nav-link" data-scroll-target="#データフレームの確認2"><span class="header-section-number">6.4.3</span> データフレームの確認2</a></li>
+  <li><a href="#データフレームの確認3" id="toc-データフレームの確認3" class="nav-link" data-scroll-target="#データフレームの確認3"><span class="header-section-number">6.4.4</span> データフレームの確認3</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./intro_lsa.html">導入</a></li><li class="breadcrumb-item"><a href="./dataframe.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">データフレーム</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">データフレーム</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="データフレームとは" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="データフレームとは"><span class="header-section-number">6.1</span> データフレームとは</h2>
+<p>ここまでは，Rのベクトル・リストの機能を使って学んできました。 ただ，本格的に社会調査のデータを扱うには，この二つだけでは力不足です。 社会調査の分析では， さまざまな情報（ID・性別・学力etc）を格納したベクトルを生成し， それらをまとめて扱う必要があるからです。</p>
+<p>ここで必要になるのが，データフレームという機能です。 学力調査の場合，少なくとも次のような変数をまとめて扱う必要があります。</p>
+<ul>
+<li>ID: 生徒一人ひとりの番号。出席番号など</li>
+<li>成績: 一人ひとりの成績</li>
+<li>個々人の情報: たとえば性別やアンケートに対する回答など</li>
+</ul>
+<p>今，id・成績（score）・性別（gender）という変数が含まれた 仮の学力調査のデータを考えましょう。 簡単のため，idは「1番から7番」， 成績は「50点・55点・60点・65点・70点・欠測・欠測」， 性別は「女子・女子・女子・欠測・男子・男子・男子」とします。 欠測というのは，何らかの理由でたまたまデータが得られなかった箇所のことです。</p>
+<p>Rでは，<code>data.frame</code>という関数を使ってデータフレームを作成します。 以下の例では，<code>id</code>，<code>score</code>，<code>gender</code>という3つのベクトルを作成し， その結果を<code>data.frame</code>関数で1つにまとめています。</p>
+<p>ちなみに欠測の箇所は，999という値を入れています。 これは社会調査の慣例で，欠測には99や999といった 「ありえない」数値を入れることでデータが存在しないことを示しているのです。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>id <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span> <span class="co"># 出席番号</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>score <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">55</span>, <span class="dv">60</span>, <span class="dv">65</span>, <span class="dv">70</span>, <span class="dv">999</span>, <span class="dv">999</span>) <span class="co"># 成績。999は欠測</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>gender <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">99</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>) <span class="co"># 性別。1が女子，2が男子</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(id, score, gender)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="データフレームの取り扱い" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="データフレームの取り扱い"><span class="header-section-number">6.2</span> データフレームの取り扱い</h2>
+<p>さて，データフレーム（今回は<code>dat</code>というオブジェクト）の扱い方を考えてみましょう。 たとえば<code>names</code>関数を使うと，データフレーム内の変数名を知ることができます。 また，<code>head</code>関数を使うと，データフレームの上6行の情報を得ることができます。 上から何行の数値がほしいかは，<code>head</code>関数の引数に<code>n = 4</code>といった形で指定することができます。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(dat)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "id"     "score"  "gender"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dat)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  id score gender
+1  1    50      1
+2  2    55      1
+3  3    60      1
+4  4    65     99
+5  5    70      2
+6  6   999      2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dat, <span class="at">n =</span> <span class="dv">4</span>) <span class="co"># 上から4行を表示</span></span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  id score gender
+1  1    50      1
+2  2    55      1
+3  3    60      1
+4  4    65     99</code></pre>
+</div>
+</div>
+<p>データフレーム内の変数にアクセスする場合は，<code>$</code>マークを使います。 <code>dat</code>の成績（score）が見たい場合は，<code>dat$score</code>か<code>dat[["score"]]</code>と入力します。 あるいは，成績は前から2列目に格納されているので，<code>dat[, 2]</code>としても構いません。 ちなみに<code>dat[, 2]</code>はデータフレームの前から2列目を意味します。 <code>dat[3, ]</code>とすると3行目ですし，<code>dat[2, 2]</code>とすると2行目の2列目の数字（55）が返ってきます<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>。</p>
+<p><code>dat$score</code>も<code>dat[["score"]]</code>も<code>dat[, 2]</code>も同じ情報が返ってきます<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>。 この中では，<code>$</code>を使う方法がもっとも簡単です。 試しに<code>dat$</code>と入力してみると，その理由がわかるかもしれません。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>score</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  50  55  60  65  70 999 999</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dat[[<span class="st">"score"</span>]]</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  50  55  60  65  70 999 999</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>dat[, <span class="dv">2</span>] <span class="co"># 2列目</span></span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  50  55  60  65  70 999 999</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>dat[<span class="dv">3</span>, ] <span class="co"># 3行目</span></span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  id score gender
+3  3    60      1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>dat[<span class="dv">2</span>, <span class="dv">2</span>] <span class="co"># 2列目の2行目（55）</span></span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 55</code></pre>
+</div>
+</div>
+<p>データフレーム内の特定の値を修正したいという場合もあるかもしれません。 たとえば，「本当は1人目の成績は40点だったのに間違えて50点と入力してしまった！」といった場合です。 こういう場合は，次のような方法を使います。 まず1人目の成績は，<code>dat$score[1]</code>とすることで表示できます。 ここで，<code>dat$score[1] &lt;- 40</code>とすると，1人目の成績が40に置き換わります。 ちなみに<code>dat[2, 2]</code>のように行と列を指定しても構いません。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>score[<span class="dv">1</span>]</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 50</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>score[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">40</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>score</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  40  55  60  65  70 999 999</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>dat[<span class="dv">2</span>, <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="dv">60</span> <span class="co"># 2行2列（＝2人目の成績）を指定しても可</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>score</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  40  60  60  65  70 999 999</code></pre>
+</div>
+</div>
+</section>
+<section id="欠測値の扱い方" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="欠測値の扱い方"><span class="header-section-number">6.3</span> 欠測値の扱い方</h2>
+<p>データフレームを作ったら，最初に正しく作成できているかどうか確認したほうがよいでしょう。 たとえば<code>table</code>という関数を使うと，ベクトル内の要素を数えることができます。 これを度数分布と呼びます。 度数（データの数）という言葉はよく使うので，覚えておくとよいでしょう。 以下では<code>table</code>関数を使って，別変数（gender）の度数分布を作成してみます。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>gender</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  1  1  1 99  2  2  2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(dat<span class="sc">$</span>gender)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ 1  2 99 
+ 3  3  1 </code></pre>
+</div>
+</div>
+<p>1が男子・2が女子・99は欠測ですから， 順に3・3・1で適切に入力できているようです。 一方で，成績変数（score）はこのままでは少々問題があります。 たとえば，成績の平均を計算することを考えましょう。 今のままでは，おかしな平均値が算出されてしまいます。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>score</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  40  60  60  65  70 999 999</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(dat<span class="sc">$</span>score)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 327.5714</code></pre>
+</div>
+</div>
+<p>326という平均が出力される理由は，欠測の部分に 999を入力しているからです。 Rは999が欠測ということがわかりませんから，999点だと思って平均を計算してしまい， 数値がおかしくなっているのです。 これを防ぐには，Rにscoreの999は欠測であり，平均を計算するときは省いてほしい旨を 伝える必要があります。</p>
+<p>ただ，この処理は少々面倒です。 まず，<code>dat$score</code>の999の箇所を特定する必要があります。 ここで<a href="./r_basics.html#条件を付けて要素にアクセスする">条件を付けて要素にアクセスする</a> 方法を思い出してみてください。 <code>dat$score == 999</code>と入力すれば，<code>dat$score</code>というベクトルの中の999の要素の位置を特定できます。 そのため，<code>dat$score[dat$score == 999]</code>とすることで999の要素を特定できるのでした。 後は，ここにRで欠測を意味する<code>NA</code>という値を格納すれば， Rにデータに欠測があることを伝えられます。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>score[dat<span class="sc">$</span>score <span class="sc">==</span> <span class="dv">999</span>]</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 999 999</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>score[dat<span class="sc">$</span>score <span class="sc">==</span> <span class="dv">999</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>score</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 40 60 60 65 70 NA NA</code></pre>
+</div>
+</div>
+<p>ではもう一回，平均を計算してみましょう。 今度は<code>NA</code>になるはずです。欠測が含まれているものに対して平均を計算することはできませんので， これは当然と言えば当然です。 そこで，欠測の箇所は除いて平均を計算するように伝えます。 これは，<code>mean</code>関数の引数に，<code>na.rm = TRUE</code>を与えることで実現できます。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(dat<span class="sc">$</span>score)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] NA</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(dat<span class="sc">$</span>score, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 59</code></pre>
+</div>
+</div>
+<p>これでようやく，成績の平均を計算することができました。 ちなみに，男女別の平均を計算することも可能です。 Rでは，<code>tapply</code>という関数を使うことで，グループごとに処理が可能です。 <code>tapply</code>の引数には，順に「処理したい値」「個々の属するグループ」 「行いたい処理」を与えます。 今回は男女別の成績の平均を計算したいので，順にscore, gender, meanを与えることになります。 欠測を無視するために，最後に<code>na.rm = TRUE</code>も与える必要があります。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tapply</span>(dat<span class="sc">$</span>score, dat<span class="sc">$</span>gender, mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       1        2       99 
+53.33333 70.00000 65.00000 </code></pre>
+</div>
+</div>
+</section>
+<section id="lsaのデータファイルを扱う" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="lsaのデータファイルを扱う"><span class="header-section-number">6.4</span> LSAのデータファイルを扱う</h2>
+<p>ここまでは説明のために，自分で作成したデータフレームを使っていました。 しかし実際の分析では， すでに用意されたデータをデータフレームとして読み込むことが一般的です。</p>
+<section id="データの読み込み" class="level3" data-number="6.4.1">
+<h3 data-number="6.4.1" class="anchored" data-anchor-id="データの読み込み"><span class="header-section-number">6.4.1</span> データの読み込み</h3>
+<p>以下では，PISA2012の日本のデータをRに読み込むことを考えます。 普通は自分のPCに保存されているデータを使うのですが， そのためにはフォルダやパスといった概念を知っておく必要があります。 フォルダやパスの説明は少し大変なので， 本書では，私がウェブ上に用意したcsvファイルをRに読み込むことにします。 ここで言うcsvファイルとは，カンマ（,）で項目を区切ったデータのことで， 社会調査ではよく使われます。</p>
+<p>Rにcsvファイルを読み込む際は，<code>read.csv</code>という関数を使います。 今回はウェブ上にあるcsvファイルを読み込むので， csvファイルのある場所（url）を<code>read.csv</code>の引数に設定します。 読み込んだデータは，<code>jpn2012</code>というデータフレームに格納しています。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">"https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/pisa2012stuJPN.csv"</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>jpn2012 <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(url)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="データフレームの確認1" class="level3" data-number="6.4.2">
+<h3 data-number="6.4.2" class="anchored" data-anchor-id="データフレームの確認1"><span class="header-section-number">6.4.2</span> データフレームの確認1</h3>
+<p>先ほど読み込んだ<code>jpn2012</code>の中身を，<code>names</code>関数や<code>head</code>関数を使って確認してみましょう。 かなりデータファイルが大きいので，ここでは最初の10列だけ表示しています。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(jpn2012)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>] <span class="co"># names関数。変数名を出力</span></span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "CNT"      "SUBNATIO" "STRATUM"  "OECD"     "NC"       "SCHOOLID"
+ [7] "StIDStd"  "ST01Q01"  "ST02Q01"  "ST03Q01" </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(jpn2012, <span class="dv">10</span>)[, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>] <span class="co"># head関数。最初の10人分のデータを出力</span></span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   CNT SUBNATIO STRATUM OECD    NC SCHOOLID StIDStd ST01Q01 ST02Q01 ST03Q01
+1  JPN  3920000 JPN0101    1 39200        1       1      10       1       9
+2  JPN  3920000 JPN0101    1 39200        1       2      10       1      12
+3  JPN  3920000 JPN0101    1 39200        1       3      10       1       4
+4  JPN  3920000 JPN0101    1 39200        1       4      10       1       6
+5  JPN  3920000 JPN0101    1 39200        1       5      10       1      12
+6  JPN  3920000 JPN0101    1 39200        1       6      10       1       4
+7  JPN  3920000 JPN0101    1 39200        1       7      10       1      11
+8  JPN  3920000 JPN0101    1 39200        1       8      10       1       8
+9  JPN  3920000 JPN0101    1 39200        1       9      10       1      10
+10 JPN  3920000 JPN0101    1 39200        1      10      10       1       1</code></pre>
+</div>
+</div>
+<p><code>$</code>を使って，個々の変数にアクセスすることも可能です。 たとえば，<code>ST03Q01</code>変数（これは生まれ月の変数です）を見てみます。 すべて表示すると数千人分のデータになるので，ここでは最初の12人分だけ表示します。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>jpn2012<span class="sc">$</span>ST03Q01[<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>] <span class="co"># $を使ってデータにアクセス</span></span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]  9 12  4  6 12  4 11  8 10  1  6  1</code></pre>
+</div>
+</div>
+<p>PISA2012は，日本では高校1年生（正確には学校に通う15歳）を対象に実施されています。 高校1年生の生まれ月はどのように分布しているのでしょうか。 <code>table</code>関数を使うことで，標本となった人たちの生まれ月の度数分布を確認します。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(jpn2012<span class="sc">$</span>ST03Q01)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  1   2   3   4   5   6   7   8   9  10  11  12 
+521 456 501 532 533 521 574 560 541 547 510 555 </code></pre>
+</div>
+</div>
+<p>多少のばらつきはありますが，特定の誕生月の子どもが多いということはなさそうに思えます。 パーセント表示にしたほうが見やすいかもしれません。 <code>table</code>関数の出力を，<code>prop.table</code>関数の引数にすることで割合を表示することができます。 ただ，素の表示は見づらいので100倍して100分率にし， さらに<code>round</code>関数を使って小数桁数を制御したほうがよいでしょう。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>tb <span class="ot">&lt;-</span> <span class="fu">table</span>(jpn2012<span class="sc">$</span>ST03Q01)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.table</span>(tb)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+         1          2          3          4          5          6          7 
+0.08203433 0.07179972 0.07888521 0.08376634 0.08392379 0.08203433 0.09037947 
+         8          9         10         11         12 
+0.08817509 0.08518344 0.08612817 0.08030231 0.08738781 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 100倍する</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.table</span>(tb) <span class="sc">*</span> <span class="dv">100</span></span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+       1        2        3        4        5        6        7        8 
+8.203433 7.179972 7.888521 8.376634 8.392379 8.203433 9.037947 8.817509 
+       9       10       11       12 
+8.518344 8.612817 8.030231 8.738781 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># round関数で小数桁数を1桁に限定</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">prop.table</span>(tb) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  1   2   3   4   5   6   7   8   9  10  11  12 
+8.2 7.2 7.9 8.4 8.4 8.2 9.0 8.8 8.5 8.6 8.0 8.7 </code></pre>
+</div>
+</div>
+<p>どの生まれ月の人も，だいたい7%から9%となっています。 多少の増減はありますが，特定の月が極端に多いということはなさそうです。</p>
+<p>さらに，生まれ月を男女別に集計したいということもあるかもしれません。 <code>table</code>関数は，複数の引数を設定することで，男女別の集計にも対応できます。 これをクロス集計と呼びます。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(jpn2012<span class="sc">$</span>ST04Q01, jpn2012<span class="sc">$</span>ST03Q01)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   
+      1   2   3   4   5   6   7   8   9  10  11  12
+  1 263 225 226 249 268 247 263 264 249 275 226 266
+  2 258 231 275 283 265 274 311 296 292 272 284 289</code></pre>
+</div>
+</div>
+<p>パーセント表示がしたいという場合は，先ほどと同じく<code>prop.table</code>関数を使います。 引数の1は，横方向に100%にしてほしいという意味です。 2に設定すると，縦方向に100%で表示されます。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>tb <span class="ot">&lt;-</span> <span class="fu">table</span>(jpn2012<span class="sc">$</span>ST04Q01, jpn2012<span class="sc">$</span>ST03Q01)</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.table</span>(tb, <span class="dv">1</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   
+             1          2          3          4          5          6
+  1 0.08705727 0.07447865 0.07480967 0.08242304 0.08871235 0.08176101
+  2 0.07747748 0.06936937 0.08258258 0.08498498 0.07957958 0.08228228
+   
+             7          8          9         10         11         12
+  1 0.08705727 0.08738828 0.08242304 0.09102946 0.07480967 0.08805031
+  2 0.09339339 0.08888889 0.08768769 0.08168168 0.08528529 0.08678679</code></pre>
+</div>
+</div>
+<p>こちらも<code>round</code>関数に渡すことで桁数を抑制できます。 次の例では数値を100倍したあとに，小数桁数を1桁に設定しています。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">prop.table</span>(tb, <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   
+      1   2   3   4   5   6   7   8   9  10  11  12
+  1 8.7 7.4 7.5 8.2 8.9 8.2 8.7 8.7 8.2 9.1 7.5 8.8
+  2 7.7 6.9 8.3 8.5 8.0 8.2 9.3 8.9 8.8 8.2 8.5 8.7</code></pre>
+</div>
+</div>
+<p>男女によって多少のズレはありますが，女子だから（あるいは男子だから）といって 特定の出生月に偏るといったことはなさそうに思えます。</p>
+</section>
+<section id="データフレームの確認2" class="level3" data-number="6.4.3">
+<h3 data-number="6.4.3" class="anchored" data-anchor-id="データフレームの確認2"><span class="header-section-number">6.4.3</span> データフレームの確認2</h3>
+<p>続いて，成績の変数も確認してみましょう。 PISAは読解リテラシー・数学リテラシー・科学リテラシーという3領域を調査しています。 ここでは，読解リテラシーの成績が格納された<code>PV1READ</code>という変数を見てみます。 PV1が何かは今は気にしなくて構いません （PVについては，<a href="./pvs.html">推算値法</a>の章で扱います）。</p>
+<p>最初に，<code>summary</code>関数を使って，最大値・最小値・平均値などを確認しましょう。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(jpn2012<span class="sc">$</span>PV1READ)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  101.8   473.9   545.1   537.8   606.1   904.8 </code></pre>
+</div>
+</div>
+<p><code>hist</code>関数を使うと成績の分布を視覚的に確認することができます。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(jpn2012<span class="sc">$</span>PV1READ, <span class="at">main =</span> <span class="st">"読解リテラシーのヒストグラム"</span>, <span class="at">xlab =</span> <span class="st">"スコア"</span>, <span class="at">ylab =</span> <span class="st">"度数"</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dataframe_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>場合によっては，読解リテラシーと数学リテラシーの関係を確認したいということもあるでしょう。 この場合は，<code>plot</code>という関数が使えます。 ここでは，読解（<code>PV1READ</code>）と数学（<code>PV1MATH</code>）の関係を見てみましょう。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(jpn2012<span class="sc">$</span>PV1READ, jpn2012<span class="sc">$</span>PV1MATH, <span class="at">xlab =</span> <span class="st">"読解リテラシー"</span>, <span class="at">ylab =</span> <span class="st">"数学リテラシー"</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dataframe_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>読解リテラシーは男女によって差があるのではないか，と思う人もいるかもしれません。 こういう場合，たとえば箱ひげ図が使えます。 Rでは，<code>boxplot</code>という関数を使うことで，箱ひげ図が描けます。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(jpn2012<span class="sc">$</span>PV1READ <span class="sc">~</span> jpn2012<span class="sc">$</span>ST04Q01, <span class="at">xlab =</span> <span class="st">"男女（1:女子，2:男子）"</span>, <span class="at">ylab =</span> <span class="st">"読解リテラシー"</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dataframe_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>わずかですが，女子のほうが読解リテラシーが高い傾向があるようです。 先ほど紹介した<code>tapply</code>関数を使えば，男女の平均値の差を示すことも可能です。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tapply</span>(jpn2012<span class="sc">$</span>PV1READ, jpn2012<span class="sc">$</span>ST04Q01, mean)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       1        2 
+548.8090 527.7306 </code></pre>
+</div>
+</div>
+<p>女子（1）が548.8に対し，男子（2）が527.7点なので，女子のほうが20ポイントほど読解リテラシーが高いようです。</p>
+</section>
+<section id="データフレームの確認3" class="level3" data-number="6.4.4">
+<h3 data-number="6.4.4" class="anchored" data-anchor-id="データフレームの確認3"><span class="header-section-number">6.4.4</span> データフレームの確認3</h3>
+<p>読み込んだデータに欠測値がある場合も珍しくありません。 たとえばPISA2012のESCSという変数を見てみます。 <a href="https://largescaleassessmentsineducation.springeropen.com/articles/10.1186/s40536-020-00086-x" target="_blank">ESCS</a> はEconomic Social and Cultural Statusの略で， 子どもの家庭環境を示す変数です。 ESCSは，子どもに「お父さんやお母さんの学歴」 「お父さんやお母さんの職業」「家庭のある本の冊数」などを尋ね， その回答をもとに作成されています。 数値は調査に参加したOECD加盟国の平均が0・標準偏差1に調整されていますので， 0だと平均的な家庭の子ども，2だと相当に恵まれた家庭に育った子ども， -2だと厳しい状況にある子ども・・・といった解釈ができるでしょう。</p>
+<p>さて，PISA2012のESCS変数では9999が欠測値になっています。 お父さんやお母さんの職業・学歴を答えたくないという子もいますから， 欠測があることは珍しいことではありません。 ただ，欠測をそのままにしておくと，平均や標準偏差の計算結果がおかしくなります。 実際，<code>summary</code>関数を使うと，中央値と平均値が大きくズレるなど， おかしなデータになっていることが確認できます。 ヒストグラムを見ても，0付近にほとんどのデータが固まっているのに 10000付近に僅かにデータが存在するなど，変なグラフになってしまいます。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(jpn2012<span class="sc">$</span>ESCS)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  -2.35   -0.61   -0.06  261.27    0.53 9999.00 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(jpn2012<span class="sc">$</span>ESCS, <span class="at">main =</span> <span class="st">""</span>, <span class="at">xlab =</span> <span class="st">"ESCS"</span>, <span class="at">ylab =</span> <span class="st">"度数"</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dataframe_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>このままでは分析に支障がでるので，9999が欠測であることをRに伝えましょう。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>jpn2012<span class="sc">$</span>ESCS[jpn2012<span class="sc">$</span>ESCS <span class="sc">==</span> <span class="dv">9999</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span></span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>欠測値をNAに指定すると，<code>summary</code>関数や<code>hist</code>関数の出力が適切なものに修正されます。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(jpn2012<span class="sc">$</span>ESCS)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    Min.  1st Qu.   Median     Mean  3rd Qu.     Max.     NA's 
+-2.35000 -0.63000 -0.09000 -0.07668  0.48000  2.04000      166 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(jpn2012<span class="sc">$</span>ESCS, <span class="at">main =</span> <span class="st">""</span>, <span class="at">xlab =</span> <span class="st">"ESCS"</span>, <span class="at">ylab =</span> <span class="st">"度数"</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dataframe_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>読み込んだデータに欠測値がある場合，気づかないまま分析すると誤った結果につながりかねません。 データを読み込んだときは，<code>table</code>や<code>summary</code>あるいは<code>hist</code>といった関数を使い， おかしなデータが含まれていないか確認する習慣を付けたほうがよいでしょう。</p>
+
+
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>行と列がよくわからないという人は，<a href="https://id.fnshr.info/2015/10/17/matrix/" target="_blank">「行列で縦か横か迷ったら」</a>をご覧ください。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>なぜ同じことをする方法がいくつもあるのかと思う人もいるでしょうが， それぞれ異なった使い道があるのです。 本書では，<a href="./replication.html">Replication Method</a>で具体例を示します。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "コピーしました");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "コピーしました");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/kawa5902\.github\.io\/RforLSA");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./sampling_basic2.html" class="pagination-link" aria-label="標本調査の基礎知識2">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">標本調査の基礎知識2</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./stat_basics.html" class="pagination-link" aria-label="相関係数と回帰分析">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">相関係数と回帰分析</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Built with <a href="https://quarto.org/" target="_blank">Quarto</a></p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

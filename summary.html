@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.6">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>17&nbsp; まとめ – Rで学ぶ大規模学力調査（Version 1.0）</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./references.html" rel="next">
+<link href="./data_prep.html" rel="prev">
+<link href="./image/bookcover.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-6c21014d9765ba549c6ebad95917e4d7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-e78aeb9f0bd9243cf33a09e7acbda6f9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "一致なし",
+    "search-matching-documents-text": "一致した文書",
+    "search-copy-link-title": "検索へのリンクをコピー",
+    "search-hide-matches-text": "追加の検索結果を非表示",
+    "search-more-match-text": "追加の検索結果",
+    "search-more-matches-text": "追加の検索結果",
+    "search-clear-button-title": "消去",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "検索",
+    "search-label": "サーチ"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-YPY43001RV"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="style/styles.css">
+<meta name="twitter:title" content="17&nbsp; まとめ – Rで学ぶ大規模学力調査（Version 1.0）">
+<meta name="twitter:description" content="">
+<meta name="twitter:image" content="https://stpltrsrcscmnprdwus001.blob.core.windows.net/rsrcs/srm/images/analyzing-complex-survey-data/9781412983341-bookcover.jpg">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./summary.html"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">まとめ</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="サーチ" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Rで学ぶ大規模学力調査（Version 1.0）</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/kawa5902/RforLSA" title="ソースコード" class="quarto-navigation-tool px-1" aria-label="ソースコード"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="サーチ"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">はじめに</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">導入</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro_lsa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">なぜLSAを学ぶのか</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_colab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">R on Colab</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Rの基本操作</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sampling_basic1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">標本調査の基礎知識1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sampling_basic2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">標本調査の基礎知識2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dataframe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">データフレーム</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stat_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">相関係数と回帰分析</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">理論編</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sampling_weight.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">標本ウェイト</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./replication.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Replication Method</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./irt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">項目反応理論</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pvs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">推算値法</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">実践編</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intsvy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">intsvyを使う</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pisa_timss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">PISAとTIMSSの概要</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pisa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">PISAの分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./timss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">TIMSSの分析</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">補足</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_prep.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">LSAのデータを入手する</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summary.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">まとめ</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">参考文献</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目次</h2>
+   
+  <ul>
+  <li><a href="#なぜlsaを学ぶのかへの回答" id="toc-なぜlsaを学ぶのかへの回答" class="nav-link active" data-scroll-target="#なぜlsaを学ぶのかへの回答"><span class="header-section-number">17.1</span> 「なぜLSAを学ぶのか」への回答</a></li>
+  <li><a href="#さらに学ぶために" id="toc-さらに学ぶために" class="nav-link" data-scroll-target="#さらに学ぶために"><span class="header-section-number">17.2</span> さらに学ぶために</a></li>
+  <li><a href="#社会調査について" id="toc-社会調査について" class="nav-link" data-scroll-target="#社会調査について"><span class="header-section-number">17.3</span> 社会調査について</a></li>
+  <li><a href="#教育測定について" id="toc-教育測定について" class="nav-link" data-scroll-target="#教育測定について"><span class="header-section-number">17.4</span> 教育測定について</a></li>
+  <li><a href="#lsaについて" id="toc-lsaについて" class="nav-link" data-scroll-target="#lsaについて"><span class="header-section-number">17.5</span> LSAについて</a></li>
+  <li><a href="#rについて" id="toc-rについて" class="nav-link" data-scroll-target="#rについて"><span class="header-section-number">17.6</span> Rについて</a>
+  <ul class="collapse">
+  <li><a href="#rユーザのための-rstudio実践入門" id="toc-rユーザのための-rstudio実践入門" class="nav-link" data-scroll-target="#rユーザのための-rstudio実践入門"><span class="header-section-number">17.6.1</span> Rユーザのための RStudio［実践］入門</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">まとめ</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="なぜlsaを学ぶのかへの回答" class="level2" data-number="17.1">
+<h2 data-number="17.1" class="anchored" data-anchor-id="なぜlsaを学ぶのかへの回答"><span class="header-section-number">17.1</span> 「なぜLSAを学ぶのか」への回答</h2>
+<p>本書では，LSAに採用されている技術を学ぶとともに， PISAやTIMSSといったLSAのデータをRを使って分析してきました。 最後に，ここまでに学んだ知識を使い 「<a href="./intro_lsa.html">なぜLSAを学ぶのか</a>」 という本書冒頭の問いに答えてみましょう。</p>
+<p>LSAを学ぶ理由は， そこで使われている技術を知らなければ 日本の学力実態やその変化を知ることができないからです。 学力の変化を捉えることができないということは， 社会の変化や教育政策の変化によって， 子どもたちがどのような影響を受けているか把握できないということです。 LSAが知られていない状況で日本の教育の問題点やその改善策を論じても意味はなく， 「いきあたりばったり」の教育政策にならざるを得ません。 日本の教育政策の問題点を指摘した書籍はいくつもありますが<span class="citation" data-cites="koba2018 tera2020 matsu2021 kawa2022"><sup>[<a href="references.html#ref-koba2018" role="doc-biblioref">1</a>–<a href="references.html#ref-kawa2022" role="doc-biblioref">4</a>]</sup></span>， 問題を生み出す要因の一つに，そもそも本書で論じてきたような 適切に学力を把握する方法が知られていないことがあると言ってもよいでしょう。 教育政策の現状を医療に例えるなら， 「検査をせずに治療を進め，さらに治療の結果も確認していない」状態です。 これで日本の教育が良くなったとしても，それはただの偶然です。</p>
+<p>そして本書で私が言いたいことは，教育の検査（その一つがLSAです）は， <strong>「それなりに難しい」</strong>ということです。 <a href="./irt.html">項目反応理論（IRT）</a>を学ぶと理解できるようになりますが， 私たちが慣れ親しんだ「100点満点のテスト」（≒古典的テスト理論）では， 学力の変化を捉えることができません。 日本の教育界では，2020年頃から「学力の変化を捉えることができる」を謳い文句に， IRTがにわかに注目を集めています。 しかしIRTを導入したら，学力テストが自動的にLSAになるわけではありません。 <a href="./pvs.html">推算値法（PVs）</a>で学んだように， IRTの一般的な能力推定法（MLEやEAP）には母集団の能力推定に偏りが生じるという欠点があります。 この欠点を改善するにはテストの項目数を増やす必要がありますが， 180を超える項目を出題するのは，現実的な方法ではありません。 ですから，LSAでは条件づけたPVsを導入することが重要になります。 LSAを設計・実施する人はもちろんですが， 分析・解釈する人もPVsの適切な利用法を知っておく必要があるのです。</p>
+<p>IRTやPVsといった複雑な手法を組み込んだ調査を，毎年度， しかも全国のすべての児童生徒を対象に実施することはほぼ不可能です。 <a href="./irt.html">項目反応理論</a>の章で説明したように， IRTを活かすには事前に十分な数の項目を用意しておく必要があります。 100を超える項目を用意し，項目の困難度や識別力といったパラメータを分析する作業には 1年でも短すぎるでしょう。 さらにIRTでは項目の秘匿が条件になるので， 不必要に多数の児童生徒を調査してしまうとせっかく用意した項目が漏洩し， IRTの前提が崩れる危険があります。 そのためLSAでは，標本抽出が有力な選択肢となるのです。</p>
+<p>もちろん，学校を対象とした調査で標本抽出を行うのは容易なことではありません。 さまざまな標本抽出法が存在しますし， 標本抽出に伴う推定値のズレや誤差をどうやって算出するかも難しい問題です。 <a href="./sampling_weight.html">標本ウェイト</a>や<a href="./replication.html">Replication Methods</a>は， こうした問題に対処するために考案されてきた技術です。</p>
+<p>要するに，現代のLSAを理解するには （そしてPISAやTIMSS，あるいは全国学力・学習状況調査について発言するなら） <a href="./sampling_weight.html">標本ウェイト</a>・ <a href="./replication.html">Replication Method</a>・ <a href="./irt.html">項目反応理論</a>・ <a href="./pvs.html">推算値法</a>の4つの技術に関する知識が必要なのです。 そして，これらの知識は調査を実施する人はもちろんですが， 調査を分析する人や調査結果を解釈する人たちにも必要です。 そうでないと，誤った分析や解釈をしてしまうでしょう。 誤った分析や解釈は，当然ながら誤った教育政策につながっていきます。 日本の学校教育や教育政策について学力調査の結果をもとに論じる人は， 本書で示したような知識を身に着けておくべきなのです<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>。</p>
+<p>断っておきますが，本書はLSAの入門書に過ぎず， 本書が説明していない内容は多岐にわたります。 本書で示した最低限の内容を知らない人たちが教育政策を論じる （さらには教育政策を変更する）ところに， 日本の教育の大きな難点があるように私は思います。</p>
+</section>
+<section id="さらに学ぶために" class="level2" data-number="17.2">
+<h2 data-number="17.2" class="anchored" data-anchor-id="さらに学ぶために"><span class="header-section-number">17.2</span> さらに学ぶために</h2>
+<p>本書はLSAについて学ぶための「とっかかり」に過ぎません。 そこで最後に，さらにLSAを学ぶためのヒントになる書籍をいくつか紹介しておきます。 トピックごとに紹介しますので，自身の興味・関心に合わせて学ぶとよいでしょう。</p>
+</section>
+<section id="社会調査について" class="level2" data-number="17.3">
+<h2 data-number="17.3" class="anchored" data-anchor-id="社会調査について"><span class="header-section-number">17.3</span> 社会調査について</h2>
+<div class="grid">
+<section id="入門社会調査法" class="level3 g-col-6" data-number="17.3.1">
+<h3 data-number="17.3.1" class="anchored" data-anchor-id="入門社会調査法"><span class="header-section-number">17.3.1</span> 入門・社会調査法</h3>
+<p><a href="https://www.hou-bun.com/cgi-bin/search/detail.cgi?c=ISBN978-4-589-04141-8" target="_blank"><img src="https://www.hou-bun.com/image/book/ISBN978-4-589-04141-8.jpg" class="img-fluid" width="130"></a></p>
+<ul>
+<li><strong>著者</strong>: 轟亮・ 杉野勇・ 平沢和司（編）</li>
+<li><strong>出版社</strong>: 法律文化社</li>
+<li><strong>発売日</strong>: 2021年（第4版）</li>
+</ul>
+<p>主に量的調査法を使った社会調査の入門書です。 第4版ではインターネット調査や研究倫理にも触れており，社会調査の基本を学べる良書です。</p>
+</section>
+<section id="入門社会統計学" class="level3 g-col-6" data-number="17.3.2">
+<h3 data-number="17.3.2" class="anchored" data-anchor-id="入門社会統計学"><span class="header-section-number">17.3.2</span> 入門・社会統計学</h3>
+<p><a href="https://www.hou-bun.com/cgi-bin/search/detail.cgi?c=ISBN978-4-589-03846-3" target="_blank"><img src="https://www.hou-bun.com/image/book/ISBN978-4-589-03846-3.jpg" class="img-fluid" width="130"></a></p>
+<ul>
+<li><strong>著者</strong>: 杉野勇</li>
+<li><strong>出版社</strong>: 法律文化社</li>
+<li><strong>発売日</strong>: 2017年</li>
+</ul>
+<p>Rを使って社会調査法の知識を学ぶテキストです。 同じ著者が書いた『入門・社会調査法』と合わせて読むと良いと思います。</p>
+</section>
+<section id="社会調査法" class="level3 g-col-6" data-number="17.3.3">
+<h3 data-number="17.3.3" class="anchored" data-anchor-id="社会調査法"><span class="header-section-number">17.3.3</span> 社会調査法</h3>
+<p><a href="https://www.gakujutsu.co.jp/product/978-4-7806-0704-8/" target="_blank"><img src="https://www.gakujutsu.co.jp/cms/wp-content/uploads/2020/03/isbn978-4-7806-0704-8.jpg" class="img-fluid" width="130"></a></p>
+<ul>
+<li><strong>著者</strong>: 伊達平和・高田聖治</li>
+<li><strong>出版社</strong>: 学術図書出版社</li>
+<li><strong>発売日</strong>: 2020年</li>
+</ul>
+<p>社会調査の入門書で，層化抽出や多段抽出，及び標準誤差の算出法について解説している点がポイントです。</p>
+</section>
+<section id="概説-標本調査法" class="level3 g-col-6" data-number="17.3.4">
+<h3 data-number="17.3.4" class="anchored" data-anchor-id="概説-標本調査法"><span class="header-section-number">17.3.4</span> 概説 標本調査法</h3>
+<p><a href="https://www.asakura.co.jp/detail.php?book_code=12791" target="_blank"><img src="https://www.asakura.co.jp/user_data/product_image/12791/1.jpg" class="img-fluid" width="130"></a></p>
+<ul>
+<li><strong>著者</strong>: 土屋隆裕</li>
+<li><strong>出版社</strong>: 朝倉書店</li>
+<li><strong>発売日</strong>: 2009年</li>
+</ul>
+<p>層化や多段抽出といった標本抽出法について解説しています。数式多めなので詳しく知りたい人向け。</p>
+</section>
+<section id="analyzing-complex-survey-data" class="level3 g-col-6" data-number="17.3.5">
+<h3 data-number="17.3.5" class="anchored" data-anchor-id="analyzing-complex-survey-data"><span class="header-section-number">17.3.5</span> Analyzing Complex Survey Data</h3>
+<p><a href="https://methods.sagepub.com/book/mono/analyzing-complex-survey-data/toc" target="_blank"><img src="https://stpltrsrcscmnprdwus001.blob.core.windows.net/rsrcs/srm/images/analyzing-complex-survey-data/9781412983341-bookcover.jpg" class="img-fluid" width="130"></a></p>
+<ul>
+<li><strong>著者</strong>: Eun Sul Lee &amp; Ronald N. Forthofer</li>
+<li><strong>出版社</strong>: Sage</li>
+<li><strong>発売日</strong>: 2006年（2nd ed）</li>
+</ul>
+<p>SageのQuantitative Applications in the Social Sciences シリーズ（いわゆる「緑本」）。 Complex Surveyについて学ぶ場合，英語の方が早いです。</p>
+</section>
+<section id="complex-surveys-a-guide-to-analysis-using-r" class="level3 g-col-6" data-number="17.3.6">
+<h3 data-number="17.3.6" class="anchored" data-anchor-id="complex-surveys-a-guide-to-analysis-using-r"><span class="header-section-number">17.3.6</span> Complex Surveys: A Guide to Analysis Using R</h3>
+<p><a href="https://www.wiley.com/en-us/Complex+Surveys%3A+A+Guide+to+Analysis+Using+R-p-9780470284308" target="_blank"><img src="https://www.wiley.com/storefront-pdp-assets/_next/image?url=https%3A%2F%2Fmedia.wiley.com%2Fproduct_data%2FcoverImage300%2F07%2F04702843%2F0470284307.jpg&amp;w=384&amp;q=75" class="img-fluid" width="130"></a></p>
+<ul>
+<li><strong>著者</strong>: Thomas Lumley</li>
+<li><strong>出版社</strong>: Wiley</li>
+<li><strong>発売日</strong>: 2010年</li>
+</ul>
+<p>Rのsurveyパッケージ開発者の本。RでComplex Surveyを分析する場合は必読。 いきなり読むと挫折するので注意。 ちなみに読まなくてもPISAやTIMSSは分析できます。</p>
+</section>
+<section id="データ分析の力" class="level3 g-col-6" data-number="17.3.7">
+<h3 data-number="17.3.7" class="anchored" data-anchor-id="データ分析の力"><span class="header-section-number">17.3.7</span> データ分析の力</h3>
+<p><a href="https://books.kobunsha.com/book/b10124787.html" target="_blank"><img src="https://hondana-image.s3.amazonaws.com/book/image/10124787/78dc44e7-b159-4f6d-9c2e-9123efbaca9f.jpg" class="img-fluid" width="130"></a></p>
+<ul>
+<li><strong>著者</strong>: 伊藤公一朗</li>
+<li><strong>出版社</strong>: 光文社新書</li>
+<li><strong>発売日</strong>: 2017年</li>
+</ul>
+<p>データから因果関係を見極める方法についてわかりやすく解説した新書。 数式なしで因果推論の概要を掴むために。</p>
+</section>
+<section id="欠測データ処理" class="level3 g-col-6" data-number="17.3.8">
+<h3 data-number="17.3.8" class="anchored" data-anchor-id="欠測データ処理"><span class="header-section-number">17.3.8</span> 欠測データ処理</h3>
+<p><a href="https://www.kyoritsu-pub.co.jp/book/b10003896.html" target="_blank"><img src="https://hondana-image.s3.amazonaws.com/book/image/10003896/normal_cd6c18ba-7db3-4303-89cc-fe5c694b39ed.jpg" class="img-fluid" width="130"></a></p>
+<ul>
+<li><strong>著者</strong>: 高橋将宜・渡辺美智子</li>
+<li><strong>出版社</strong>: 共立出版</li>
+<li><strong>発売日</strong>: 2017年</li>
+</ul>
+<p>多重代入法（Multiple Imputation: MI）のテキスト。Rによるコードも豊富に記載されています。 推算値を理解するにはMIの知識が必要ですし，調査データの分析で欠測処理は避けて通れないので必読。</p>
+</section>
+</div>
+</section>
+<section id="教育測定について" class="level2" data-number="17.4">
+<h2 data-number="17.4" class="anchored" data-anchor-id="教育測定について"><span class="header-section-number">17.4</span> 教育測定について</h2>
+<div class="grid">
+<section id="テストは何を測るのか" class="level3 g-col-6" data-number="17.4.1">
+<h3 data-number="17.4.1" class="anchored" data-anchor-id="テストは何を測るのか"><span class="header-section-number">17.4.1</span> テストは何を測るのか</h3>
+<p><a href="https://www.nakanishiya.co.jp/book/b278806.html" target="_blank"><img src="https://hondana-image.s3.amazonaws.com/book/image/278806/1ee5ed45-ac0e-4c27-9c34-f440ed215aae.jpg" class="img-fluid" width="130"></a></p>
+<ul>
+<li><strong>著者</strong>: 光永悠彦</li>
+<li><strong>出版社</strong>: ナカニシヤ出版</li>
+<li><strong>発売日</strong>: 2017年</li>
+</ul>
+<p>項目反応理論の入門書。まずはこの辺から始めると良いと思います。</p>
+</section>
+<section id="rによる項目反応理論" class="level3 g-col-6" data-number="17.4.2">
+<h3 data-number="17.4.2" class="anchored" data-anchor-id="rによる項目反応理論"><span class="header-section-number">17.4.2</span> Rによる項目反応理論</h3>
+<p><a href="https://www01.hanmoto.com/bd/isbn/9784274050176" target="_blank"><img src="https://img.hanmoto.com/bd/img/9784274050176_600.jpg?lastupdated=2016-04-19T20%3A28%3A53%2B09%3A00" class="img-fluid" width="130"></a></p>
+<ul>
+<li><strong>著者</strong>: 加藤健太郎・山田剛史・川端一光</li>
+<li><strong>出版社</strong>: オーム社</li>
+<li><strong>発売日</strong>: 2014年</li>
+</ul>
+<p>Rで学ぶ項目反応理論の入門書。Rと項目反応理論の両方を学べます。</p>
+</section>
+<section id="心理統計学の基礎" class="level3 g-col-6" data-number="17.4.3">
+<h3 data-number="17.4.3" class="anchored" data-anchor-id="心理統計学の基礎"><span class="header-section-number">17.4.3</span> 心理統計学の基礎</h3>
+<p><a href="https://www.yuhikaku.co.jp/books/detail/4641121605" target="_blank"><img src="https://www.yuhikaku.co.jp/uploads/images/L12160.jpg" class="img-fluid" width="130"></a></p>
+<ul>
+<li><strong>著者</strong>: 南風原朝和</li>
+<li><strong>出版社</strong>: 有斐閣</li>
+<li><strong>発売日</strong>: 2002年</li>
+</ul>
+<p>タイトルそのままに心理統計学の基礎を学べます。 社会統計学と心理統計学は微妙に違うので，社会調査に関心があるなら後回しでok。 逆に，個人（集団ではない）の能力測定に関心がある場合はこちらから。</p>
+</section>
+</div>
+</section>
+<section id="lsaについて" class="level2" data-number="17.5">
+<h2 data-number="17.5" class="anchored" data-anchor-id="lsaについて"><span class="header-section-number">17.5</span> LSAについて</h2>
+<div class="grid">
+<section id="pisa-data-analysis-manual-spss-2nd-ed" class="level3 g-col-6" data-number="17.5.1">
+<h3 data-number="17.5.1" class="anchored" data-anchor-id="pisa-data-analysis-manual-spss-2nd-ed"><span class="header-section-number">17.5.1</span> PISA Data Analysis Manual: SPSS 2nd ed</h3>
+<p><a href="https://www.oecd.org/en/publications/pisa-data-analysis-manual-spss-second-edition_9789264056275-en.html" target="_blank"><img src="data:image/jpeg;base64,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" class="img-fluid" width="130"></a></p>
+<ul>
+<li><strong>著者</strong>: OECD</li>
+<li><strong>出版社</strong>: OECD Publishing</li>
+<li><strong>発売日</strong>: 2009年</li>
+</ul>
+<p>PISAで利用されている技術と分析方法についてSPSSを使って解説した本（無料でダウンロード可）。 PISAの技術概要の基礎を知ることができます。</p>
+</section>
+<section id="pisa調査の解剖" class="level3 g-col-6" data-number="17.5.2">
+<h3 data-number="17.5.2" class="anchored" data-anchor-id="pisa調査の解剖"><span class="header-section-number">17.5.2</span> PISA調査の解剖</h3>
+<p><a href="https://www.toshindo-pub.com/book/91588/" target="_blank"><img src="https://www.toshindo-pub.com/wp-content/uploads/2019/09/9784798915883-1.jpg" class="img-fluid" width="130"></a></p>
+<ul>
+<li><strong>著者</strong>: 袰岩晶・篠原真子・篠原康正</li>
+<li><strong>出版社</strong>: 東信堂</li>
+<li><strong>発売日</strong>: 2019年</li>
+</ul>
+<p>PISA調査の技術概要について，日本語で解説したおそらく唯一の本。 初学者には難易度高めだが，LSAを語るための必読書。 Rによる解説付き。</p>
+</section>
+<section id="handbook-of-international-large-scale-assessment" class="level3 g-col-6" data-number="17.5.3">
+<h3 data-number="17.5.3" class="anchored" data-anchor-id="handbook-of-international-large-scale-assessment"><span class="header-section-number">17.5.3</span> Handbook of International Large-Scale Assessment</h3>
+<p><a href="https://www.routledge.com/Handbook-of-International-Large-Scale-Assessment-Background-Technical-Issues-and-Methods-of-Data-Analysis/Rutkowski-vonDavier-Rutkowski/p/book/9781032477435" target="_blank"><img src="https://images.routledge.com/common/jackets/crclarge/978103247/9781032477435.jpg" class="img-fluid" width="130"></a></p>
+<ul>
+<li><strong>著者</strong>: Leslie Rutkowski, Matthias von Davier, David Rutkowski</li>
+<li><strong>出版社</strong>: Routledge</li>
+<li><strong>発売日</strong>: 2023年</li>
+</ul>
+<p>LSAの概要と2020年以降の話題についてまとめた本。 LSAでマルチレベルモデルや因果推論をするにはどうすればいいか（そして，標本ウェイトはどう扱うか？）について言及があるので， LSAを使って論文を書きたい人に役立ちます。 初学者には難易度高め。</p>
+</section>
+</div>
+</section>
+<section id="rについて" class="level2" data-number="17.6">
+<h2 data-number="17.6" class="anchored" data-anchor-id="rについて"><span class="header-section-number">17.6</span> Rについて</h2>
+<p>Rについては，ウェブ上に無料の資料が数多くあります。 むしろ多すぎて，どれを選べばいいのかわからない・・・というレベルかもしれません。 ここでは私が見つけたサイトを載せておきます。</p>
+<ul>
+<li><a href="https://ryotamugiyama.github.io/seminar_sociology_r/" target="_blank">Rによる社会調査データ分析の手引き</a>：社会調査向けです。</li>
+<li><a href="https://www.jaysong.net/RBook/" target="_blank">私たちのR</a>：Rについて学びたい人向けです。</li>
+</ul>
+<div class="grid">
+<section id="rユーザのための-rstudio実践入門" class="level3 g-col-6" data-number="17.6.1">
+<h3 data-number="17.6.1" class="anchored" data-anchor-id="rユーザのための-rstudio実践入門"><span class="header-section-number">17.6.1</span> Rユーザのための RStudio［実践］入門</h3>
+<p><a href="https://gihyo.jp/book/2021/978-4-297-12170-9" target="_blank"><img src="https://gihyo.jp/assets/images/cover/2021/thumb/TH160_9784297121709.jpg" class="img-fluid" width="130"></a></p>
+<ul>
+<li><strong>著者</strong>: 松村優哉・湯谷啓明・紀ノ定保礼・前田和寛</li>
+<li><strong>出版社</strong>: 技術評論社</li>
+<li><strong>発売日</strong>: 2021年</li>
+</ul>
+<p>本書ではほとんどスルーしていた<a href="https://www.tidyverse.org/" target="_blank">tidyverse</a>の入門書。 Rを使った現代的なデータ分析をするための本ですが，ある程度Rに慣れた後に学ぶのが吉。</p>
+</section>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
+<div id="ref-koba2018" class="csl-entry" role="listitem">
+1. 小針誠. (2018年). <em>アクティブラーニング—学校教育の理想と現実</em>. 講談社現代新書.
+</div>
+<div id="ref-tera2020" class="csl-entry" role="listitem">
+2. 寺沢拓敬. (2020年). <em>小学校英語のジレンマ</em>. 岩波新書.
+</div>
+<div id="ref-matsu2021" class="csl-entry" role="listitem">
+3. 松岡亮二. (2021年). <em>教育論の新常識—格差・学力・政策・未来</em>. 中公新書ラクレ.
+</div>
+<div id="ref-kawa2022" class="csl-entry" role="listitem">
+4. 川口俊明 (編). (2022年). <em>教育格差の診断書</em>. 岩波書店.
+</div>
+</div>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>LSAを学ぶのは大変すぎるという方は，<strong><em>学力調査には言及せず，</em></strong> 日本の学校教育の在り方について論じればよいと思います。 もっともTIMSSはともかく，PISAや全国学力・学習状況調査に触れずに日本の学校教育を論じるというのは かなり難しい気もしますが・・・。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "コピーしました");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "コピーしました");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/kawa5902\.github\.io\/RforLSA");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./data_prep.html" class="pagination-link" aria-label="LSAのデータを入手する">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">LSAのデータを入手する</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./references.html" class="pagination-link" aria-label="参考文献">
+        <span class="nav-page-text">参考文献</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Built with <a href="https://quarto.org/" target="_blank">Quarto</a></p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

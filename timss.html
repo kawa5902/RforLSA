@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.6">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>15&nbsp; TIMSSの分析 – Rで学ぶ大規模学力調査（Version 1.0）</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./data_prep.html" rel="next">
+<link href="./pisa.html" rel="prev">
+<link href="./image/bookcover.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-6c21014d9765ba549c6ebad95917e4d7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-e78aeb9f0bd9243cf33a09e7acbda6f9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "一致なし",
+    "search-matching-documents-text": "一致した文書",
+    "search-copy-link-title": "検索へのリンクをコピー",
+    "search-hide-matches-text": "追加の検索結果を非表示",
+    "search-more-match-text": "追加の検索結果",
+    "search-more-matches-text": "追加の検索結果",
+    "search-clear-button-title": "消去",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "検索",
+    "search-label": "サーチ"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-YPY43001RV"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="style/styles.css">
+<meta name="twitter:title" content="15&nbsp; TIMSSの分析 – Rで学ぶ大規模学力調査（Version 1.0）">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./intsvy.html">実践編</a></li><li class="breadcrumb-item"><a href="./timss.html"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">TIMSSの分析</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="サーチ" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Rで学ぶ大規模学力調査（Version 1.0）</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/kawa5902/RforLSA" title="ソースコード" class="quarto-navigation-tool px-1" aria-label="ソースコード"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="サーチ"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">はじめに</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">導入</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro_lsa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">なぜLSAを学ぶのか</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_colab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">R on Colab</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Rの基本操作</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sampling_basic1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">標本調査の基礎知識1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sampling_basic2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">標本調査の基礎知識2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dataframe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">データフレーム</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stat_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">相関係数と回帰分析</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">理論編</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sampling_weight.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">標本ウェイト</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./replication.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Replication Method</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./irt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">項目反応理論</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pvs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">推算値法</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">実践編</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intsvy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">intsvyを使う</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pisa_timss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">PISAとTIMSSの概要</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pisa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">PISAの分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./timss.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">TIMSSの分析</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">補足</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_prep.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">LSAのデータを入手する</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">まとめ</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">参考文献</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目次</h2>
+   
+  <ul>
+  <li><a href="#ファイル名" id="toc-ファイル名" class="nav-link active" data-scroll-target="#ファイル名"><span class="header-section-number">15.1</span> ファイル名</a></li>
+  <li><a href="#intsvyによるtimssの分析" id="toc-intsvyによるtimssの分析" class="nav-link" data-scroll-target="#intsvyによるtimssの分析"><span class="header-section-number">15.2</span> intsvyによるTIMSSの分析</a></li>
+  <li><a href="#学校票の結合" id="toc-学校票の結合" class="nav-link" data-scroll-target="#学校票の結合"><span class="header-section-number">15.3</span> 学校票の結合</a></li>
+  <li><a href="#保護者票の結合" id="toc-保護者票の結合" class="nav-link" data-scroll-target="#保護者票の結合"><span class="header-section-number">15.4</span> 保護者票の結合</a></li>
+  <li><a href="#教員票の結合" id="toc-教員票の結合" class="nav-link" data-scroll-target="#教員票の結合"><span class="header-section-number">15.5</span> 教員票の結合</a></li>
+  <li><a href="#第8学年のデータを扱う" id="toc-第8学年のデータを扱う" class="nav-link" data-scroll-target="#第8学年のデータを扱う"><span class="header-section-number">15.6</span> 第8学年のデータを扱う</a></li>
+  <li><a href="#過去のtimss" id="toc-過去のtimss" class="nav-link" data-scroll-target="#過去のtimss"><span class="header-section-number">15.7</span> 過去のTIMSS</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./intsvy.html">実践編</a></li><li class="breadcrumb-item"><a href="./timss.html"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">TIMSSの分析</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">TIMSSの分析</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><code>intsvy</code>を使えば，TIMSSもPISAと同じように分析することが可能です。 ただ，いくつか違う点もあります。</p>
+<section id="ファイル名" class="level2" data-number="15.1">
+<h2 data-number="15.1" class="anchored" data-anchor-id="ファイル名"><span class="header-section-number">15.1</span> ファイル名</h2>
+<p>TIMSSのデータファイルは，国ごとに分割され，命名規則に従ってファイル名が付けられています。 分析者にとって重要になるのは，主として以下のファイルです。 ここでは第4学年（ファイル名がAで始まる）のファイルを例に説明します。 第8学年のファイルは，ファイル名がBで始まることと， BTM（数学の教員質問）・BTS（理科の教員質問）の二種類が存在する点が違います。</p>
+<ul>
+<li>ACG: 第4学年・学校質問（school context data）</li>
+<li>ASG: 第4学年・生徒質問（student context data）</li>
+<li>ASH: 第4学年・家庭質問（home context data）</li>
+<li>AST: 第4学年・生徒教員リンク（student-teacher linkage）</li>
+<li>ATG: 第4学年・教員質問（teacher context data）</li>
+</ul>
+</section>
+<section id="intsvyによるtimssの分析" class="level2" data-number="15.2">
+<h2 data-number="15.2" class="anchored" data-anchor-id="intsvyによるtimssの分析"><span class="header-section-number">15.2</span> intsvyによるTIMSSの分析</h2>
+<p>ここでは最新のTIMSS2019を例に，intsvyによる分析方法を示します。 最初にデータを読み込みます。 TIMSSのデータファイルはSPSSというソフトウェア向けのファイルフォーマットで 公開されているので，Rの<code>foreign</code>というパッケージにある <code>read.spss</code>関数を使って読み込みます。 後に<code>intsvy</code>を使う関係上，<code>read.spss</code>関数の設定は， 以下のようにしてください。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>url_stu <span class="ot">&lt;-</span> <span class="st">"https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/timss2019/asgjpnm7.sav"</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>jpn09g4stu <span class="ot">&lt;-</span> foreign<span class="sc">::</span><span class="fu">read.spss</span>(url_stu,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">use.value.labels =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">to.data.frame =</span> <span class="cn">TRUE</span>, <span class="at">use.missings =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>まず児童に尋ねた家庭のある本の冊数（<code>ASBG04</code>変数）の回答と， 男女（<code>ITSEX</code>変数）の人数を確認してみましょう。 いずれの処理も，<code>timss.table</code>関数で実行できます。 出力は，<code>pisa.table</code>の場合と同じです。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 家庭にある本の冊数</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">timss.table</span>(<span class="st">"ASBG04"</span>, <span class="at">data =</span> jpn09g4stu)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  ASBG04 Freq Percentage Std.err.
+1      1  595      14.51     0.72
+2      2 1220      29.55     0.81
+3      3 1545      36.63     0.86
+4      4  521      12.12     0.60
+5      5  295       6.88     0.42
+9      9   14       0.31     0.09</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 性別</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">timss.table</span>(<span class="st">"ITSEX"</span>, <span class="at">data =</span> jpn09g4stu)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  ITSEX Freq Percentage Std.err.
+1     1 2038      48.39     0.48
+2     2 2158      51.61     0.48</code></pre>
+</div>
+</div>
+<p>続いて算数・理科の平均値を計算します。 <code>timss.mean.pv</code>関数を使うと，5つのPVを使い， 平均値の計算とJK法による標準誤差の算出まで行ってくれます。 <code>pisa.mean.pv</code>関数と同じく，引数<code>by</code>を指定することで男女（<code>ITSEX</code>）別や 本の冊数（<code>ASBG04</code>）別の平均値も計算してくれます。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 算数の平均点</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">timss.mean.pv</span>(<span class="fu">paste0</span>(<span class="st">"ASMMAT0"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>), <span class="at">data =</span> jpn09g4stu)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Freq   Mean s.e.    SD s.e
+1 4196 592.96 1.75 70.21   1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 理科の平均点</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">timss.mean.pv</span>(<span class="fu">paste0</span>(<span class="st">"ASSSCI0"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>), <span class="at">data =</span> jpn09g4stu)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Freq   Mean s.e.    SD  s.e
+1 4196 561.66 1.77 68.91 1.56</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 男女別</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">timss.mean.pv</span>(<span class="fu">paste0</span>(<span class="st">"ASMMAT0"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>), <span class="at">by =</span> <span class="st">"ITSEX"</span>, <span class="at">data =</span> jpn09g4stu)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  ITSEX Freq   Mean s.e.    SD  s.e
+1     1 2038 593.34 2.18 67.11 1.29
+2     2 2158 592.59 1.94 72.99 1.31</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 家にある本の冊数別</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">timss.mean.pv</span>(<span class="fu">paste0</span>(<span class="st">"ASSSCI0"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>), <span class="at">by =</span> <span class="st">"ASBG04"</span>, <span class="at">data =</span> jpn09g4stu)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  ASBG04 Freq   Mean  s.e.    SD   s.e
+1      1  595 528.26  3.46 66.41  2.90
+2      2 1220 547.75  2.78 66.93  1.96
+3      3 1545 572.66  2.20 64.69  2.00
+4      4  521 582.04  3.94 64.46  3.02
+5      5  295 599.91  4.76 64.51  3.68
+6      9   14 487.47 27.14 86.89 18.28
+7   &lt;NA&gt;    6 597.36 18.86 81.25 30.20</code></pre>
+</div>
+</div>
+</section>
+<section id="学校票の結合" class="level2" data-number="15.3">
+<h2 data-number="15.3" class="anchored" data-anchor-id="学校票の結合"><span class="header-section-number">15.3</span> 学校票の結合</h2>
+<p>学校票を結合する方法もPISAとほぼ同様です。 以下では，学校票のデータを<code>jpn09g4sch</code>に格納し，生徒票のデータと<code>merge</code>関数で結合しています。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>url_sch <span class="ot">&lt;-</span> <span class="st">"https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/timss2019/acgjpnm7.sav"</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>jpn09g4sch <span class="ot">&lt;-</span> foreign<span class="sc">::</span><span class="fu">read.spss</span>(url_sch,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">use.value.labels =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">to.data.frame =</span> <span class="cn">TRUE</span>, <span class="at">use.missings =</span> <span class="cn">FALSE</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>jpn09g4v1 <span class="ot">&lt;-</span> <span class="fu">merge</span>(jpn09g4stu, jpn09g4sch,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">by =</span> <span class="fu">c</span>(</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"IDCNTRY"</span>, <span class="st">"IDSCHOOL"</span>, <span class="st">"IDPOP"</span>, <span class="st">"IDGRADER"</span>, <span class="st">"IDGRADE"</span>,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"WGTADJ1"</span>, <span class="st">"WGTFAC1"</span>, <span class="st">"VERSION"</span>, <span class="st">"SCOPE"</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>結合した後は，<code>timss.table</code>関数などを使って分析が可能です。 以下の例では，経済的に恵まれない家庭の児童の割合（<code>ACBG03A</code>変数）の回答について， 学校票の回答割合（<code>table</code>関数を使って度数分布のみ出力）と， <code>timss.table</code>関数を使った児童の割合を出力しています。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ACBG03Aの回答（学校単位）</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(jpn09g4sch<span class="sc">$</span>ACBG03A)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ 1  2  3  4 
+77 56 13  1 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">prop.table</span>(<span class="fu">table</span>(jpn09g4sch<span class="sc">$</span>ACBG03A)) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+   1    2    3    4 
+52.4 38.1  8.8  0.7 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ACBG03Aの回答（児童単位）</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">timss.table</span>(<span class="st">"ACBG03A"</span>, <span class="at">data =</span> jpn09g4v1)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  ACBG03A Freq Percentage Std.err.
+1       1 2207      51.69     4.17
+2       2 1569      38.21     4.22
+3       3  386       9.34     2.38
+4       4   34       0.76     0.76</code></pre>
+</div>
+</div>
+<p>回答は「1: 0〜10%」「2: 11〜25%」「3: 26〜50%」「4: 50%より多い」の4択です。 度数分布を見ると，1が77校（52.4%）・2が56校（38.1%）・・・であることがわかります。 また<code>timss.table</code>の結果から，1の学校に所属する児童の割合が51.69%でもっとも多いことがわかります。</p>
+</section>
+<section id="保護者票の結合" class="level2" data-number="15.4">
+<h2 data-number="15.4" class="anchored" data-anchor-id="保護者票の結合"><span class="header-section-number">15.4</span> 保護者票の結合</h2>
+<p>TIMSSでは保護者票を結合することも可能です。 ここでは先ほど学校票を結合したデータフレーム<code>jpn09g4v1</code>にさらに保護者票を結合します。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>url_par <span class="ot">&lt;-</span> <span class="st">"https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/timss2019/ashjpnm7.sav"</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>jpn09g4home <span class="ot">&lt;-</span> foreign<span class="sc">::</span><span class="fu">read.spss</span>(url_par,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">use.value.labels =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">to.data.frame =</span> <span class="cn">TRUE</span>, <span class="at">use.missings =</span> <span class="cn">FALSE</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>jpn09g4v2 <span class="ot">&lt;-</span> <span class="fu">merge</span>(jpn09g4v1, jpn09g4home,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">by =</span> <span class="fu">c</span>(</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"IDCNTRY"</span>, <span class="st">"IDSCHOOL"</span>, <span class="st">"IDCLASS"</span>, <span class="st">"IDSTUD"</span>, <span class="st">"IDPOP"</span>, <span class="st">"IDGRADER"</span>,</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"IDGRADE"</span>, <span class="st">"ASDAGE"</span>, <span class="st">"ASBGHRL"</span>, <span class="st">"ASDGHRL"</span>, <span class="st">"VERSION"</span>, <span class="st">"SCOPE"</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>母親の学歴（<code>ASBH15B</code>変数）の回答割合に注目してみましょう。 ここでは回答者の母親学歴の分布（<code>table</code>関数で出力）， 母親学歴ごとの児童の分布（<code>timss.table</code>関数で出力）， 母親学歴ごとの児童の数学の平均値（<code>timss.mean.pv</code>関数で出力）のそれぞれを出力します。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 母親の学歴</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(jpn09g4home<span class="sc">$</span>ASBH15B)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+   3    4    5    6    7    8    9   99 
+ 149 1205  108 1672  821   47    7   76 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">timss.table</span>(<span class="st">"ASBH15B"</span>, <span class="at">data =</span> jpn09g4v2)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   ASBH15B Freq Percentage Std.err.
+3        3  149       3.63     0.31
+4        4 1205      29.97     0.92
+5        5  108       2.67     0.24
+6        6 1672      40.85     0.79
+7        7  821      19.74     0.90
+8        8   47       1.12     0.22
+9        9    7       0.16     0.06
+99      99   76       1.85     0.23</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">timss.mean.pv</span>(<span class="fu">paste0</span>(<span class="st">"ASMMAT0"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>), <span class="at">by =</span> <span class="st">"ASBH15B"</span>, <span class="at">data =</span> jpn09g4v2)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  ASBH15B Freq   Mean  s.e.    SD   s.e
+1       3  149 540.60  5.31 62.61  4.45
+2       4 1205 575.01  2.16 66.46  1.95
+3       5  108 579.11  5.71 57.77  4.26
+4       6 1672 599.69  2.31 67.40  1.52
+5       7  821 625.30  2.92 65.49  2.09
+6       8   47 633.01  9.00 62.05  7.51
+7       9    7 548.29 36.66 93.37 32.29
+8      99   76 561.35 11.55 74.87  8.18
+9    &lt;NA&gt;  111 546.08  9.21 65.53  5.74</code></pre>
+</div>
+</div>
+<p>母親の学歴の回答は， 「1:学校に行っていない」 「2:小学校」 「3:中学校」 「4:高等学校」 「5:高等学校の専攻科」 「6:短期大学，高等専門学校，専門学校」 「7:大学」 「8:大学院」 「9:あてはまらない」 の9択です。 回答者の人数を見ると， 6（短期大学，高等専門学校，専門学校）が1672人でもっとも多く， ついで4（高等学校）が1205人です。 児童の割合に注目すると，6（短期大学，高等専門学校，専門学校）の母親のいる児童が 全体の40.85%ということになります。 数学の成績に着目すると，基本的に母親の学歴が高いほど（＝回答番号が3から8になるにつれて） 児童の成績が高くなることがわかります。 ただし，8（大学院）は保護者の数が少ないこともあって標準誤差（s.e.）が9.00と大きくなっています。</p>
+</section>
+<section id="教員票の結合" class="level2" data-number="15.5">
+<h2 data-number="15.5" class="anchored" data-anchor-id="教員票の結合"><span class="header-section-number">15.5</span> 教員票の結合</h2>
+<p>TIMSSでは，児童を教えている教員に対しても質問票が配布されています。 教員票を使う場合，ATGで始まる教員票に加え，ASTで始まるリンクファイルもダウンロードする必要があります。</p>
+<p>なお，今回のように複数のデータフレームを結合する場合，<code>merge</code>関数ではどうしても書きにくくなります。 そこで，<code>dplyr</code>パッケージを使った結合を行っています。 <code>dplyr</code>はRの処理を円滑に行うために開発されたパッケージの一つです。 現代のRプログラミングでは必須とも言えるものなので， Rに関心のある方は学んでみるとよいでしょう。 <code>dplyr</code>を使った場合は，データフレーム間で共通する変数が自動的に認識されて結合されます。</p>
+<p>以下では分析例として，教員の学歴（<code>ATBG04</code>変数）の度数分布を表示しています。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>url_l1 <span class="ot">&lt;-</span> <span class="st">"https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/timss2019/astjpnm7.sav"</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>url_l2 <span class="ot">&lt;-</span> <span class="st">"https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/timss2019/atgjpnm7.sav"</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>jpn09g4link <span class="ot">&lt;-</span> foreign<span class="sc">::</span><span class="fu">read.spss</span>(url_l1,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">use.value.labels =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">to.data.frame =</span> <span class="cn">TRUE</span>, <span class="at">use.missings =</span> <span class="cn">FALSE</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>jpn09g4tea <span class="ot">&lt;-</span> foreign<span class="sc">::</span><span class="fu">read.spss</span>(url_l2,</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">use.value.labels =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">to.data.frame =</span> <span class="cn">TRUE</span>, <span class="at">use.missings =</span> <span class="cn">FALSE</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="co"># dplyrを使うと簡単にマージ可能</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressMessages</span>(<span class="fu">library</span>(dplyr))</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>jpn09g4v3 <span class="ot">&lt;-</span> jpn09g4stu <span class="sc">|&gt;</span></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(jpn09g4link) <span class="sc">|&gt;</span></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(jpn09g4tea)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(IDCNTRY, IDBOOK, IDSCHOOL, IDCLASS, IDSTUD, IDPOP,
+IDGRADER, IDGRADE, JKREP, JKZONE, ASMMAT01, ASMMAT02, ASMMAT03, ASMMAT04,
+ASMMAT05, ASSSCI01, ASSSCI02, ASSSCI03, ASSSCI04, ASSSCI05, ASMNUM01, ASMNUM02,
+ASMNUM03, ASMNUM04, ASMNUM05, ASMGEO01, ASMGEO02, ASMGEO03, ASMGEO04, ASMGEO05,
+ASMDAT01, ASMDAT02, ASMDAT03, ASMDAT04, ASMDAT05, ASMKNO01, ASMKNO02, ASMKNO03,
+ASMKNO04, ASMKNO05, ASMAPP01, ASMAPP02, ASMAPP03, ASMAPP04, ASMAPP05, ASMREA01,
+ASMREA02, ASMREA03, ASMREA04, ASMREA05, ASSLIF01, ASSLIF02, ASSLIF03, ASSLIF04,
+ASSLIF05, ASSPHY01, ASSPHY02, ASSPHY03, ASSPHY04, ASSPHY05, ASSEAR01, ASSEAR02,
+ASSEAR03, ASSEAR04, ASSEAR05, ASSKNO01, ASSKNO02, ASSKNO03, ASSKNO04, ASSKNO05,
+ASSAPP01, ASSAPP02, ASSAPP03, ASSAPP04, ASSAPP05, ASSREA01, ASSREA02, ASSREA03,
+ASSREA04, ASSREA05, ASSENV01, ASSENV02, ASSENV03, ASSENV04, ASSENV05, ASMIBM01,
+ASMIBM02, ASMIBM03, ASMIBM04, ASMIBM05, ASSIBM01, ASSIBM02, ASSIBM03, ASSIBM04,
+ASSIBM05, VERSION, SCOPE)`
+Joining with `by = join_by(IDCNTRY, IDSCHOOL, IDPOP, IDGRADER, IDGRADE,
+VERSION, SCOPE, IDTEALIN, IDTEACH, IDLINK, IDSUBJ, ITCOURSE)`</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ATBG04: 教員の学歴</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(jpn09g4tea<span class="sc">$</span>ATBG04)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  4   5   6 
+ 14 255  13 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">prop.table</span>(<span class="fu">table</span>(jpn09g4tea<span class="sc">$</span>ATBG04)) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+   4    5    6 
+ 5.0 90.4  4.6 </code></pre>
+</div>
+</div>
+<p>ほとんどの教員が「5: 大卒」であることがわかります。 「4: 短大卒」や「6: 大学院卒」もわずかにいます。</p>
+<p>教員票を使った分析をする際に注意することは，標本ウェイトが変わるという点です。 TIMSSでは，児童を担当している教員はすべて教員票の対象になっています。 そのため算数や理科で複数の担任が担当していた場合， 児童1人に対して2名以上の教員票があるということも珍しくありません。 そのため教員票を結合すると，個々の教員に担当している児童が接続され， データセット内に同じ児童のデータが複数存在することになるのです。 このまま平均値などを計算すると，児童がダブルカウント（場合によってはトリプルカウント）されるため， 標本ウェイトを調整し，ダブルカウントの児童のウェイトは半分にするといった処理が行われています。 このウェイトをTIMSSでは教員ウェイト（<code>TCHWGT</code>）と呼んでいます。 <code>intsvy</code>では，引数の<code>timss4_conf</code>を設定することでウェイトを変更可能です。 ただしこの場合は，<code>timss.mean.pv</code>ではなく，<code>intsvy.mean.pv</code>関数を使う必要があります。 以下の例では，ウェイトを変更しなかった場合と変更した場合の推定値を比較しています。 度数（Freq）が<code>jpn09g4v3</code>では変わっていることも確認してください。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 正しい推定値（児童票のみ）</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">timss.mean.pv</span>(<span class="fu">paste0</span>(<span class="st">"ASMMAT0"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>), <span class="at">data =</span> jpn09g4stu)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Freq   Mean s.e.    SD s.e
+1 4196 592.96 1.75 70.21   1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 正しい推定値（学校票・保護者票を追加しても問題ない）</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">timss.mean.pv</span>(<span class="fu">paste0</span>(<span class="st">"ASMMAT0"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>), <span class="at">data =</span> jpn09g4v2)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Freq   Mean s.e.    SD s.e
+1 4196 592.96 1.75 70.21   1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ウェイトを変更せずに教員票を含むデータセットを使うと間違った推定値が出力される</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">timss.mean.pv</span>(<span class="fu">paste0</span>(<span class="st">"ASMMAT0"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>), <span class="at">data =</span> jpn09g4v3)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Freq  Mean s.e.   SD s.e
+1 7946 593.3 1.88 70.5   1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># timss09g4_tchconfでウェイトを変更</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>timss09g4_tchconf <span class="ot">&lt;-</span> intsvy<span class="sc">::</span>timss4_conf</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>timss09g4_tchconf<span class="sc">$</span>variables<span class="sc">$</span>weight <span class="ot">&lt;-</span> <span class="st">"TCHWGT"</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ウェイトを変更すると適切な推定値が得られる</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">intsvy.mean.pv</span>(</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">pvnames =</span> <span class="fu">paste0</span>(<span class="st">"ASMMAT0"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>),</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> jpn09g4v3, <span class="at">config =</span> timss09g4_tchconf</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Freq   Mean s.e.    SD s.e
+1 7946 592.96 1.75 70.21   1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 教員の学歴別に算数の平均値を計算</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">intsvy.mean.pv</span>(</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">pvnames =</span> <span class="fu">paste0</span>(<span class="st">"ASMMAT0"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>), <span class="at">by =</span> <span class="st">"ATBG04"</span>,</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> jpn09g4v3, <span class="at">config =</span> timss09g4_tchconf</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  ATBG04 Freq   Mean s.e.    SD  s.e
+1      4  353 591.46 5.65 65.12 2.96
+2      5 7133 593.30 1.89 70.33 1.02
+3      6  358 582.92 5.50 71.14 2.71
+4   &lt;NA&gt;  102 626.24 3.01 60.08 7.04</code></pre>
+</div>
+</div>
+</section>
+<section id="第8学年のデータを扱う" class="level2" data-number="15.6">
+<h2 data-number="15.6" class="anchored" data-anchor-id="第8学年のデータを扱う"><span class="header-section-number">15.6</span> 第8学年のデータを扱う</h2>
+<p>第8学年のデータも第4学年のデータと同様に分析可能です。 違いはファイル名と，教員票が数学と理科のそれぞれに存在する点です。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>url_g8s <span class="ot">&lt;-</span> <span class="st">"https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/timss2019/bsgjpnm7.sav"</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>jpn09g8stu <span class="ot">&lt;-</span> foreign<span class="sc">::</span><span class="fu">read.spss</span>(</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  url_g8s, <span class="at">to.data.frame =</span> <span class="cn">TRUE</span>, <span class="at">use.value.labels =</span> <span class="cn">FALSE</span>, <span class="at">use.missings =</span> <span class="cn">FALSE</span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">timss.mean.pv</span>(<span class="fu">paste0</span>(<span class="st">"BSMMAT0"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>), <span class="at">data =</span> jpn09g8stu)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Freq   Mean s.e.    SD  s.e
+1 4446 594.23 2.72 84.14 2.06</code></pre>
+</div>
+</div>
+<p>以下の例では，第8学年の数学の平均値を教員の学歴（<code>BTBG04</code>変数）別に出力しています。 最初に，複数のデータファイルを<code>lapply</code>関数を使って一気にダウンロードしています。 その上で<code>purrr</code>の<code>reduce</code>関数を使って複数のデータフレームを結合し，<code>intsvy.mean.pv</code>関数で分析しています。 数学の教員ウェイトを使う必要があるので，標本ウェイトは<code>MATWGT</code>に変更しています。 出力を見ると，標準誤差（s.e.）がNaNになっている箇所がありますが， これは該当する教員が1名しかいないので標準誤差が計算できなかったためです。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 複数のファイルを一気にダウンロード</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>url_g8 <span class="ot">&lt;-</span> <span class="st">"https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/timss2019/b"</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>jpn09g8data <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">c</span>(<span class="st">"sg"</span>, <span class="st">"st"</span>, <span class="st">"tm"</span>), <span class="cf">function</span>(x) {</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  foreign<span class="sc">::</span><span class="fu">read.spss</span>(<span class="fu">paste0</span>(url_g8, x, <span class="st">"jpnm7.sav"</span>),</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">use.value.labels =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">to.data.frame =</span> <span class="cn">TRUE</span>, <span class="at">use.missings =</span> <span class="cn">FALSE</span></span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a><span class="co"># データフレームを結合</span></span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>jpn09g8 <span class="ot">&lt;-</span> jpn09g8data <span class="sc">|&gt;</span></span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">reduce</span>(inner_join)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(IDCNTRY, IDBOOK, IDSCHOOL, IDCLASS, IDSTUD, IDPOP,
+IDGRADER, IDGRADE, JKREP, JKZONE, BSMMAT01, BSMMAT02, BSMMAT03, BSMMAT04,
+BSMMAT05, BSSSCI01, BSSSCI02, BSSSCI03, BSSSCI04, BSSSCI05, BSMALG01, BSMALG02,
+BSMALG03, BSMALG04, BSMALG05, BSMAPP01, BSMAPP02, BSMAPP03, BSMAPP04, BSMAPP05,
+BSMDAT01, BSMDAT02, BSMDAT03, BSMDAT04, BSMDAT05, BSMGEO01, BSMGEO02, BSMGEO03,
+BSMGEO04, BSMGEO05, BSMKNO01, BSMKNO02, BSMKNO03, BSMKNO04, BSMKNO05, BSMNUM01,
+BSMNUM02, BSMNUM03, BSMNUM04, BSMNUM05, BSMREA01, BSMREA02, BSMREA03, BSMREA04,
+BSMREA05, BSSAPP01, BSSAPP02, BSSAPP03, BSSAPP04, BSSAPP05, BSSBIO01, BSSBIO02,
+BSSBIO03, BSSBIO04, BSSBIO05, BSSCHE01, BSSCHE02, BSSCHE03, BSSCHE04, BSSCHE05,
+BSSEAR01, BSSEAR02, BSSEAR03, BSSEAR04, BSSEAR05, BSSKNO01, BSSKNO02, BSSKNO03,
+BSSKNO04, BSSKNO05, BSSPHY01, BSSPHY02, BSSPHY03, BSSPHY04, BSSPHY05, BSSREA01,
+BSSREA02, BSSREA03, BSSREA04, BSSREA05, BSSENV01, BSSENV02, BSSENV03, BSSENV04,
+BSSENV05, BSMIBM01, BSMIBM02, BSMIBM03, BSMIBM04, BSMIBM05, BSSIBM01, BSSIBM02,
+BSSIBM03, BSSIBM04, BSSIBM05, VERSION, SCOPE)`
+Joining with `by = join_by(IDCNTRY, IDSCHOOL, IDPOP, IDGRADER, IDGRADE,
+VERSION, SCOPE, IDTEALIN, IDTEACH, IDLINK, IDSUBJ, ITCOURSE)`</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># timss8_confを修正</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>timss09g8m_tchconf <span class="ot">&lt;-</span> intsvy<span class="sc">::</span>timss8_conf</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>timss09g8m_tchconf<span class="sc">$</span>variables<span class="sc">$</span>weight <span class="ot">&lt;-</span> <span class="st">"MATWGT"</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 教員の学歴（BTBG04）ごとの数学の平均値を出力</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">intsvy.mean.pv</span>(</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">pvnames =</span> <span class="fu">paste0</span>(<span class="st">"BSMMAT0"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>), <span class="at">by =</span> <span class="st">"BTBG04"</span>,</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> jpn09g8, <span class="at">config =</span> timss09g8m_tchconf</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  BTBG04 Freq   Mean s.e.    SD   s.e
+1      4   72 581.96 6.51 73.97 14.05
+2      5 5136 595.35 3.15 85.08  2.13
+3      6  834 588.82 4.93 77.29  3.12
+4     99   36 568.53  NaN 88.02   NaN
+5   &lt;NA&gt;   35 587.10  NaN 70.07   NaN</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># SEがNAなのは該当する教員が1名しかいないため</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(jpn09g8data[[<span class="dv">3</span>]]<span class="sc">$</span>BTBG04, <span class="at">exclude =</span> <span class="cn">NULL</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+   4    5    6   99 &lt;NA&gt; 
+   2  179   27    1    1 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">intsvy.mean.pv</span>(</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">pvnames =</span> <span class="fu">paste0</span>(<span class="st">"BSMMAT0"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>),</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> jpn09g8, <span class="at">config =</span> timss09g8m_tchconf</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Freq   Mean s.e.    SD  s.e
+1 6113 594.23 2.72 84.14 2.06</code></pre>
+</div>
+</div>
+</section>
+<section id="過去のtimss" class="level2" data-number="15.7">
+<h2 data-number="15.7" class="anchored" data-anchor-id="過去のtimss"><span class="header-section-number">15.7</span> 過去のTIMSS</h2>
+<p>TIMSS2019の分析方法は，過去のTIMSSにも適用可能です。 たとえばTIMSS2003で，第4学年の日本の平均値を出力する方法は，以下のようになります。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>url_03 <span class="ot">&lt;-</span> <span class="st">"https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/timss2003/ASGJPNm3.sav"</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>jpn03g4stu <span class="ot">&lt;-</span> foreign<span class="sc">::</span><span class="fu">read.spss</span>(url_03,</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">use.value.labels =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">to.data.frame =</span> <span class="cn">TRUE</span>, <span class="at">use.missings =</span> <span class="cn">FALSE</span></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">timss.mean.pv</span>(<span class="fu">paste0</span>(<span class="st">"ASSSCI0"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>), <span class="at">data =</span> jpn03g4stu)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Freq   Mean s.e.    SD  s.e
+1 4535 543.47 1.54 73.12 1.14</code></pre>
+</div>
+</div>
+<p>ただし，TIMSS1995だけは現在のTIMSSと調査設計が違うので注意が必要です。 SPSSファイルの場合，JRRの計算に必要な<code>JKREP</code>変数が小文字になっているので， そのままだと<code>intsvy</code>が動きません。 PVの変数名も小文字なので，引数も<code>paste0("asssci0", 1:5)</code>になります。 さらにTIMSS1995では第3学年も調査対象になっていたので， 第4学年のデータを得るには引数<code>by</code>に学年（<code>IDGRADE</code>変数）を指定する必要もあります。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>url_95 <span class="ot">&lt;-</span> <span class="st">"https://raw.githubusercontent.com/kawa5902/LSAdata/refs/heads/main/timss1995/ASGJPNm1.sav"</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>jpn95stu <span class="ot">&lt;-</span> foreign<span class="sc">::</span><span class="fu">read.spss</span>(url_95,</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">use.value.labels =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">to.data.frame =</span> <span class="cn">TRUE</span>, <span class="at">use.missings =</span> <span class="cn">FALSE</span></span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>re-encoding from CP1252</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># jkrepをJKREPに変更</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(jpn95stu)[<span class="fu">names</span>(jpn95stu) <span class="sc">==</span> <span class="st">"jkrep"</span>] <span class="ot">&lt;-</span> <span class="st">"JKREP"</span></span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="co"># byにIDGRADEを指定し，学年ごとに結果を出力</span></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>intsvy<span class="sc">::</span><span class="fu">timss.mean.pv</span>(<span class="fu">paste0</span>(<span class="st">"asssci0"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>), <span class="at">by =</span> <span class="st">"IDGRADE"</span>, <span class="at">data =</span> jpn95stu)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  IDGRADE Freq   Mean s.e.    SD  s.e
+1       3 4306 501.03 1.63 73.68 1.29
+2       4 4306 553.18 1.74 72.50 1.21</code></pre>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "コピーしました");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "コピーしました");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/kawa5902\.github\.io\/RforLSA");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./pisa.html" class="pagination-link" aria-label="PISAの分析">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">PISAの分析</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./data_prep.html" class="pagination-link" aria-label="LSAのデータを入手する">
+        <span class="nav-page-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">LSAのデータを入手する</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Built with <a href="https://quarto.org/" target="_blank">Quarto</a></p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
