@@ -7,9 +7,12 @@ book:
   date: today
   favicon: image/bookcover.png
   twitter-card: true
+  site-url: https://kawa5902.github.io/RforLSA
+  repo-url: https://github.com/kawa5902/RforLSA
+  google-analytics: "G-YPY43001RV"
   page-footer:
     center: |
-      Built with [Quarto](https://quarto.org/){target="_blank"}  |  [Source on GitHub](https://github.com/kawa5902/RforLSA){target="_blank"}
+      Built with [Quarto](https://quarto.org/){target="_blank"}
   chapters:
     - index.qmd
     - part: "導入"
