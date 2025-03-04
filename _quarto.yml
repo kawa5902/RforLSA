@@ -2,7 +2,7 @@ project:
   type: book
 
 book:
-  title: "Rで学ぶ大規模学力調査（Version 1.0）"
+  title: "Rで学ぶ大規模学力調査（Version 1.1）"
   author: "川口 俊明"
   date: today
   favicon: image/bookcover.png
