@@ -67,7 +67,7 @@ sd(data$score) / sqrt(nrow(data)) # 標準誤差
 
 ```{r}
 #| eval: false
-# R on Colab上でlme4を使う
+# 注意！Colab用です！PC上のRでは実行しないこと
 # ダウンロード
 system("curl -L -o library.tar.gz https://github.com/kawa5902/LSAdata/raw/refs/heads/main/202502library.tar.gz")
 # 解凍

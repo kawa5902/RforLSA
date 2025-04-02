@@ -26,11 +26,11 @@
 ::: {.grid}
 
 ::: {.g-col-5}
-[![全国学力テストはなぜ失敗したのか](https://www.iwanami.co.jp/images/book/527892.jpg)](https://www.iwanami.co.jp/book/b527892.html){target="_blank"}
+[![全国学力テストはなぜ失敗したのか](https://hondana-image.s3.amazonaws.com/book/sub_images/527892/831e7d29-c9e5-4289-ae53-80665405c86e.jpg)](https://www.iwanami.co.jp/book/b527892.html){target="_blank"}
 :::
 
 ::: {.g-col-5}
-[![教育格差の診断書](https://www.iwanami.co.jp/images/book/600953.jpg)](https://www.iwanami.co.jp/book/b600953.html){target="_blank"}
+[![教育格差の診断書](https://hondana-image.s3.amazonaws.com/book/sub_images/600953/0daa8d74-ab9a-4bd2-9626-cc0468400349.jpg)](https://www.iwanami.co.jp/book/b600953.html){target="_blank"}
 :::
 
 :::
@@ -38,4 +38,4 @@
 ## 改定履歴
 
 - 2025年2月25日: Version 1.0を公開
-- 2025年3月*日: Version 1.1を公開（主な変更箇所：誤字や脱字の修正）
+- 2025年4月2日: Version 1.1を公開（主な変更箇所：誤字・脱字の修正。書籍イメージの修正）
