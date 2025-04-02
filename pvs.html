@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>11&nbsp; 推算値法 – Rで学ぶ大規模学力調査（Version 1.0）</title>
+<title>11&nbsp; 推算値法 – Rで学ぶ大規模学力調査（Version 1.1）</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -164,7 +164,7 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="style/styles.css">
-<meta name="twitter:title" content="11&nbsp; 推算値法 – Rで学ぶ大規模学力調査（Version 1.0）">
+<meta name="twitter:title" content="11&nbsp; 推算値法 – Rで学ぶ大規模学力調査（Version 1.1）">
 <meta name="twitter:description" content="">
 <meta name="twitter:card" content="summary">
 </head>
@@ -193,7 +193,7 @@ window.Quarto = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Rで学ぶ大規模学力調査（Version 1.0）</a> 
+      <a href="./">Rで学ぶ大規模学力調査（Version 1.1）</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/kawa5902/RforLSA" title="ソースコード" class="quarto-navigation-tool px-1" aria-label="ソースコード"><i class="bi bi-github"></i></a>
 </div>
@@ -472,13 +472,13 @@ window.Quarto = {
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(ability, mean), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>theta   MLE   EAP    PV 
- 0.01  0.00  0.00  0.01 </code></pre>
+ 0.01  0.00  0.00  0.00 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 分散</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(ability, var), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>theta   MLE   EAP    PV 
- 1.01  1.21  0.82  0.96 </code></pre>
+ 1.01  1.21  0.82  1.00 </code></pre>
 </div>
 </div>
 <p>先の章と同じく，MLEやEAPの推定値は，平均は適切に推定していますが， 分散を過大推定しています。 これに対してPVの推定値は，やや過小推定（0.96）ではあるものの， MLEやEAPに比べればthetaに近い分散を推定しています。</p>
@@ -501,18 +501,18 @@ window.Quarto = {
 <div class="cell-output cell-output-stdout">
 <pre><code>   theta   MLE   EAP    PV
 -1 -0.20 -0.21 -0.17 -0.16
-1   0.21  0.21  0.17  0.17</code></pre>
+1   0.21  0.21  0.17  0.16</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability, var), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   theta  MLE  EAP   PV
--1  0.97 1.16 0.79 0.93
-1   0.96 1.18 0.80 0.93</code></pre>
+-1  0.97 1.16 0.78 0.96
+1   0.96 1.19 0.80 1.00</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability, cor), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>theta   MLE   EAP    PV 
- 0.42  0.38  0.38  0.34 </code></pre>
+ 0.42  0.38  0.38  0.36 </code></pre>
 </div>
 </div>
 <p>男女別の能力値の平均を見てみると，MLEはthetaとほぼ同じ（男子-0.21・女子0.21）値になっています。 他方，EAPとPVはいずれもthetaと値がズレています。</p>
@@ -538,13 +538,13 @@ window.Quarto = {
 <span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(ability2, mean), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>theta   MLE   EAP    PV   PV2 
- 0.01  0.00  0.00  0.01  0.00 </code></pre>
+ 0.01  0.00  0.00  0.00 -0.01 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 分散</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(ability2, var), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>theta   MLE   EAP    PV   PV2 
- 1.01  1.21  0.82  0.96  1.02 </code></pre>
+ 1.01  1.21  0.82  1.00  0.99 </code></pre>
 </div>
 </div>
 <p>母集団の平均・分散ともに，PV2がthetaに非常に近い値を返していることがわかります。 同様に，男女別の平均と分散，SESとの相関係数も検討してみましょう。</p>
@@ -553,18 +553,18 @@ window.Quarto = {
 <div class="cell-output cell-output-stdout">
 <pre><code>   theta   MLE   EAP    PV   PV2
 -1 -0.20 -0.21 -0.17 -0.16 -0.21
-1   0.21  0.21  0.17  0.17  0.20</code></pre>
+1   0.21  0.21  0.17  0.16  0.20</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability2, var), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   theta  MLE  EAP   PV  PV2
--1  0.97 1.16 0.79 0.93 0.98
-1   0.96 1.18 0.80 0.93 0.97</code></pre>
+-1  0.97 1.16 0.78 0.96 0.94
+1   0.96 1.19 0.80 1.00 0.96</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability2, cor), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>theta   MLE   EAP    PV   PV2 
- 0.42  0.38  0.38  0.34  0.41 </code></pre>
+ 0.42  0.38  0.38  0.36  0.42 </code></pre>
 </div>
 </div>
 <p>いずれの値も，PV2がもっともthetaと近い値を返しています。</p>
@@ -646,33 +646,33 @@ window.Quarto = {
 <span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(ability3, mean), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>theta   MLE   EAP    PV   PV2   PV3 
- 0.01  0.00  0.00  0.01  0.00  0.00 </code></pre>
+ 0.01  0.00  0.00  0.00 -0.01 -0.01 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 分散</span></span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(ability3, var), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>theta   MLE   EAP    PV   PV2   PV3 
- 1.01  1.21  0.82  0.96  1.02  0.86 </code></pre>
+ 1.01  1.21  0.82  1.00  0.99  0.87 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 男女別の平均値</span></span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability3, mean), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   theta   MLE   EAP    PV   PV2   PV3
 -1 -0.20 -0.21 -0.17 -0.16 -0.21 -0.21
-1   0.21  0.21  0.17  0.17  0.20  0.20</code></pre>
+1   0.21  0.21  0.17  0.16  0.20  0.20</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 男女別の分散</span></span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability3, var), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   theta  MLE  EAP   PV  PV2  PV3
--1  0.97 1.16 0.79 0.93 0.98 0.82
-1   0.96 1.18 0.80 0.93 0.97 0.82</code></pre>
+-1  0.97 1.16 0.78 0.96 0.94 0.83
+1   0.96 1.19 0.80 1.00 0.96 0.82</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># SESとの相関係数</span></span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability3, cor), <span class="dv">2</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>theta   MLE   EAP    PV   PV2   PV3 
- 0.42  0.38  0.38  0.34  0.41  0.44 </code></pre>
+ 0.42  0.38  0.38  0.36  0.42  0.45 </code></pre>
 </div>
 </div>
 

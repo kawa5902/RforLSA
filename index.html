@@ -8,7 +8,7 @@
 
 <meta name="author" content="川口 俊明">
 
-<title>Rで学ぶ大規模学力調査（Version 1.0）</title>
+<title>Rで学ぶ大規模学力調査（Version 1.1）</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -81,7 +81,7 @@ gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
 
 
 <link rel="stylesheet" href="style/styles.css">
-<meta name="twitter:title" content="Rで学ぶ大規模学力調査（Version 1.0）">
+<meta name="twitter:title" content="Rで学ぶ大規模学力調査（Version 1.1）">
 <meta name="twitter:description" content="">
 <meta name="twitter:image" content="https://kawa5902.github.io/RforLSA/image/bookcover.png">
 <meta name="twitter:image-height" content="1024">
@@ -113,7 +113,7 @@ gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Rで学ぶ大規模学力調査（Version 1.0）</a> 
+      <a href="./">Rで学ぶ大規模学力調査（Version 1.1）</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/kawa5902/RforLSA" title="ソースコード" class="quarto-navigation-tool px-1" aria-label="ソースコード"><i class="bi bi-github"></i></a>
 </div>
@@ -306,7 +306,7 @@ gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Rで学ぶ大規模学力調査（Version 1.0）</h1>
+<h1 class="title">Rで学ぶ大規模学力調査（Version 1.1）</h1>
 </div>
 
 
@@ -323,7 +323,7 @@ gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
     <div>
     <div class="quarto-title-meta-heading">公開</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">2025年2月25日</p>
+      <p class="date">2025年4月2日</p>
     </div>
   </div>
   
@@ -337,7 +337,7 @@ gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
 
 
 <section id="はじめに" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="はじめに">はじめに</h2><p><img src="image/bookcover.png" title="Rで学ぶ大規模学力調査（Version 1.0）" class="quarto-cover-image nolightbox img-fluid"></p>
+<h2 class="unnumbered anchored" data-anchor-id="はじめに">はじめに</h2><p><img src="image/bookcover.png" title="Rで学ぶ大規模学力調査（Version 1.1）" class="quarto-cover-image nolightbox img-fluid"></p>
 <p>本書はRを使い， <a href="https://www.oecd.org/en/about/programmes/pisa.html" target="_blank">PISA</a>や <a href="https://timssandpirls.bc.edu/" target="_blank">TIMSS</a>といった 教育における大規模学力調査（Large Scale Assessment in Education: LSA）を分析する方法を説明しています。 もともと授業のために作成していたのですが， 資料が溜まってきたので，自身の勉強も兼ねてまとめてみることにしました。 いろいろとおかしな記述もあると思いますので，気づいたらご指摘くださいますと幸いです。</p>
 </section>
 <section id="本書の特徴" class="level2">
@@ -354,7 +354,7 @@ gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
 <div class="g-col-5">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="https://www.iwanami.co.jp/book/b527892.html" target="_blank"><img src="https://www.iwanami.co.jp/images/book/527892.jpg" class="img-fluid figure-img"></a></p>
+<p><a href="https://www.iwanami.co.jp/book/b527892.html" target="_blank"><img src="https://hondana-image.s3.amazonaws.com/book/sub_images/527892/831e7d29-c9e5-4289-ae53-80665405c86e.jpg" class="img-fluid figure-img"></a></p>
 <figcaption>全国学力テストはなぜ失敗したのか</figcaption>
 </figure>
 </div>
@@ -362,7 +362,7 @@ gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
 <div class="g-col-5">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="https://www.iwanami.co.jp/book/b600953.html" target="_blank"><img src="https://www.iwanami.co.jp/images/book/600953.jpg" class="img-fluid figure-img"></a></p>
+<p><a href="https://www.iwanami.co.jp/book/b600953.html" target="_blank"><img src="https://hondana-image.s3.amazonaws.com/book/sub_images/600953/0daa8d74-ab9a-4bd2-9626-cc0468400349.jpg" class="img-fluid figure-img"></a></p>
 <figcaption>教育格差の診断書</figcaption>
 </figure>
 </div>
@@ -373,6 +373,7 @@ gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
 <h2 class="anchored" data-anchor-id="改定履歴">改定履歴</h2>
 <ul>
 <li>2025年2月25日: Version 1.0を公開</li>
+<li>2025年4月2日: Version 1.1を公開（主な変更箇所：誤字・脱字の修正。書籍イメージの修正）</li>
 </ul>
 
 
