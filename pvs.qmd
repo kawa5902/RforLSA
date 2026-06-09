@@ -108,8 +108,9 @@ Rのコードは，次のようになります。
 mod <- TAM::tam.mml.2pl(resp, verbose = FALSE)
 
 # ability estimation
-mle <- TAM::tam.wle(mod, progress = FALSE)$theta
+mle <- TAM::tam.wle(mod, WLE = FALSE, progress = FALSE)$theta
 eap <- mod$person$EAP
+set.seed(123)
 pv <- TAM::tam.pv(mod, nplausible = 1, verbose = FALSE)$pv$PV1.Dim1
 
 # 能力推定
@@ -135,9 +136,8 @@ round(sapply(ability, var), 2)
 ```
 
 先の章と同じく，MLEやEAPの推定値は，平均は適切に推定していますが，
-分散を過大推定しています。
-これに対してPVの推定値は，やや過小推定（0.96）ではあるものの，
-MLEやEAPに比べればthetaに近い分散を推定しています。
+分散はMLEが過大推定，EAPが過小推定しています。
+これに対してPVの推定値は，thetaに近い分散を推定しています。
 
 続いて，男女別の平均と分散，そして能力値とSESの相関を検討してみましょう。
 
@@ -165,17 +165,16 @@ round(calc_stats(ability, cor), 2)
 
 分散の推定値については，母集団の推定と同じく，
 MLEは過大推定，EAPは過小推定の傾向が見られます。
-PVsは0.93とやや過小推定ですが，それでも比較的thetaに近い値が得られています。
+PVsは0.95・1.00と，比較的thetaに近い値が得られています。
 
 相関係数については，thetaの値が0.42に対し，
-MLEとEAPは0.38でやや過小推定になっています。
-PVsは0.34で更に過小推定であり，母集団の特性を適切に推定しているとは言えません。
+MLEとEAPは0.37でやや過小推定になっています。
+PVsは0.31で更に過小推定であり，母集団の特性を適切に推定しているとは言えません。
 
 ## 推算値の条件付
 
 先ほどのシミュレーションから言えることは，
 PVsは母集団の特性を適切に推定するわけではないということです。
-分散はわずかに過小推定するにとどまっていますが，
 男女の平均や相関係数の偏りなど，MLEやEAPと比べてPVsが優れているとは言えません。
 
 それではなぜLSAではPVsが有効だと言われるのでしょうか。
@@ -197,18 +196,20 @@ LSAでPVsを利用する場合，性別やSESのような母集団の能力分�
 2段階の推定法が採用されています[@zheng2024]。
 2段階の推定は，Rの`TAM`パッケージに実装されており，`tam.latreg`関数を使うことで実行可能です。
 
-以下では，条件付けを行って推定したPVs（`PV2`とします）を使い，
+以下では，条件付けを行って推定したPVs（`PVcond`とします）を使い，
 母集団の推定を行ってみましょう。
 最初に，母集団の平均と分散を確認します。
 
 ```{r}
+# likeliは各受検者の能力の尤度。これを条件付け推定に渡す
 likeli <- CDM::IRT.likelihood(mod)
+# Yに条件付け変数(性別sex・SES)を指定して，これらを考慮した能力分布を推定する
 mod2 <- TAM::tam.latreg(likeli, Y = cbind(sex, ses), verbose = FALSE)
 # 後で使うのでPVを5つ生成し，そのうち1つだけを利用
 pvs <- TAM::tam.pv(mod2, nplausible = 5, verbose = FALSE)
-pv2 <- pvs$pv$PV1.Dim1
+pv_cond <- pvs$pv$PV1.Dim1
 
-ability2 <- c(ability, list("PV2" = pv2))
+ability2 <- c(ability, list("PVcond" = pv_cond))
 
 # 平均値
 round(sapply(ability2, mean), 2)
@@ -216,7 +217,7 @@ round(sapply(ability2, mean), 2)
 round(sapply(ability2, var), 2)
 ```
 
-母集団の平均・分散ともに，PV2がthetaに非常に近い値を返していることがわかります。
+母集団の平均・分散ともに，PVcondがthetaに非常に近い値を返していることがわかります。
 同様に，男女別の平均と分散，SESとの相関係数も検討してみましょう。
 
 ```{r}
@@ -225,7 +226,7 @@ round(calc_stats(ability2, var), 2)
 round(calc_stats(ability2, cor), 2)
 ```
 
-いずれの値も，PV2がもっともthetaと近い値を返しています。
+いずれの値も，PVcondがもっともthetaと近い値を返しています。
 
 
 ## 推算値の使い方
@@ -236,7 +237,7 @@ round(calc_stats(ability2, cor), 2)
 ただ，より正確な推定のためには複数の値を生成し，それぞれで得られた推定値を合成する必要があります。
 
 PVsを使った推定値を合成する際は，Rubinのルールと呼ばれる方法を使います。
-今，PVsの数を$M$，$i$番目のPVを使った推定値を$\theta_i$，$i$番目のPVを使った推定値の分散を$V_i$とすると，
+今，PVsの数を$M$，$i$番目のPVを使った推定値を$\theta_i$，$i$番目のPVを使った推定値の分散（＝標準誤差の2乗）を$V_i$とすると，
 PVsを使った推定値（$\theta$），及びその分散（$V$）は，以下の式になります。
 
 $$\theta = \frac{1}{M}\sum_{i=1}^M{\theta_i}$$
@@ -265,7 +266,7 @@ pv4 <- intsvy::pisa.mean("PV4READ", data = jpn2012)
 pv5 <- intsvy::pisa.mean("PV5READ", data = jpn2012)
 
 est <- c(pv1$Mean, pv2$Mean, pv3$Mean, pv4$Mean, pv5$Mean)
-# s.e.なので注意。s.eは分散の標準誤差
+# pisa.meanが返すのは平均値の標準誤差(s.e.)。2乗すると推定値の分散V_iになる
 se <- c(pv1$s.e., pv2$s.e., pv3$s.e., pv4$s.e., pv5$s.e.)
 
 round(est, 3) # 5つの推定値
@@ -322,19 +323,19 @@ intsvy::pisa.mean.pv(paste0("PV", 1:5, "READ"), data = jpn2012)
 
 なお，PVsを使うときに複数のPVを個人レベルで平均してはいけません。
 PVsを個人レベルで平均すると，その値はEAPに近いものになります。
-以下では，生成した5つのPVsを個人レベルで平均したもの（`PV3`）を使った例を示します。
-推定結果を見ると，PV3はEAPと同じように母集団の分散を過小推定していることがわかります[^4]。
+以下では，生成した5つのPVsを個人レベルで平均したもの（`PVavg`）を使った例を示します。
+推定結果を見ると，PVavgはEAPと同じように母集団の分散を過小推定していることがわかります[^4]。
 
 [^4]: 通常，LSAのデータセットに含まれるPVsは条件付けを行った能力分布から抽出されていますので，
   その個人レベルの平均は，通常のEAPではなく条件づけたEAPになります。
-  これが，シミュレーションでEAP（＝条件づけていないEAP）とPV3（≒条件づけたEAP）の値が微妙に違う理由です。
+  これが，シミュレーションでEAP（＝条件づけていないEAP）とPVavg（≒条件づけたEAP）の値が微妙に違う理由です。
 
 ```{r}
 # 5つのPVsをlistに変換
 pvs_list <- TAM::tampv2datalist(pvs)
 # 5つのPVsを個人レベルで平均
-pv3 <- Reduce("+", lapply(1:5, function(i) pvs_list[[i]]$PV.Dim1)) / 5
-ability3 <- c(ability2, list("PV3" = pv3))
+pv_avg <- Reduce("+", lapply(1:5, function(i) pvs_list[[i]]$PV.Dim1)) / 5
+ability3 <- c(ability2, list("PVavg" = pv_avg))
 
 # 平均値
 round(sapply(ability3, mean), 2)
