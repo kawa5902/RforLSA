@@ -264,7 +264,7 @@ sd(jpn2012$PV1READ) / sqrt(nrow(jpn2012))
 ```
 
 `PV1READ`の分散や分散の標準誤差も，ウェイトを使って計算します。
-以下では，ウェイトを考慮した分散を計算する`weighted.var`関数を自作し，
+以下では，ウェイトを考慮した分散を計算する`weighted_var`関数を自作し，
 Replication Weightsと組み合わせて，`PV1READ`の分散とその標準誤差を算出しています。
 
 ```{r}
@@ -290,4 +290,4 @@ intsvy::pisa.mean("PV1READ", data = jpn2012)
 ```
 
 出力が，これまで計算してきた推定値と一致していることを確認してください。
-intsvyについては，[intsvyを使う](intro_lsa.qmd)で解説します。
+intsvyについては，[intsvyを使う](intsvy.qmd)で解説します。

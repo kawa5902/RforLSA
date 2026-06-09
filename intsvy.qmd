@@ -135,7 +135,7 @@ intsvy::pisa.reg(y = "PV1READ", x = "ESCS", data = jpn2012)
 ```
 
 出力は，`Estimate`の列が推定値，`Std.Err`の列が標準誤差を示します。
-`t value`の列やは`R-squared`の行は気にしなくて構いません[^2]。
+`t value`の列や`R-squared`の行は気にしなくて構いません[^2]。
 ここでは，`(Intercept)`が$\beta_0$，`ESCS`が$\beta_1$に該当しますので，
 `ESCS`が1単位上昇すると`PV1READ`が39.24ポイント上昇するという関係があることになります[^3]。
 `intsvy`を使うと，回帰係数にも標準誤差を算出してくれます。

@@ -16,7 +16,7 @@ LSAの例として，もっとも有名なのはOECDが実施する
 （Programme for International Student Assessment）でしょう。
 PISAに知名度は劣りますが，
 [TIMSS](https://timssandpirls.bc.edu/timss-landing.html){target="_blank"}
-（Trend in International Mathematics and Science Study）も
+（Trends in International Mathematics and Science Study）も
 国際的なLSAの代表格です。
 また，現在もアメリカで行われている全米学力調査
 （[NAEP](https://nces.ed.gov/nationsreportcard/){target="_blank"}）
