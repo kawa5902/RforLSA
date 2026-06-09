@@ -22,11 +22,9 @@ Colabには`Mirt`・`TAM`は含まれていませんので，下記のコマン�
 ```{r}
 #| eval: false
 # R on Colab上でMIRTやTAMを使う
-# ダウンロード
-system("curl -L -o library.tar.gz https://github.com/kawa5902/LSAdata/raw/refs/heads/main/202502library.tar.gz")
-# 解凍
-system("tar -xzf /content/library.tar.gz -C /content")
-.libPaths("library")
+system("curl -L -o /content/202606library.tar.xz https://github.com/kawa5902/LSAdata/raw/refs/heads/main/202606library.tar.xz")
+system("tar -xJf /content/202606library.tar.xz -C /content")
+.libPaths(c("/content/library", .libPaths()))
 ```
 
 本書では，`MIRT`や`TAM`の細かい使い方は解説しません。
