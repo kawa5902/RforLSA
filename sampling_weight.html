@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>8&nbsp; 標本ウェイト – Rで学ぶ大規模学力調査（Version 1.2）</title>
+<title>8&nbsp; 標本ウェイト – Rで学ぶ大規模学力調査（Version 1.3）</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -149,7 +149,7 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="style/styles.css">
-<meta name="twitter:title" content="8&nbsp; 標本ウェイト – Rで学ぶ大規模学力調査（Version 1.2）">
+<meta name="twitter:title" content="8&nbsp; 標本ウェイト – Rで学ぶ大規模学力調査（Version 1.3）">
 <meta name="twitter:description" content="">
 <meta name="twitter:card" content="summary">
 </head>
@@ -178,7 +178,7 @@ window.Quarto = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Rで学ぶ大規模学力調査（Version 1.2）</a> 
+      <a href="./">Rで学ぶ大規模学力調査（Version 1.3）</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/kawa5902/RforLSA" title="ソースコード" class="quarto-navigation-tool px-1" aria-label="ソースコード"><i class="bi bi-github"></i></a>
 </div>
@@ -482,7 +482,7 @@ window.Quarto = {
 <section id="大規模学力調査における標本ウェイト" class="level2" data-number="8.2">
 <h2 data-number="8.2" class="anchored" data-anchor-id="大規模学力調査における標本ウェイト"><span class="header-section-number">8.2</span> 大規模学力調査における標本ウェイト</h2>
 <p>LSAにおける標本ウェイトの使い道について，もう少し紹介しておきましょう。 たとえば私立学校と公立学校の学力実態を比べることを考えます。 小学校の場合，私立学校は約200校であり，その割合は 日本の小学校全体（約20000校）の約1%に過ぎません。 ですから母集団から小学校を100校選ぶと，そこに含まれる私立学校の数は せいぜい1〜2校（あるいは0校）になってしまいます。 これでは私立学校の実態を知ることができません。</p>
-<p>そこでたとえば公立学校は100校・私立学校は20校を選ぶことにしましょう。 私立学校を過剰に抽出していますので，これを過剰抽出 （oversampling）と呼んだりします。 この場合，公立学校の抽出確率は<span class="math inline">\(\frac{100}{20000}\)</span>で0.5%ですが， 私立学校の抽出確率は<span class="math inline">\(\frac{20}{200}\)</span>で10%になります。 これは，「私立学校は公立学校の20倍選ばれやすい」ことを意味します。 当然，私立学校の児童も公立学校の児童の20倍選ばれやすくなります。 この状況で単純に標本で得られた成績のスコアを平均を計算してしまうと， 私立学校の児童の成績を過剰に反映してしまいます。 そこで私立学校の児童には10（0.1の逆数）， 公立学校の児童には200（0.005の逆数）のウェイトを与えれば， 母集団の平均を適切に推定できます。</p>
+<p>そこでたとえば公立学校は100校・私立学校は20校を選ぶことにしましょう。 私立学校を過剰に抽出していますので，これを過剰抽出 （oversampling）と呼んだりします。 この場合，公立学校の抽出確率は<span class="math inline">\(\frac{100}{20000}\)</span>で0.5%ですが， 私立学校の抽出確率は<span class="math inline">\(\frac{20}{200}\)</span>で10%になります。 これは，「私立学校は公立学校の20倍選ばれやすい」ことを意味します。 当然，私立学校の児童も公立学校の児童の20倍選ばれやすくなります。 この状況で単純に標本で得られた成績のスコアの平均を計算してしまうと， 私立学校の児童の成績を過剰に反映してしまいます。 そこで私立学校の児童には10（0.1の逆数）， 公立学校の児童には200（0.005の逆数）のウェイトを与えれば， 母集団の平均を適切に推定できます。</p>
 <p>偏ってしまった標本を母集団に近づけるためにウェイトを利用することも可能です。 たとえば標本抽出の結果，まったくの偶然で， 標本は男子が80人・女子が20人になってしまったとしましょう<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>。 これでは男子の情報を強く反映しすぎる可能性が高いので， 母集団の男女比（おそらく1対1）を考慮して，ウェイトを作成します。 この場合は，<code>80 * 1 = 20 * 4</code>なので，男子に1・女子に4のウェイトを与えれば， より適切に母集団の状態を把握できると考えられます。</p>
 <p>その他，調査では何らかの理由で学校や生徒が調査に参加できないとか， 一部の設問に回答しないとかいった事態は珍しくありませんが， ウェイトはこうした事態（≒データの欠測）の対処にも使えます。 保護者の年収を例に取ると，極端に年収の高い （あるいは低い）人は年収を尋ねる設問には回答しない傾向があるかもしれません。 もしそうであれば，年収の高い人と低い人の標本に高めのウェイトを与えることで， より適切に母集団における保護者の年収を推定できる可能性があります。</p>
 <p>以上のように，標本ウェイトにはさまざまな使い道があります。 一般的なLSAのデータセットに含まれている標本ウェイトは， これらさまざまな事情で作成されたウェイトを掛け合わせたウェイトになっています。 普通，ウェイトの作成方法は調査の技術概要書（Technical Report）でその手続きが示されるだけで， 詳細はわからないことが多いようです。 ここには，詳細な手続きを示してしまうと調査対象となった個人や学校が特定されかねない という事情があると思われます。</p>

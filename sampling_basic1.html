@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>4&nbsp; 標本調査の基礎知識1 – Rで学ぶ大規模学力調査（Version 1.2）</title>
+<title>4&nbsp; 標本調査の基礎知識1 – Rで学ぶ大規模学力調査（Version 1.3）</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -169,7 +169,7 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="style/styles.css">
-<meta name="twitter:title" content="4&nbsp; 標本調査の基礎知識1 – Rで学ぶ大規模学力調査（Version 1.2）">
+<meta name="twitter:title" content="4&nbsp; 標本調査の基礎知識1 – Rで学ぶ大規模学力調査（Version 1.3）">
 <meta name="twitter:description" content="">
 <meta name="twitter:image" content="https://kawa5902.github.io/RforLSA/image/sampling/population.png">
 <meta name="twitter:image-height" content="367">
@@ -201,7 +201,7 @@ window.Quarto = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Rで学ぶ大規模学力調査（Version 1.2）</a> 
+      <a href="./">Rで学ぶ大規模学力調査（Version 1.3）</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/kawa5902/RforLSA" title="ソースコード" class="quarto-navigation-tool px-1" aria-label="ソースコード"><i class="bi bi-github"></i></a>
 </div>
@@ -441,16 +441,16 @@ window.Quarto = {
 <p>母集団から標本を抽出する方法には，さまざまな手法がありますが， LSAを知る上で重要な方法には，次のものがあります。</p>
 <ul>
 <li>単純な無作為抽出</li>
-<li>村落抽出法</li>
+<li>集落抽出法</li>
 <li>多段抽出法</li>
 <li>層化抽出法</li>
 </ul>
 <p>それぞれ簡単に説明すると，単純な無作為抽出（Simple Random Sampling: SRS）とは， どの対象も同じ確率で選ばれる可能性がある抽出法のことです。 あまり現実的ではありませんが，全国の小学生の名簿を用意して， そこからサイコロを振ってランダムに対象者を選ぶというのが，単純な無作為抽出になります。 サイコロという偶然に任せて対象者を決めるので， 母集団と標本の特徴は，よく似通ったものになることが想定できます。</p>
 <p>ただ，SRSがLSAで採用されることはまずありません。 まず，全国の小学生の名簿を用意するのが大変な手間です。 仮に用意できたとしても，SRSでは離島の学校に調査対象者が1名いるといった 極端な状況が発生する可能性があります。 たった1名を調べるために遠隔地へ出向くのは費用対効果という点から見て問題があります。 さらに，一つの学校に1名しか調査を受ける子どもがいないと， 仮にその学校の学力が高かったとして， それが調査対象になった子どもの特性なのか，それとも学校の指導法に要因があるのか 分析することが困難になります。</p>
-<p>そこで登場するのが，対象となる子どもが通う学校名のリストを用意して， そこから学校をランダムに選び，対象になった学校の児童生徒全員を調査するというものです。 日本全国の小学6年生の学力を知りたいのであれば， まず日本の小学校の一覧を用意し，サイコロを振って調査対象となる学校を決めます。 そして選ばれた学校のすべての児童に学力調査を行うのです。 これを村落抽出法（Cluster Sampling）と呼びます。 村落抽出法は，全国学力・学習状況調査の保護者に対する調査や経年比較分析調査で利用されています<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>。</p>
+<p>そこで登場するのが，対象となる子どもが通う学校名のリストを用意して， そこから学校をランダムに選び，対象になった学校の児童生徒全員を調査するというものです。 日本全国の小学6年生の学力を知りたいのであれば， まず日本の小学校の一覧を用意し，サイコロを振って調査対象となる学校を決めます。 そして選ばれた学校のすべての児童に学力調査を行うのです。 これを集落抽出法（Cluster Sampling）と呼びます。 集落抽出法は，全国学力・学習状況調査の保護者に対する調査や経年変化分析調査で利用されています<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>。</p>
 <p>調査対象となった学校から，さらに児童生徒を抽出するという方法もあります。 サイコロを振って調査対象となる学校を選んだ後で， その学校に対して小学6年生の名簿を提出してもらいます。 その上で，個々の学校の名簿についてサイコロを振って，調査の対象となる児童を決めるわけです。 これを多段抽出法（Multistage Sampling）と呼びます。 多段抽出法はPISAで採用されており， まず学校を選び，続いて各学校から生徒を抽出する多段抽出法 （学校・生徒という二段階の抽出を行うので，とくに二段抽出と呼びます）が使われています。</p>
-<p>村落抽出法や多段抽出法は対象者を効率よく選択できるという利点がある一方で， 精度が落ちるという欠点があります。 一般に，同じ学校に通う子どもは似た特徴を持つと考えられます。 同じ地域で育ち，同じような指導を受けてきたわけですから， 学力や考え方・行動に似た部分が出てくるだろう・・・ということです。 そのため村落抽出法や多段抽出法は，SRSに比べて得られる情報量が少なくなります。 極端な例ですが，仮に各学校の子どもの学力がまったく同じ （A校は全員50点，B校は全員40点・・・）だったとしたら， A校から10人選んでも全体の推測にはあまり役立たず， SRSで母集団から10人選んだ方が圧倒的に良いということになります。</p>
-<p>精度が落ちるという欠点に対処するため，村落抽出法や多段抽出法を 層化抽出法（Stratified Sampling）という方法と組み合わせることがよく行われます。 この場合，層化村落抽出法／層化多段抽出法といった呼び方がされます。</p>
+<p>集落抽出法や多段抽出法は対象者を効率よく選択できるという利点がある一方で， 精度が落ちるという欠点があります。 一般に，同じ学校に通う子どもは似た特徴を持つと考えられます。 同じ地域で育ち，同じような指導を受けてきたわけですから， 学力や考え方・行動に似た部分が出てくるだろう・・・ということです。 そのため集落抽出法や多段抽出法は，SRSに比べて得られる情報量が少なくなります。 極端な例ですが，仮に各学校の子どもの学力がまったく同じ （A校は全員50点，B校は全員40点・・・）だったとしたら， A校から10人選んでも全体の推測にはあまり役立たず， SRSで母集団から10人選んだ方が圧倒的に良いということになります。</p>
+<p>精度が落ちるという欠点に対処するため，集落抽出法や多段抽出法を 層化抽出法（Stratified Sampling）という方法と組み合わせることがよく行われます。 この場合，層化集落抽出法／層化多段抽出法といった呼び方がされます。</p>
 <p>層化とは学力に影響を与えると思われる要因で各学校をグループ（層）にまとめておき， その層の中から学校を抽出するという方法です。 一例として，都市部かそうでないかで学力実態が大きく変わることが想定できます。 であれば，事前に学校を都市部かそうでないかで二つのグループに分けておき， それぞれから学校を抽出すれば，標本には必ず都市部／それ以外の学校が混ざるので， 何も考慮しなかった場合よりも精度が上がることが期待できます。</p>
 <p>いろいろと述べてきましたが，実のところ，LSAを分析する際に さまざまな抽出法について知っておくことは必須ではありません。 分析者側が抽出法について知らなくても問題ないような工夫 （Replication Method）が施されているからです。 そして，いずれの抽出法を使用しているにせよ， 標本から母集団を推定する方法は，基本的にはSRSの条件下での推定の拡張です。</p>
 <p>そこで以下では，SRSの条件下で，どのように標本から母集団を推定すればよいのか 学んでいくことにしましょう。 なお，ここで留意すべきは，これから学ぶ方法は あくまでも「SRSの条件下」であるという点です。 すでに述べたように，LSAでSRSが採用されることはほぼありません。 ですから，SRSの方法をそのまま母集団の推定に当てはめることは，ときに誤った推測に繋がります。 SRSの理屈は学びつつ，「どこがLSAに適用できて，どこが適用できないのか」という点を 意識しておくことが重要なのです。</p>
@@ -465,9 +465,9 @@ window.Quarto = {
 </section>
 <section id="平均" class="level2" data-number="4.4">
 <h2 data-number="4.4" class="anchored" data-anchor-id="平均"><span class="header-section-number">4.4</span> 平均</h2>
-<p>よく使われる統計量の代表が，平均です。 <span class="math inline">\(x_1\)</span>, <span class="math inline">\(x_2\)</span>，・・・，<span class="math inline">\(x_i\)</span>，・・・<span class="math inline">\(x_n\)</span>の<span class="math inline">\(n\)</span>個のデータに対して， その平均<span class="math inline">\(\mu\)</span>は以下の式で定義されます。</p>
-<p><span class="math display">\[\mu = \frac{1}{n}\sum_{i=1}^nx_i\]</span></p>
-<p>数学記号が出てきて驚くかもしれませんが， 要は「データをすべて足して，データの数で割る」ということです。 Rでは，オブジェクトに対してさまざまな操作をするコマンド （これを「関数」と呼びます）が用意されています。 たとえばベクトルの要素をすべて足す場合は<code>sum</code>関数が使えますし， ベクトルの要素の数は<code>length</code>関数で取得できます。 また，ベクトルの平均を計算する<code>mean</code>関数も用意されています。</p>
+<p>よく使われる統計量の代表が，平均です。 <span class="math inline">\(x_1\)</span>, <span class="math inline">\(x_2\)</span>，・・・，<span class="math inline">\(x_i\)</span>，・・・<span class="math inline">\(x_n\)</span>の<span class="math inline">\(n\)</span>個のデータに対して， その平均<span class="math inline">\(\bar{x}\)</span>は以下の式で定義されます。</p>
+<p><span class="math display">\[\bar{x} = \frac{1}{n}\sum_{i=1}^nx_i\]</span></p>
+<p>数学記号が出てきて驚くかもしれませんが， 要は「データをすべて足して，データの数で割る」ということです。 なお，<span class="math inline">\(\bar{x}\)</span>は手元の標本から計算した平均なので標本平均と呼び， 母集団全体の平均（母平均<span class="math inline">\(\mu\)</span>）とは記号を分けて区別します。 Rでは，オブジェクトに対してさまざまな操作をするコマンド （これを「関数」と呼びます）が用意されています。 たとえばベクトルの要素をすべて足す場合は<code>sum</code>関数が使えますし， ベクトルの要素の数は<code>length</code>関数で取得できます。 また，ベクトルの平均を計算する<code>mean</code>関数も用意されています。</p>
 <p>ここでは簡単のため，児童数5人の学級AとBがあると考えます。 Aクラスの5人の成績は，40点・40点・60点・80点・80点です。 Bクラスの5人の成績は，20点・20点・60点・100点・100点とします。 このとき，それぞれの平均（どちらも60点になります）は Rで以下のように計算できます。</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Aクラスのベクトルを作成</span></span>
@@ -488,7 +488,7 @@ window.Quarto = {
 <h2 data-number="4.5" class="anchored" data-anchor-id="分散"><span class="header-section-number">4.5</span> 分散</h2>
 <p>さて，AクラスもBクラスも平均は60点ですが， 両者は点数のばらつき具合が違います。 Aクラスは最小値40点・最大値80点に対し， Bクラスは最小値20点・最大値100点なので， 成績のばらつきは明らかにBクラスのほうが大きくなっています。</p>
 <p>こうしたデータのばらつきを表す統計量が分散です。 分散は，次の式で計算します。</p>
-<p><span class="math display">\[\frac{1}{n}\sum_{i=1}^n(x_i - \mu)^2\]</span></p>
+<p><span class="math display">\[\frac{1}{n}\sum_{i=1}^n(x_i - \bar{x})^2\]</span></p>
 <p>数式では難しいかもしれないので，Rで考えてみましょう。 データのばらつきを表現する際に手っ取り早いのは， すべての要素から平均を引いてしまうことです。 Rで表現すると，次のようになります。</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>A <span class="sc">-</span> <span class="fu">mean</span>(A)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
@@ -599,7 +599,7 @@ window.Quarto = {
 </div>
 </div>
 <p>これは<code>VAR</code>が間違っているというわけではありません。 標本から母集団の分散を推定する場合，その式は，次のようになります。</p>
-<p><span class="math display">\[\frac{1}{n-1}\sum_{i=1}^n(x_i - \mu)^2\]</span></p>
+<p><span class="math display">\[\frac{1}{n-1}\sum_{i=1}^n(x_i - \bar{x})^2\]</span></p>
 <p>違いは<span class="math inline">\(n\)</span>ではなく，<span class="math inline">\(n-1\)</span>で割っているという点です。 詳しい説明は省きますが，こちらの式の方が母集団の分散を適切に推定 できることがわかっています。 Rに用意されている<code>var</code>は，この式を実装したものです。 そのため，<code>var</code>で計算した値に，<span class="math inline">\(\frac{n-1}{n}\)</span>をかけると， <code>VAR</code>の値と一致します。</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">var</span>(A) <span class="sc">*</span> (<span class="fu">length</span>(A) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> <span class="fu">length</span>(A)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
@@ -701,7 +701,7 @@ window.Quarto = {
 <li id="fn2"><p>令和3年度の抽出法について，国立教育政策研究所のウェブサイトに <a href="https://www.nier.go.jp/21chousakekkahoukoku/kannren_chousa/keinen_chousa.htm" target="_blank">資料</a>が載っています。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn3"><p>厄介なことに，Rのオブジェクトも「変数」と呼ぶことがあります。 混乱すると思うので，本書でRの説明をするときは「変数」という言葉を使っていません。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn4"><p>アンケートの回答は，数値にして管理することが一般的です。 もし「はい」「いいえ」といった文字のまま管理したら， 打ち間違いが発生する危険があります （コンピュータは融通がききませんので，「はい」「はぃ」「ハイ」はすべて違う意味になります）。 また，回答が長い場合（たとえば「いつもある」「ときどきある」「あまりない」「まったくない」など）， 分析時に非常に扱いづらくなります。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn5"><p>この辺まで来るとベクトルのありがたさがわかるようになります。 この計算をベクトルを使わずやろうと思うと， <code>sum(((40 - 60)^2 + (40 - 60)^2 + (60 - 60)^2 + (80 - 60)^2 + (80 - 60)^2))</code> となってしまいます。 今は要素が5つですからなんとか計算できますが， 要素が1000や2000になったらもう手に終えません。 ベクトルを使えば，Aの要素が1000になっても2000になっても， <code>sum((A - mean(A))^2)</code>は変わらないのです。<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>この辺まで来るとベクトルのありがたさがわかるようになります。 この計算をベクトルを使わずやろうと思うと， <code>sum(((40 - 60)^2 + (40 - 60)^2 + (60 - 60)^2 + (80 - 60)^2 + (80 - 60)^2))</code> となってしまいます。 今は要素が5つですからなんとか計算できますが， 要素が1000や2000になったらもう手に負えません。 ベクトルを使えば，Aの要素が1000になっても2000になっても， <code>sum((A - mean(A))^2)</code>は変わらないのです。<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn6"><p>仮にもとの単位が<span class="math inline">\(m\)</span>（メートル）だったとすると， 途中で2乗しているので<span class="math inline">\(m^2\)</span>（平方メートル）になっています。<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>13&nbsp; PISAとTIMSSの概要 – Rで学ぶ大規模学力調査（Version 1.2）</title>
+<title>13&nbsp; PISAとTIMSSの概要 – Rで学ぶ大規模学力調査（Version 1.3）</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -134,7 +134,7 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="style/styles.css">
-<meta name="twitter:title" content="13&nbsp; PISAとTIMSSの概要 – Rで学ぶ大規模学力調査（Version 1.2）">
+<meta name="twitter:title" content="13&nbsp; PISAとTIMSSの概要 – Rで学ぶ大規模学力調査（Version 1.3）">
 <meta name="twitter:description" content="">
 <meta name="twitter:card" content="summary">
 </head>
@@ -163,7 +163,7 @@ window.Quarto = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Rで学ぶ大規模学力調査（Version 1.2）</a> 
+      <a href="./">Rで学ぶ大規模学力調査（Version 1.3）</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/kawa5902/RforLSA" title="ソースコード" class="quarto-navigation-tool px-1" aria-label="ソースコード"><i class="bi bi-github"></i></a>
 </div>
@@ -386,9 +386,9 @@ window.Quarto = {
 <section id="timss" class="level2" data-number="13.2">
 <h2 data-number="13.2" class="anchored" data-anchor-id="timss"><span class="header-section-number">13.2</span> TIMSS</h2>
 <p>TIMSSは，IEA（国際教育到達度評価学会）が実施する数学と理科の国際的な学力調査です。 第4学年・第8学年に在籍する子どもの学力を国際的な尺度によって測定し， 学力と学習環境等との関係を明らかにすることを目的としています。 学校に通う15歳児を対象にするPISAに対し，TIMSSは学年を調査対象にしていることになります。 ちなみに日本では第4学年は9歳か10歳，第8学年は13歳か14歳ですが， 他の国・地域では留年や飛び級があるので，必ずしもこの年齢に該当しない子どもも受検しています。</p>
-<p>TIMSSの標本抽出は，最初に学校を抽出し， 続いて学校から1（ないしそれ以上）の学級を抽出するという 層化二段クラスターサンプリングが採用されています。 標本ウェイトの生成など，基本的な考え方はPISAと大きく変わりません。</p>
+<p>TIMSSの標本抽出は，最初に学校を抽出し， 続いて学校から1（ないしそれ以上）の学級を抽出するという 層化二段集落抽出法が採用されています。 標本ウェイトの生成など，基本的な考え方はPISAと大きく変わりません。</p>
 <p>ただし標準誤差を算出する際のReplication MethodはPISAと違い， JackKnife法（JK法）の一種であるJRR（Jackknife Repeated Replication）法が採用されています。 JRRは抽出された学校を75のペア<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>にグループ化（Zoneと呼ばれます）し， 「一つのZoneだけ，片方の学校のウェイトを0倍・もう片方の学校のウェイトを2倍にする」 という手順で新たな標本を作成します。 個々のZoneには2つの学校がありますので，いずれを0にするかによって， 1つのZoneからは2つの標本が生成できます。 75のZoneがありますから，全部で150の標本が生成されることになります。</p>
-<p>JRRのZoneとウェイトの関係を，<a href="#tbl-jrr" class="quarto-xref">表&nbsp;<span>13.1</span></a>をもとに説明しましょう。 まず各学校（s1〜s150）は，2つずつ75のZoneに分かれています。 JRRで標本を生成する際は，まずZone 1でs1のウェイトを2倍，s2のウェイトを0倍にします（r1）。 次にZone 1でs1のウェイトを0倍，s2のウェイトを2倍にします（r2）。 その後も，Zone 2でs3のウェイトを2倍，s4のウェイトを0倍（r3）， Zone 2でs4のウェイトを0倍，s4のウェイトを2倍（r4）・・・という作業を続け， r1からr150まで150の標本を生成することになります。</p>
+<p>JRRのZoneとウェイトの関係を，<a href="#tbl-jrr" class="quarto-xref">表&nbsp;<span>13.1</span></a>をもとに説明しましょう。 まず各学校（s1〜s150）は，2つずつ75のZoneに分かれています。 JRRで標本を生成する際は，まずZone 1でs1のウェイトを2倍，s2のウェイトを0倍にします（r1）。 次にZone 1でs1のウェイトを0倍，s2のウェイトを2倍にします（r2）。 その後も，Zone 2でs3のウェイトを2倍，s4のウェイトを0倍（r3）， Zone 2でs3のウェイトを0倍，s4のウェイトを2倍（r4）・・・という作業を続け， r1からr150まで150の標本を生成することになります。</p>
 <div id="tbl-jrr" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-jrr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">

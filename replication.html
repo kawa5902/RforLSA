@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>9&nbsp; Replication Method – Rで学ぶ大規模学力調査（Version 1.2）</title>
+<title>9&nbsp; Replication Method – Rで学ぶ大規模学力調査（Version 1.3）</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -169,7 +169,7 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="style/styles.css">
-<meta name="twitter:title" content="9&nbsp; Replication Method – Rで学ぶ大規模学力調査（Version 1.2）">
+<meta name="twitter:title" content="9&nbsp; Replication Method – Rで学ぶ大規模学力調査（Version 1.3）">
 <meta name="twitter:description" content="">
 <meta name="twitter:card" content="summary">
 </head>
@@ -198,7 +198,7 @@ window.Quarto = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Rで学ぶ大規模学力調査（Version 1.2）</a> 
+      <a href="./">Rで学ぶ大規模学力調査（Version 1.3）</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/kawa5902/RforLSA" title="ソースコード" class="quarto-navigation-tool px-1" aria-label="ソースコード"><i class="bi bi-github"></i></a>
 </div>
@@ -445,7 +445,7 @@ window.Quarto = {
 <pre><code>[1] 0.2502844</code></pre>
 </div>
 </div>
-<p>平均48.45・標準誤差は0.25になりました。 （約）95%信頼区間を考えてみると， 48.45±2×0.25≒48.9〜47.95で，母平均（=50）を捉えそこねています。</p>
+<p>平均48.45・標準誤差は0.25になりました。 （約）95%信頼区間を考えてみると， 48.45±2×0.25≒47.95〜48.95で，母平均（=50）を捉えそこねています。</p>
 <p>次に，各学校ごとに平均点が異なるという設定を踏まえて標準誤差を算出してみましょう。 ここでは，マルチレベルモデルという統計技法を利用して標準誤差を算出します。 マルチレベルモデルは難しいので，覚える必要はありません。 なお，Colabでマルチレベルモデルをするには，以下のコマンドを実行する必要があります。 コマンドの意味については，<a href="./intsvy.html">intsvyを使う</a>で解説します。</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 注意！Colab用です！PC上のRでは実行しないこと</span></span>
@@ -461,7 +461,7 @@ window.Quarto = {
  48.455310   1.013182 </code></pre>
 </div>
 </div>
-<p>平均は同じく48.45ですが，標準誤差は1.01と4倍以上の値になっています。 （約）95%信頼区間を考えると， 48.45±2×1.01≒50.45〜46.45なので，こちらは母平均を捉えています。</p>
+<p>平均は同じく48.45ですが，標準誤差は1.01と4倍以上の値になっています。 （約）95%信頼区間を考えると， 48.45±2×1.01≒46.45〜50.45なので，こちらは母平均を捉えています。</p>
 <p>SRSが標準誤差を過小評価する理由は， <a href="./sampling_basic1.html#標本抽出の方法">標本抽出の方法</a>で指摘した 「個々の学校から抽出された生徒は似ている」ことを踏まえていないからです。 今回利用したデータは， 個々の学校の平均点に差がある（≒平均点の高い学校の生徒はおしなべて成績がよい） という状況のもとで生成されています。 そのため個々の学校の生徒の成績が似通っており， SRSが仮定するほど多くの情報量が得られない（≒標準誤差が大きくなる）のです。</p>
 <p>加えて本書では詳しく解説しませんが， 通常の社会調査において母集団は有限であり， さらに母集団から抽出した個体を母集団に戻す（≒調査対象になった個体を 再び調査対象に選ぶこと。復元抽出と言います）こともありません。 このような状況下（有限母集団かつ非復元抽出）では 標準誤差の算出はさらに複雑になります<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>。</p>
 <p>適切な標準誤差を得るには，母集団情報と 標本抽出法も踏まえた標準誤差の算出が必要です<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>。 ただ，この方法は標本抽出に詳しく， かつ詳細な調査設計を知る人間でないと設定することが困難です。 加えて詳細な調査設計を公開してしまうと， 調査対象となった学校や個人が特定されてしまう危険も生じます。 そこでLSAで利用されている方法が，Replication Methodです。</p>
@@ -561,7 +561,7 @@ window.Quarto = {
 </div>
 <p>PISAで利用されているBRR法において， 標準誤差は以下の式で算出されます。</p>
 <p><span class="math display">\[最終的な標準誤差 = \sqrt{\frac{1}{20}\sum_{i=1}^{80}((\hat{\theta}_i - \hat{\theta}) ^ 2)}\]</span></p>
-<p>ここで<span class="math inline">\(\hat{\theta}\)</span>は最終的な推定値， <span class="math inline">\(\hat{\theta_i}\)</span>は<span class="math inline">\(i\)</span>番目のReplication weightsを使った推定値です。 Rで次のように計算すれば，<code>PV1READ</code>の平均値の標準誤差が得られます。</p>
+<p>ここで<span class="math inline">\(\hat{\theta}\)</span>は最終的な推定値， <span class="math inline">\(\hat{\theta_i}\)</span>は<span class="math inline">\(i\)</span>番目のReplication weightsを使った推定値です。 標本を80個作るのに分母が20なのは，PISAが採用するFayのBRR（Fayの係数0.5）に由来し， <span class="math inline">\(80 \times (1 - 0.5)^2 = 20\)</span>として求まる値だからです。 Rで次のように計算すれば，<code>PV1READ</code>の平均値の標準誤差が得られます。</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">Mean =</span> fin_m, <span class="at">SE =</span> <span class="fu">sqrt</span>(<span class="fu">sum</span>((rep_m <span class="sc">-</span> fin_m)<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> <span class="dv">20</span>))</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -569,7 +569,7 @@ window.Quarto = {
 538.116436   3.666172 </code></pre>
 </div>
 </div>
-<p>ちなみに，単純な無作為抽出を前提に <code>PV1READ</code>の標準誤差を計算すると1.25になり， 本来の推定値（3.67）に比べ過小になります。</p>
+<p>ちなみに，単純な無作為抽出を前提に <code>PV1READ</code>の標準誤差を計算すると1.25になり， 上で求めた本来の標準誤差（3.67）に比べ過小になります。</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 単純な無作為抽出を前提に計算した標準誤差</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(jpn2012<span class="sc">$</span>PV1READ) <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="fu">nrow</span>(jpn2012))</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
@@ -577,7 +577,7 @@ window.Quarto = {
 <pre><code>[1] 1.25302</code></pre>
 </div>
 </div>
-<p><code>PV1READ</code>の分散や分散の標準誤差も，ウェイトを使って計算します。 以下では，ウェイトを考慮した分散を計算する<code>weighted.var</code>関数を自作し， Replication Weightsと組み合わせて，<code>PV1READ</code>の分散とその標準誤差を算出しています。</p>
+<p><code>PV1READ</code>の標準偏差や標準偏差の標準誤差も，ウェイトを使って計算します。 以下では，ウェイトを考慮した分散を計算する<code>weighted_var</code>関数を自作し， Replication Weightsと組み合わせて，<code>PV1READ</code>の標準偏差（分散の平方根）とその標準誤差を算出しています。</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>weighted_var <span class="ot">&lt;-</span> <span class="cf">function</span>(x, w) {</span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>(w <span class="sc">*</span> (x <span class="sc">-</span> <span class="fu">weighted.mean</span>(x, w))<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> <span class="fu">sum</span>(w)</span>
@@ -608,7 +608,7 @@ window.Quarto = {
 1 6351 538.1164 3.666172 99.1964 2.294498</code></pre>
 </div>
 </div>
-<p>出力が，これまで計算してきた推定値と一致していることを確認してください。 intsvyについては，<a href="./intro_lsa.html">intsvyを使う</a>で解説します。</p>
+<p>出力が，これまで計算してきた推定値と一致していることを確認してください。 intsvyについては，<a href="./intsvy.html">intsvyを使う</a>で解説します。</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">

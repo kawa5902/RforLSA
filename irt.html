@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>10&nbsp; 項目反応理論 – Rで学ぶ大規模学力調査（Version 1.2）</title>
+<title>10&nbsp; 項目反応理論 – Rで学ぶ大規模学力調査（Version 1.3）</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -169,7 +169,7 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="style/styles.css">
-<meta name="twitter:title" content="10&nbsp; 項目反応理論 – Rで学ぶ大規模学力調査（Version 1.2）">
+<meta name="twitter:title" content="10&nbsp; 項目反応理論 – Rで学ぶ大規模学力調査（Version 1.3）">
 <meta name="twitter:description" content="">
 <meta name="twitter:image" content="https://kawa5902.github.io/RforLSA/irt_files/figure-html/fig-irt1-1.png">
 <meta name="twitter:image-height" content="960">
@@ -201,7 +201,7 @@ window.Quarto = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Rで学ぶ大規模学力調査（Version 1.2）</a> 
+      <a href="./">Rで学ぶ大規模学力調査（Version 1.3）</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/kawa5902/RforLSA" title="ソースコード" class="quarto-navigation-tool px-1" aria-label="ソースコード"><i class="bi bi-github"></i></a>
 </div>
@@ -421,18 +421,18 @@ window.Quarto = {
 <li>項目：テストを構成する個々の設問のこと。あるいはアイテム（item）。</li>
 <li>能力：テストで測定する受検者の潜在的な測定値。いわゆる「学力」。</li>
 </ul>
-<p>また，この章ではIRT分析用のRパッケージ（<code>Mirt</code>・<code>TAM</code>）を利用します。 Colabには<code>Mirt</code>・<code>TAM</code>は含まれていませんので，下記のコマンドを実行するようにしてください。 これは，ColabでIRTを行うための「裏技」です。 コマンドの意味については，<a href="./intsvy.html">intsvyを使う</a>で解説します。</p>
+<p>また，この章ではIRT分析用のRパッケージ（<code>mirt</code>・<code>TAM</code>）を利用します。 Colabには<code>mirt</code>・<code>TAM</code>は含まれていませんので，下記のコマンドを実行するようにしてください。 これは，ColabでIRTを行うための「裏技」です。 コマンドの意味については，<a href="./intsvy.html">intsvyを使う</a>で解説します。</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># R on Colab上でMIRTやTAMを使う</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># R on Colab上でmirtやTAMを使う</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(<span class="st">"curl -L -o /content/202606library.tar.xz https://github.com/kawa5902/LSAdata/raw/refs/heads/main/202606library.tar.xz"</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(<span class="st">"tar -xJf /content/202606library.tar.xz -C /content"</span>)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">.libPaths</span>(<span class="fu">c</span>(<span class="st">"/content/library"</span>, <span class="fu">.libPaths</span>()))</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>本書では，<code>MIRT</code>や<code>TAM</code>の細かい使い方は解説しません。 一般的なLSAでは受検者の能力値は算出済みであり，分析者がIRTを実行する必要はほとんどないからです。 関心のある方は，<code>IRT</code>の入門書を参照してください。</p>
-<p>なお本書で<code>MIRT</code>や<code>TAM</code>に含まれる関数を使う際は， <code>TAM::tam.wle</code>といった具合に関数の前に<code>TAM::</code>あるいは<code>MIRT::</code>を付け， どのパッケージに含まれる関数なのか明示しています。</p>
+<p>本書では，<code>mirt</code>や<code>TAM</code>の細かい使い方は解説しません。 一般的なLSAでは受検者の能力値は算出済みであり，分析者がIRTを実行する必要はほとんどないからです。 関心のある方は，<code>IRT</code>の入門書を参照してください。</p>
+<p>なお本書で<code>mirt</code>や<code>TAM</code>に含まれる関数を使う際は， <code>TAM::tam.wle</code>といった具合に関数の前に<code>TAM::</code>あるいは<code>mirt::</code>を付け， どのパッケージに含まれる関数なのか明示しています。</p>
 <section id="古典的テスト理論の課題" class="level2" data-number="10.1">
 <h2 data-number="10.1" class="anchored" data-anchor-id="古典的テスト理論の課題"><span class="header-section-number">10.1</span> 古典的テスト理論の課題</h2>
-<p>IRTの特徴は，古典的テスト理論（Clasical Test Theory: CTT）との対比で 説明されることが多いようです。 CTTに基づいたテストでは， 受検者がテスト項目に何問正解したか（≒正答率）を，受検者の能力と捉えます。 わかりにくい人は，いわゆる「100点満点のテスト」を想像すればよいでしょう。</p>
+<p>IRTの特徴は，古典的テスト理論（Classical Test Theory: CTT）との対比で 説明されることが多いようです。 CTTに基づいたテストでは， 受検者がテスト項目に何問正解したか（≒正答率）を，受検者の能力と捉えます。 わかりにくい人は，いわゆる「100点満点のテスト」を想像すればよいでしょう。</p>
 <p>さて，CTTの課題は「受検者の能力とテストの難易度が分離できない」という点です。 「100点満点のテスト」を全国の小学6年生を対象に実施したとき， ある年度のテストの平均点が60点，次の年度が70点だったとしましょう。 このとき，受検者（＝小学6年生）の学力は向上したと考えてよいでしょうか？ 答えはNoです。受検者の能力が向上したのではなく， テストが簡単になっただけかもしれません。 もちろん，まったく同じテストを用意すればCTTでも能力の変化を 測ることはできます。 ただ普通は，まったく同じテストを出題していたらテスト対策が行われ， 受検者の能力が変わらなかったとしても，次第に正答率は向上していくでしょう。</p>
 <p>とくにメディアの発達した現代社会では， 一度出題したテストの項目を秘匿することはなかなか困難です。 そのためCTTでは， 受検者の能力やその変化を捉えることが難しく， それに代わるテスト理論が求められるようになってきたのです。</p>
 </section>
@@ -528,7 +528,7 @@ window.Quarto = {
 <p>たとえば，赤の曲線（<span class="math inline">\(a\)</span>が0.9）は<span class="math inline">\(\theta\)</span>が-1のときは正答確率が20%程度ですが， <span class="math inline">\(\theta\)</span>が0で50%，<span class="math inline">\(\theta\)</span>が1で80%程度と，大きく正答確率が上昇しています。 他方，緑の曲線（<span class="math inline">\(a\)</span>が0.5）は<span class="math inline">\(\theta\)</span>が-1のときの正答確率は20%程度で， <span class="math inline">\(\theta\)</span>が3になっても正答確率が80%程度と，正答確率の上昇が緩やかです。</p>
 <p>要は<span class="math inline">\(a\)</span>が高い項目のほうが， 受検者の能力を区別することができる（≒識別できる）ということです。 <span class="math inline">\(a\)</span>が極端に低い項目は，受検者の能力が高かろうが低かろうが正答確率が変わらないわけで， 受検者の能力を知るという観点からは，あまり出題する意味がない（≒「悪問」）ということになります。</p>
 <p>ここまで見てきたような「個々の項目に困難度と識別力というパラメータがある」ことを想定するモデルは， 2PL（2パラメータ・ロジスティックモデル）と呼ばれます。 他にも識別力を考えない1PLや，偶然に正解する確率を考慮する3PLなど， いくつかのモデルが存在します。 さらに今回のモデルは，正答と誤答しか考えていませんが， 部分正答を考える部分得点モデル（Partial Credit Model: PCM）というモデルも存在します。 IRTを利用したテストでは，こうしたモデルからいずれかを設定し（あるいは複数を採用し）， <span class="math inline">\(b\)</span>や<span class="math inline">\(a\)</span>などのパラメータを推定していくことになります。</p>
-<p>パラメータが推定されたら，次は受検者の回答をもとに能力推定を行います。 ここでも複数の能力推定法があり，それぞれ異なる特性を持ちます。 有名な推定法には，MLE（最尤推定）やEAP（期待事後確率）があります。 PISAでは，WLE（重み付け最尤推定）という推定法も使われています。 これら能力推定法を大雑把に分類すると， 受験者の能力分布について仮定を置かないもの（MLEやWLE）と 正規分布などの仮定を置くもの（EAP）に分けられます。 個々の推定法の説明は，かなり難しいので本書では扱いません。 興味のある方は，参考文献<span class="citation" data-cites="mitsu2017 kato2018 horo2019"><sup>[<a href="references.html#ref-mitsu2017" role="doc-biblioref">1</a>–<a href="references.html#ref-horo2019" role="doc-biblioref">3</a>]</sup></span>で勉強してみてください。</p>
+<p>パラメータが推定されたら，次は受検者の回答をもとに能力推定を行います。 ここでも複数の能力推定法があり，それぞれ異なる特性を持ちます。 有名な推定法には，MLE（最尤推定）やEAP（期待事後確率）があります。 PISAでは，WLE（重み付け最尤推定）という推定法も使われています。 これら能力推定法を大雑把に分類すると， 受検者の能力分布について仮定を置かないもの（MLEやWLE）と 正規分布などの仮定を置くもの（EAP）に分けられます。 個々の推定法の説明は，かなり難しいので本書では扱いません。 興味のある方は，参考文献<span class="citation" data-cites="mitsu2017 kato2018 horo2019"><sup>[<a href="references.html#ref-mitsu2017" role="doc-biblioref">1</a>–<a href="references.html#ref-horo2019" role="doc-biblioref">3</a>]</sup></span>で勉強してみてください。</p>
 </section>
 <section id="重複テスト分冊法" class="level2" data-number="10.4">
 <h2 data-number="10.4" class="anchored" data-anchor-id="重複テスト分冊法"><span class="header-section-number">10.4</span> 重複テスト分冊法</h2>
@@ -788,7 +788,7 @@ mean  var
  0.0  0.8 </code></pre>
 </div>
 </div>
-<p>平均値（mean）はどの推定法も0.0なので，真の値（0.01）とほとんど同じです。 問題は分散（var）で，真の値（theta）が0.99に対し， いずれの推定法にもズレが生じています。 傾向として，MLEとWLEは過大推定，EAPは過小推定しているようです。 分散の推定値がズレるということは，標準誤差にズレが生じます。 そして標準誤差がズレると，母集団に対する誤った推測に゙繋がります。 <a href="./pvs.html">推算値法</a>では，この問題を改善する方法を解説します。</p>
+<p>平均値（mean）はどの推定法も0.0なので，真の値（0.01）とほとんど同じです。 問題は分散（var）で，真の値（theta）が0.99に対し， いずれの推定法にもズレが生じています。 傾向として，MLEとWLEは過大推定，EAPは過小推定しているようです。 分散の推定値がズレるということは，標準誤差にズレが生じます。 そして標準誤差がズレると，母集団に対する誤った推測に繋がります。 <a href="./pvs.html">推算値法</a>では，この問題を改善する方法を解説します。</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">

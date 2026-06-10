@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>7&nbsp; 相関係数と回帰分析 – Rで学ぶ大規模学力調査（Version 1.2）</title>
+<title>7&nbsp; 相関係数と回帰分析 – Rで学ぶ大規模学力調査（Version 1.3）</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -149,7 +149,7 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="style/styles.css">
-<meta name="twitter:title" content="7&nbsp; 相関係数と回帰分析 – Rで学ぶ大規模学力調査（Version 1.2）">
+<meta name="twitter:title" content="7&nbsp; 相関係数と回帰分析 – Rで学ぶ大規模学力調査（Version 1.3）">
 <meta name="twitter:description" content="">
 <meta name="twitter:image" content="https://kawa5902.github.io/RforLSA/stat_basics_files/figure-html/fig-cor1-1.png">
 <meta name="twitter:image-height" content="960">
@@ -181,7 +181,7 @@ window.Quarto = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Rで学ぶ大規模学力調査（Version 1.2）</a> 
+      <a href="./">Rで学ぶ大規模学力調査（Version 1.3）</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/kawa5902/RforLSA" title="ソースコード" class="quarto-navigation-tool px-1" aria-label="ソースコード"><i class="bi bi-github"></i></a>
 </div>
@@ -581,7 +581,7 @@ Coefficients:
 </div>
 </div>
 <p><code>lm</code>関数の出力を見ると<code>jpn2012$ESCS</code>の係数は39.94ですから， ESCSが1単位変化すると39.9ポイント読解リテラシーが変化することがわかります。 ESCSは子どもの家庭背景を示す指標ですから， 家庭背景が恵まれている子の方が読解リテラシーが高いということです。</p>
-<p>もっともこれは，直線関係を仮定すると読解リテラシーとESCSの あいだに関係が見えるということに過ぎません。 図を描いてみるとわかるのですが，ESCSが高くても成績の低い生徒はいますし， 逆にESCSが低くても成績の高い子もいます（<a href="#fig-pisa" class="quarto-xref">図&nbsp;<span>7.3</span></a>）。 PISA2012のデータから読み溶ける読解リテラシーとESCSの関係は， 「ESCSが高い子はすべて読解リテラシーが高い」といった絶対的なものではなく， あくまで「ESCSが高い子の方が読解リテラシーが高い傾向にある」というレベルに留まっているのです。 ですから回帰分析をした際は，数値を解釈するだけでなく<code>plot</code>などを使って 変数間の関連を図で把握することを心がけるようにしましょう。</p>
+<p>もっともこれは，直線関係を仮定すると読解リテラシーとESCSの あいだに関係が見えるということに過ぎません。 図を描いてみるとわかるのですが，ESCSが高くても成績の低い生徒はいますし， 逆にESCSが低くても成績の高い子もいます（<a href="#fig-pisa" class="quarto-xref">図&nbsp;<span>7.3</span></a>）。 PISA2012のデータから読み解ける読解リテラシーとESCSの関係は， 「ESCSが高い子はすべて読解リテラシーが高い」といった絶対的なものではなく， あくまで「ESCSが高い子の方が読解リテラシーが高い傾向にある」というレベルに留まっているのです。 ですから回帰分析をした際は，数値を解釈するだけでなく<code>plot</code>などを使って 変数間の関連を図で把握することを心がけるようにしましょう。</p>
 </section>
 <section id="回帰分析の標準誤差" class="level3" data-number="7.2.2">
 <h3 data-number="7.2.2" class="anchored" data-anchor-id="回帰分析の標準誤差"><span class="header-section-number">7.2.2</span> 回帰分析の標準誤差</h3>
@@ -620,9 +620,9 @@ F-statistic: 580.1 on 1 and 6183 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p><span class="math display">\[y = \beta_0 + \beta_1x_1 + \beta_2x_2 + \beta_3x_3 + \epsilon\]</span></p>
 <p>単回帰分析と違い，重回帰分析の偏回帰係数の解釈は面倒です。 今，被説明変数を学力（<span class="math inline">\(y\)</span>）とし， 説明変数を保護者の学歴（<span class="math inline">\(x_1\)</span>：保護者が大卒のとき1・非大卒のとき0）， 勉強時間（<span class="math inline">\(x_2\)</span>：単位は時間）としましょう。 分析の結果，<span class="math inline">\(y=50 + 10x_1 + 5x_2\)</span>という関連があったとします。 このとき<span class="math inline">\(x_2\)</span>の偏回帰係数の解釈は， 「勉強時間（<span class="math inline">\(x_2\)</span>）が1時間増えると学力（<span class="math inline">\(y\)</span>）が5上がる」ではありません。 <span class="math inline">\(x_2\)</span>以外に保護者の学歴（<span class="math inline">\(x_1\)</span>）が存在しますので， 「保護者の学歴が大卒（<span class="math inline">\(x_1=1\)</span>）の人同士を比べると，勉強時間（<span class="math inline">\(x_2\)</span>）が1時間増えると学力（<span class="math inline">\(y\)</span>）が5上がる」 ，あるいは 「保護者の学歴が非大卒（<span class="math inline">\(x_1=0\)</span>）の人同士を比べると，勉強時間（<span class="math inline">\(x_2\)</span>）が1時間増えると学力（<span class="math inline">\(y\)</span>）が5上がる」になります。 前半は似たようなことを言っていますから，まとめて 「保護者の学歴が同じ人同士を比べると，勉強時間（<span class="math inline">\(x_2\)</span>）が1時間増えると学力（<span class="math inline">\(y\)</span>）が5上がる」でよいでしょう。 要するに重回帰分析における<span class="math inline">\(x_1\)</span>の偏回帰係数<span class="math inline">\(\beta_1\)</span>は， 「<span class="math inline">\(x_1\)</span>以外の説明変数（<span class="math inline">\(x_2\)</span>や<span class="math inline">\(x_3\)</span>）が同じ対象を比較したときに，<span class="math inline">\(x_1\)</span>が1単位変化したときの<span class="math inline">\(y\)</span>の変化量」になります。</p>
 <p>重回帰分析の利点は，「よく似たものを比べる」ことを可能にしてくれる点です。 この意義を，PISA2012のデータを使い「ひとり親家庭の低学力問題」を例に考えてみましょう。 PISA2012では，調査対象になった子どもに「一緒に住んでいる人」を尋ねています。 ここで子どもが，「お父さん」あるいは「お母さん」のみと一緒に暮らしていると回答した場合， その子は「ひとり親」であると判定できます。 PISA2012のデータセットでは，<code>FAMSTRUC</code>という変数に子どもの回答結果が格納されています。 このデータを使って，ひとり親家庭とそうでない家庭の学力を考えてみましょう。</p>
-<p>最初に<code>FAMSTRUC</code>変数から，「ひとり親家庭」と「それ以外の家庭」を示す変数を作ります。 <code>FAMSTRUC</code>変数には4つの値があり，1がひとり親（お父さん，あるいはお母さんとのみ住んでいる）， 2が二人親（お父さん・お母さんと住んでいる），3がそれ以外，9が欠測となっています。 ここでは分析のために，ひとり親を1・それ以外を2とする<code>single</code>という新しい変数を作成します。 また，欠測はNAに変換します<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>。</p>
+<p>最初に<code>FAMSTRUC</code>変数から，「ひとり親家庭」と「それ以外の家庭」を示す変数を作ります。 <code>FAMSTRUC</code>変数には4つの値があり，1がひとり親（お父さん，あるいはお母さんとのみ住んでいる）， 2が二人親（お父さん・お母さんと住んでいる），3がそれ以外，9が欠測となっています。 ここでは分析のために，ひとり親を1・それ以外を0とする<code>single</code>という新しい変数を作成します。 また，欠測はNAに変換します<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>。</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># table関数でFAMSTURCの度数分布を表示</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># table関数でFAMSTRUCの度数分布を表示</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(jpn2012<span class="sc">$</span>FAMSTRUC)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>

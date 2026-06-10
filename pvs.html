@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>11&nbsp; 推算値法 – Rで学ぶ大規模学力調査（Version 1.2）</title>
+<title>11&nbsp; 推算値法 – Rで学ぶ大規模学力調査（Version 1.3）</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -169,7 +169,7 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="style/styles.css">
-<meta name="twitter:title" content="11&nbsp; 推算値法 – Rで学ぶ大規模学力調査（Version 1.2）">
+<meta name="twitter:title" content="11&nbsp; 推算値法 – Rで学ぶ大規模学力調査（Version 1.3）">
 <meta name="twitter:description" content="">
 <meta name="twitter:card" content="summary">
 </head>
@@ -198,7 +198,7 @@ window.Quarto = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Rで学ぶ大規模学力調査（Version 1.2）</a> 
+      <a href="./">Rで学ぶ大規模学力調査（Version 1.3）</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/kawa5902/RforLSA" title="ソースコード" class="quarto-navigation-tool px-1" aria-label="ソースコード"><i class="bi bi-github"></i></a>
 </div>
@@ -422,7 +422,7 @@ window.Quarto = {
 <section id="rによる確認" class="level2" data-number="11.2">
 <h2 data-number="11.2" class="anchored" data-anchor-id="rによる確認"><span class="header-section-number">11.2</span> Rによる確認</h2>
 <p>実際にPVsが有効かどうか，シミュレーションで確認してみましょう。 最初に仮の受検者の回答データとして，<code>resp</code>を作成します。 母集団における能力値の分布は，実際の学力調査を意識して，以下のような複雑な状況を設定します。 まず，受検者のサンプルサイズは4000とし，うち男子2000名・女子2000名とします。 さらに能力値の平均と分散は男女で違い， 男子は平均-0.2・分散1に対し，女子は平均0.2・分散1になっています。 また能力値以外にSESという変数があると仮定し， 能力値とSESの相関係数は，男子0.5，女子0.4としています。 状況設定が複雑なので，コードは閉じています。</p>
-<p>なお，コード実行のためには<code>MIRT</code>や<code>TAM</code>が必要です。 インストールしていない場合は，<a href="./irt.html">項目反応理論</a>の章を参考に設定を済ませてください。</p>
+<p>なお，コード実行のためには<code>mirt</code>や<code>TAM</code>が必要です。 インストールしていない場合は，<a href="./irt.html">項目反応理論</a>の章を参考に設定を済ませてください。</p>
 <div class="cell">
 <details class="code-fold">
 <summary>コード</summary>
@@ -459,17 +459,18 @@ window.Quarto = {
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> TAM<span class="sc">::</span><span class="fu">tam.mml.2pl</span>(resp, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ability estimation</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>mle <span class="ot">&lt;-</span> TAM<span class="sc">::</span><span class="fu">tam.wle</span>(mod, <span class="at">progress =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>theta</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>mle <span class="ot">&lt;-</span> TAM<span class="sc">::</span><span class="fu">tam.wle</span>(mod, <span class="at">WLE =</span> <span class="cn">FALSE</span>, <span class="at">progress =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>theta</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>eap <span class="ot">&lt;-</span> mod<span class="sc">$</span>person<span class="sc">$</span>EAP</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>pv <span class="ot">&lt;-</span> TAM<span class="sc">::</span><span class="fu">tam.pv</span>(mod, <span class="at">nplausible =</span> <span class="dv">1</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>pv<span class="sc">$</span>PV1.Dim1</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 能力推定</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>ability <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"theta"</span> <span class="ot">=</span> theta,</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"MLE"</span> <span class="ot">=</span> mle,</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"EAP"</span> <span class="ot">=</span> eap,</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PV"</span> <span class="ot">=</span> pv</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>pv <span class="ot">&lt;-</span> TAM<span class="sc">::</span><span class="fu">tam.pv</span>(mod, <span class="at">nplausible =</span> <span class="dv">1</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>pv<span class="sc">$</span>PV1.Dim1</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 能力推定</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>ability <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"theta"</span> <span class="ot">=</span> theta,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"MLE"</span> <span class="ot">=</span> mle,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"EAP"</span> <span class="ot">=</span> eap,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PV"</span> <span class="ot">=</span> pv</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>続いて，TAMを使って推定した能力値が， 適切に母集団の値を復元しているかどうか検討してみましょう。 最初に，母集団の平均と分散を見てみます。 なお以下の出力では， <code>theta</code>が真の値，<code>MLE</code>・<code>EAP</code>・<code>PV</code>はそれぞれの推定法による推定値を示します。</p>
 <div class="cell">
@@ -477,16 +478,16 @@ window.Quarto = {
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(ability, mean), <span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>theta   MLE   EAP    PV 
- 0.01  0.00  0.00  0.00 </code></pre>
+ 0.01  0.00  0.00 -0.01 </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 分散</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(ability, var), <span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>theta   MLE   EAP    PV 
- 1.01  1.21  0.82  1.01 </code></pre>
+ 1.01  1.26  0.82  1.00 </code></pre>
 </div>
 </div>
-<p>先の章と同じく，MLEやEAPの推定値は，平均は適切に推定していますが， 分散を過大推定しています。 これに対してPVの推定値は，やや過小推定（0.96）ではあるものの， MLEやEAPに比べればthetaに近い分散を推定しています。</p>
+<p>先の章と同じく，MLEやEAPの推定値は，平均は適切に推定していますが， 分散はMLEが過大推定，EAPが過小推定しています。 これに対してPVの推定値は，thetaに近い分散を推定しています。</p>
 <p>続いて，男女別の平均と分散，そして能力値とSESの相関を検討してみましょう。</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 男女別のスコア，SESとの相関を計算する関数</span></span>
@@ -504,80 +505,82 @@ window.Quarto = {
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability, mean), <span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>   theta  MLE   EAP    PV
--1 -0.20 -0.2 -0.17 -0.16
-1   0.21  0.2  0.17  0.16</code></pre>
+<pre><code>   theta   MLE   EAP    PV
+-1 -0.20 -0.21 -0.17 -0.18
+1   0.21  0.21  0.17  0.16</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability, var), <span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   theta  MLE EAP   PV
--1  0.97 1.17 0.8 0.97
-1   0.96 1.18 0.8 1.00</code></pre>
+-1  0.97 1.22 0.8 0.95
+1   0.96 1.22 0.8 1.00</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability, cor), <span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>theta   MLE   EAP    PV 
- 0.42  0.37  0.37  0.35 </code></pre>
+ 0.42  0.37  0.37  0.31 </code></pre>
 </div>
 </div>
 <p>男女別の能力値の平均を見てみると，MLEはthetaとほぼ同じ（男子-0.21・女子0.21）値になっています。 他方，EAPとPVはいずれもthetaと値がズレています。</p>
-<p>分散の推定値については，母集団の推定と同じく， MLEは過大推定，EAPは過小推定の傾向が見られます。 PVsは0.93とやや過小推定ですが，それでも比較的thetaに近い値が得られています。</p>
-<p>相関係数については，thetaの値が0.42に対し， MLEとEAPは0.38でやや過小推定になっています。 PVsは0.34で更に過小推定であり，母集団の特性を適切に推定しているとは言えません。</p>
+<p>分散の推定値については，母集団の推定と同じく， MLEは過大推定，EAPは過小推定の傾向が見られます。 PVsは0.95・1.00と，比較的thetaに近い値が得られています。</p>
+<p>相関係数については，thetaの値が0.42に対し， MLEとEAPは0.37でやや過小推定になっています。 PVsは0.31で更に過小推定であり，母集団の特性を適切に推定しているとは言えません。</p>
 </section>
 <section id="推算値の条件付" class="level2" data-number="11.3">
 <h2 data-number="11.3" class="anchored" data-anchor-id="推算値の条件付"><span class="header-section-number">11.3</span> 推算値の条件付</h2>
-<p>先ほどのシミュレーションから言えることは， PVsは母集団の特性を適切に推定するわけではないということです。 分散はわずかに過小推定するにとどまっていますが， 男女の平均や相関係数の偏りなど，MLEやEAPと比べてPVsが優れているとは言えません。</p>
-<p>それではなぜLSAではPVsが有効だと言われるのでしょうか。 実は先ほどのシミュレーションで推定したPVsが偏った推定値を返したのは， 母集団の能力値の分布について誤った仮定をおいていたからです。 すでに述べたように，EAPやPVsでは事前に母集団の能力分布について， 正規分布などの仮定を起きます。 しかし先のシミュレーションのように，男女で能力値の平均が異なるといった状況はありえます。 この場合，母集団の能力分布は，異なる2つの正規分布が重なった分布になっており， 単純な正規分布とは異なる形状になっています。</p>
+<p>先ほどのシミュレーションから言えることは， PVsは母集団の特性を適切に推定するわけではないということです。 男女の平均や相関係数の偏りなど，MLEやEAPと比べてPVsが優れているとは言えません。</p>
+<p>それではなぜLSAではPVsが有効だと言われるのでしょうか。 実は先ほどのシミュレーションで推定したPVsが偏った推定値を返したのは， 母集団の能力値の分布について誤った仮定をおいていたからです。 すでに述べたように，EAPやPVsでは事前に母集団の能力分布について， 正規分布などの仮定を置きます。 しかし先のシミュレーションのように，男女で能力値の平均が異なるといった状況はありえます。 この場合，母集団の能力分布は，異なる2つの正規分布が重なった分布になっており， 単純な正規分布とは異なる形状になっています。</p>
 <p>LSAでPVsを利用する場合，性別やSESのような母集団の能力分布に影響を与えるであろう要因を 事前に考慮して能力分布を設定し，項目パラメータや能力値の推定を行わなければなりません。 こうした母集団の要因を考慮することを，一般に「条件づけ（Conditioning）」と呼びます。 なお，LSAのようにサンプルサイズが大きいデータに対して，条件付けを行った推定を行うと， 長い時間がかかったり，推定がうまくいかない場合があります。 そこで一般的なLSAでは，いったん条件付けを行わずに項目パラメータを推定し， そこで得られた推定値を利用しつつ条件付けを行った能力推定を行うという 2段階の推定法が採用されています<span class="citation" data-cites="zheng2024"><sup>[<a href="references.html#ref-zheng2024" role="doc-biblioref">4</a>]</sup></span>。 2段階の推定は，Rの<code>TAM</code>パッケージに実装されており，<code>tam.latreg</code>関数を使うことで実行可能です。</p>
-<p>以下では，条件付けを行って推定したPVs（<code>PV2</code>とします）を使い， 母集団の推定を行ってみましょう。 最初に，母集団の平均と分散を確認します。</p>
+<p>以下では，条件付けを行って推定したPVs（<code>PVcond</code>とします）を使い， 母集団の推定を行ってみましょう。 最初に，母集団の平均と分散を確認します。</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>likeli <span class="ot">&lt;-</span> CDM<span class="sc">::</span><span class="fu">IRT.likelihood</span>(mod)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>mod2 <span class="ot">&lt;-</span> TAM<span class="sc">::</span><span class="fu">tam.latreg</span>(likeli, <span class="at">Y =</span> <span class="fu">cbind</span>(sex, ses), <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 後で使うのでPVを5つ生成し，そのうち1つだけを利用</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>pvs <span class="ot">&lt;-</span> TAM<span class="sc">::</span><span class="fu">tam.pv</span>(mod2, <span class="at">nplausible =</span> <span class="dv">5</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>pv2 <span class="ot">&lt;-</span> pvs<span class="sc">$</span>pv<span class="sc">$</span>PV1.Dim1</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>ability2 <span class="ot">&lt;-</span> <span class="fu">c</span>(ability, <span class="fu">list</span>(<span class="st">"PV2"</span> <span class="ot">=</span> pv2))</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># likeliは各受検者の能力の尤度。これを条件付け推定に渡す</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>likeli <span class="ot">&lt;-</span> CDM<span class="sc">::</span><span class="fu">IRT.likelihood</span>(mod)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Yに条件付け変数(性別sex・SES)を指定して，これらを考慮した能力分布を推定する</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>mod2 <span class="ot">&lt;-</span> TAM<span class="sc">::</span><span class="fu">tam.latreg</span>(likeli, <span class="at">Y =</span> <span class="fu">cbind</span>(sex, ses), <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 後で使うのでPVを5つ生成し，そのうち1つだけを利用</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>pvs <span class="ot">&lt;-</span> TAM<span class="sc">::</span><span class="fu">tam.pv</span>(mod2, <span class="at">nplausible =</span> <span class="dv">5</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>pv_cond <span class="ot">&lt;-</span> pvs<span class="sc">$</span>pv<span class="sc">$</span>PV1.Dim1</span>
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 平均値</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(ability2, mean), <span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>ability2 <span class="ot">&lt;-</span> <span class="fu">c</span>(ability, <span class="fu">list</span>(<span class="st">"PVcond"</span> <span class="ot">=</span> pv_cond))</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 平均値</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(ability2, mean), <span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>theta   MLE   EAP    PV   PV2 
- 0.01  0.00  0.00  0.00  0.00 </code></pre>
+<pre><code> theta    MLE    EAP     PV PVcond 
+  0.01   0.00   0.00  -0.01   0.00 </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 分散</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(ability2, var), <span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>theta   MLE   EAP    PV   PV2 
- 1.01  1.21  0.82  1.01  1.00 </code></pre>
+<pre><code> theta    MLE    EAP     PV PVcond 
+  1.01   1.26   0.82   1.00   1.00 </code></pre>
 </div>
 </div>
-<p>母集団の平均・分散ともに，PV2がthetaに非常に近い値を返していることがわかります。 同様に，男女別の平均と分散，SESとの相関係数も検討してみましょう。</p>
+<p>母集団の平均・分散ともに，PVcondがthetaに非常に近い値を返していることがわかります。 同様に，男女別の平均と分散，SESとの相関係数も検討してみましょう。</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability2, mean), <span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>   theta  MLE   EAP    PV   PV2
--1 -0.20 -0.2 -0.17 -0.16 -0.20
-1   0.21  0.2  0.17  0.16  0.19</code></pre>
+<pre><code>   theta   MLE   EAP    PV PVcond
+-1 -0.20 -0.21 -0.17 -0.18  -0.20
+1   0.21  0.21  0.17  0.16   0.19</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability2, var), <span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>   theta  MLE EAP   PV  PV2
--1  0.97 1.17 0.8 0.97 0.95
-1   0.96 1.18 0.8 1.00 0.97</code></pre>
+<pre><code>   theta  MLE EAP   PV PVcond
+-1  0.97 1.22 0.8 0.95   0.97
+1   0.96 1.22 0.8 1.00   0.95</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability2, cor), <span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>theta   MLE   EAP    PV   PV2 
- 0.42  0.37  0.37  0.35  0.41 </code></pre>
+<pre><code> theta    MLE    EAP     PV PVcond 
+  0.42   0.37   0.37   0.31   0.40 </code></pre>
 </div>
 </div>
-<p>いずれの値も，PV2がもっともthetaと近い値を返しています。</p>
+<p>いずれの値も，PVcondがもっともthetaと近い値を返しています。</p>
 </section>
 <section id="推算値の使い方" class="level2" data-number="11.4">
 <h2 data-number="11.4" class="anchored" data-anchor-id="推算値の使い方"><span class="header-section-number">11.4</span> 推算値の使い方</h2>
 <p>ここまでの分析では，簡単のためにPVsは1つだけを生成していました。 シミュレーションの結果からもわかるように，条件づけたPVsは1つの値しか生成しなくても 母集団の推定には有効です。 ただ，より正確な推定のためには複数の値を生成し，それぞれで得られた推定値を合成する必要があります。</p>
-<p>PVsを使った推定値を合成する際は，Rubinのルールと呼ばれる方法を使います。 今，PVsの数を<span class="math inline">\(M\)</span>，<span class="math inline">\(i\)</span>番目のPVを使った推定値を<span class="math inline">\(\theta_i\)</span>，<span class="math inline">\(i\)</span>番目のPVを使った推定値の分散を<span class="math inline">\(V_i\)</span>とすると， PVsを使った推定値（<span class="math inline">\(\theta\)</span>），及びその分散（<span class="math inline">\(V\)</span>）は，以下の式になります。</p>
+<p>PVsを使った推定値を合成する際は，Rubinのルールと呼ばれる方法を使います。 今，PVsの数を<span class="math inline">\(M\)</span>，<span class="math inline">\(i\)</span>番目のPVを使った推定値を<span class="math inline">\(\theta_i\)</span>，<span class="math inline">\(i\)</span>番目のPVを使った推定値の分散（＝標準誤差の2乗）を<span class="math inline">\(V_i\)</span>とすると， PVsを使った推定値（<span class="math inline">\(\theta\)</span>），及びその分散（<span class="math inline">\(V\)</span>）は，以下の式になります。</p>
 <p><span class="math display">\[\theta = \frac{1}{M}\sum_{i=1}^M{\theta_i}\]</span></p>
 <p><span class="math display">\[V = U + (1 + \frac{1}{M})B_m\]</span> <span class="math display">\[U = \frac{1}{M}\sum_{i=1}^M{V_i} \qquad B_m = \frac{1}{M-1}\sum_{i=1}^M(\theta_i - \theta) ^ 2\]</span></p>
 <p>これでは何のことかわからないと思いますが， まず最終的な推定値（<span class="math inline">\(\theta\)</span>）は，単純に個々のPVで得られた推定値（<span class="math inline">\(\theta_i\)</span>）の平均です。 推定値の分散（つまり標準誤差の2乗）は，個々のPVで得られた推定値の分散（<span class="math inline">\(V_i\)</span>）の平均（これが<span class="math inline">\(U\)</span>です）に， <span class="math inline">\((1+\frac{1}{M})B_m\)</span>を足したものになります。 <span class="math inline">\(B_m\)</span>は個々のPVごとの推定値のばらつきを示し， PVが受検者の能力分布から得られたランダムな値であることによる推定値のブレを考慮しています。</p>
@@ -593,7 +596,7 @@ window.Quarto = {
 <span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>pv5 <span class="ot">&lt;-</span> intsvy<span class="sc">::</span><span class="fu">pisa.mean</span>(<span class="st">"PV5READ"</span>, <span class="at">data =</span> jpn2012)</span>
 <span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>est <span class="ot">&lt;-</span> <span class="fu">c</span>(pv1<span class="sc">$</span>Mean, pv2<span class="sc">$</span>Mean, pv3<span class="sc">$</span>Mean, pv4<span class="sc">$</span>Mean, pv5<span class="sc">$</span>Mean)</span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="co"># s.e.なので注意。s.eは分散の標準誤差</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="co"># pisa.meanが返すのは平均値の標準誤差(s.e.)。2乗すると推定値の分散V_iになる</span></span>
 <span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>se <span class="ot">&lt;-</span> <span class="fu">c</span>(pv1<span class="sc">$</span>s.e., pv2<span class="sc">$</span>s.e., pv3<span class="sc">$</span>s.e., pv4<span class="sc">$</span>s.e., pv5<span class="sc">$</span>s.e.)</span>
 <span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(est, <span class="dv">3</span>) <span class="co"># 5つの推定値</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
@@ -609,12 +612,12 @@ window.Quarto = {
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>f_est <span class="ot">&lt;-</span> <span class="fu">mean</span>(est)</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>u <span class="ot">&lt;-</span> <span class="fu">mean</span>(se<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">var</span>(se<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">var</span>(est)</span>
 <span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>v <span class="ot">&lt;-</span> u <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">5</span>) <span class="sc">*</span> b</span>
 <span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">c</span>(<span class="at">mean =</span> f_est, <span class="at">var =</span> v), <span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  mean    var 
-538.05  13.46 </code></pre>
+538.05  13.49 </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">c</span>(<span class="at">mean =</span> f_est, <span class="at">se =</span> <span class="fu">sqrt</span>(v)), <span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -639,45 +642,45 @@ window.Quarto = {
 1 6351 538.05 3.67 98.69 2.27</code></pre>
 </div>
 </div>
-<p>なお，PVsを使うときに複数のPVを個人レベルで平均してはいけません。 PVsを個人レベルで平均すると，その値はEAPに近いものになります。 以下では，生成した5つのPVsをを個人レベルで平均したもの（<code>PV3</code>）を使った例を示します。 推定結果を見ると，PV3はEAPと同じように母集団の分散を過小推定していることがわかります<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>。</p>
+<p>なお，PVsを使うときに複数のPVを個人レベルで平均してはいけません。 PVsを個人レベルで平均すると，その値はEAPに近いものになります。 以下では，生成した5つのPVsを個人レベルで平均したもの（<code>PVavg</code>）を使った例を示します。 推定結果を見ると，PVavgはEAPと同じように母集団の分散を過小推定していることがわかります<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>。</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 5つのPVsをlistに変換</span></span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>pvs_list <span class="ot">&lt;-</span> TAM<span class="sc">::</span><span class="fu">tampv2datalist</span>(pvs)</span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 5つのPVsを個人レベルで平均</span></span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>pv3 <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">"+"</span>, <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="cf">function</span>(i) pvs_list[[i]]<span class="sc">$</span>PV.Dim1)) <span class="sc">/</span> <span class="dv">5</span></span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>ability3 <span class="ot">&lt;-</span> <span class="fu">c</span>(ability2, <span class="fu">list</span>(<span class="st">"PV3"</span> <span class="ot">=</span> pv3))</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>pv_avg <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">"+"</span>, <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="cf">function</span>(i) pvs_list[[i]]<span class="sc">$</span>PV.Dim1)) <span class="sc">/</span> <span class="dv">5</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>ability3 <span class="ot">&lt;-</span> <span class="fu">c</span>(ability2, <span class="fu">list</span>(<span class="st">"PVavg"</span> <span class="ot">=</span> pv_avg))</span>
 <span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 平均値</span></span>
 <span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(ability3, mean), <span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>theta   MLE   EAP    PV   PV2   PV3 
- 0.01  0.00  0.00  0.00  0.00 -0.01 </code></pre>
+<pre><code> theta    MLE    EAP     PV PVcond  PVavg 
+  0.01   0.00   0.00  -0.01   0.00   0.00 </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 分散</span></span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(ability3, var), <span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>theta   MLE   EAP    PV   PV2   PV3 
- 1.01  1.21  0.82  1.01  1.00  0.87 </code></pre>
+<pre><code> theta    MLE    EAP     PV PVcond  PVavg 
+  1.01   1.26   0.82   1.00   1.00   0.88 </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 男女別の平均値</span></span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability3, mean), <span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>   theta  MLE   EAP    PV   PV2   PV3
--1 -0.20 -0.2 -0.17 -0.16 -0.20 -0.21
-1   0.21  0.2  0.17  0.16  0.19  0.19</code></pre>
+<pre><code>   theta   MLE   EAP    PV PVcond PVavg
+-1 -0.20 -0.21 -0.17 -0.18  -0.20  -0.2
+1   0.21  0.21  0.17  0.16   0.19   0.2</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 男女別の分散</span></span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability3, var), <span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>   theta  MLE EAP   PV  PV2  PV3
--1  0.97 1.17 0.8 0.97 0.95 0.84
-1   0.96 1.18 0.8 1.00 0.97 0.83</code></pre>
+<pre><code>   theta  MLE EAP   PV PVcond PVavg
+-1  0.97 1.22 0.8 0.95   0.97  0.85
+1   0.96 1.22 0.8 1.00   0.95  0.83</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># SESとの相関係数</span></span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">calc_stats</span>(ability3, cor), <span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>theta   MLE   EAP    PV   PV2   PV3 
- 0.42  0.37  0.37  0.35  0.41  0.43 </code></pre>
+<pre><code> theta    MLE    EAP     PV PVcond  PVavg 
+  0.42   0.37   0.37   0.31   0.40   0.43 </code></pre>
 </div>
 </div>
 
@@ -703,7 +706,7 @@ window.Quarto = {
 <li id="fn1"><p>推定された能力値なので<span class="math inline">\(\theta\)</span>ではなく，<span class="math inline">\(\hat{\theta}\)</span>としています。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>Rubinのルールには，推定値の分布が正規分布であるという前提があるため， たとえば相関係数には適用できません<span class="citation" data-cites="takahashi2017"><sup>[<a href="references.html#ref-takahashi2017" role="doc-biblioref">2</a>]</sup></span>。 ただLSAの場合はサンプルサイズが大きいこともあって，相関係数（を含むその他の分析）についても Rubinのルールを適用することが一般的です。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn3"><p>LSAの分析はReplication MethodとPVsを使うので，それなりに時間がかかります。 たとえばPISAの場合，Replication Methodだけで80回の計算が必要です。 個々のPVについて80回の計算を行うとなると，PVが5つの場合は全部で400回の計算になります。 PISA2015以降はPVが10個になっているので，最終的な推定値を得るまでに800回以上の計算が必要となるのです。 PVを1つだけ使えば，計算回数を大きく抑えることができます。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4"><p>通常，LSAのデータセットに含まれるPVsは条件付けを行った能力分布から抽出されていますので， その個人レベルの平均は，通常のEAPではなく条件づけたEAPになります。 これが，シミュレーションでEAP（＝条件づけていないEAP）とPV3（≒条件づけたEAP）の値が微妙に違う理由です。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>通常，LSAのデータセットに含まれるPVsは条件付けを行った能力分布から抽出されていますので， その個人レベルの平均は，通常のEAPではなく条件づけたEAPになります。 これが，シミュレーションでEAP（＝条件づけていないEAP）とPVavg（≒条件づけたEAP）の値が微妙に違う理由です。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 

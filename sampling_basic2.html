@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>5&nbsp; 標本調査の基礎知識2 – Rで学ぶ大規模学力調査（Version 1.2）</title>
+<title>5&nbsp; 標本調査の基礎知識2 – Rで学ぶ大規模学力調査（Version 1.3）</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -149,7 +149,7 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="style/styles.css">
-<meta name="twitter:title" content="5&nbsp; 標本調査の基礎知識2 – Rで学ぶ大規模学力調査（Version 1.2）">
+<meta name="twitter:title" content="5&nbsp; 標本調査の基礎知識2 – Rで学ぶ大規模学力調査（Version 1.3）">
 <meta name="twitter:description" content="">
 <meta name="twitter:image" content="https://kawa5902.github.io/RforLSA/sampling_basic2_files/figure-html/fig-height-1.png">
 <meta name="twitter:image-height" content="960">
@@ -181,7 +181,7 @@ window.Quarto = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Rで学ぶ大規模学力調査（Version 1.2）</a> 
+      <a href="./">Rで学ぶ大規模学力調査（Version 1.3）</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/kawa5902/RforLSA" title="ソースコード" class="quarto-navigation-tool px-1" aria-label="ソースコード"><i class="bi bi-github"></i></a>
 </div>
@@ -417,7 +417,7 @@ window.Quarto = {
 </div>
 </div>
 <p><a href="#fig-height" class="quarto-xref">図&nbsp;<span>5.1</span></a> は<code>rnorm</code>という関数を使い， 仮想の20歳男性の身長のデータを作成して描いた図です。 <code>rnorm</code>は正規分布と呼ばれる規則に従って，ランダム<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>にデータを生成する関数です。 正規分布は <a href="#fig-height" class="quarto-xref">図&nbsp;<span>5.1</span></a> のような山形のデータの散らばり方を表現したもの（≒分布）で， いろいろと便利な性質を持つので統計学ではよく使われます。 正規分布以外にもベルヌーイ分布や二項分布といったさまざまな形の分布があり， これらを総称して確率分布と呼びます。 本書では正規分布を主に使いますが，統計の入門書では 正規分布以外の確率分布もしばしば登場します。</p>
-<p>さてRの話に戻ると，<code>rnorm</code>のカッコの中の10000・170・6の数値は， 順に生成するデータの数（10000個）・平均（170）・標準偏差（7）を意味します。 日本の20歳男性の身長は，だいたい平均170cm・標準偏差7cmなので， その情報に従って正規分布からデータを生成したのです。 生成したデータは，<code>simdata</code>というオブジェクトに格納しています。</p>
+<p>さてRの話に戻ると，<code>rnorm</code>のカッコの中の10000・170・7の数値は， 順に生成するデータの数（10000個）・平均（170）・標準偏差（7）を意味します。 日本の20歳男性の身長は，だいたい平均170cm・標準偏差7cmなので， その情報に従って正規分布からデータを生成したのです。 生成したデータは，<code>simdata</code>というオブジェクトに格納しています。</p>
 <p>次に<code>hist</code>は，ヒストグラムを書くための関数です。 <code>hist</code>のカッコの中のmain・xlab・ylabは， それぞれ，グラフのタイトル（身長のヒストグラム），x軸のタイトル（身長）， y軸のタイトル（度数）を意味します。 いずれも，""を付けて文字にしていることに注意してください。 なお，度数は統計でよく使う用語で，「データの出現した回数」という意味です。</p>
 <p>最後に，<code>abline</code>という関数は，赤い縦線を引くための関数です。 <code>abline</code>の中のv・colは，縦に線を引く位置（今回は170のところに線を引く） ・線の色（redは赤色）を意味します。</p>
 <p>なお，関数のカッコの中の情報を，引数（ひきすう）と呼びます。 <code>rnorm</code>関数であれば，「生成するデータの数・平均・標準偏差を引数として設定する」わけです。 Rに限らず，プログラミングでは「引数を設定する」といった表現を使うので， 覚えておくとよいでしょう。</p>
@@ -635,7 +635,7 @@ window.Quarto = {
 <span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_norm</span>(means) <span class="co"># 正規分布を重ねる</span></span>
 <span id="cb19-44"><a href="#cb19-44" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb19-45"><a href="#cb19-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-46"><a href="#cb19-46" aria-hidden="true" tabindex="-1"></a><span class="co"># 「おなじない」を解除</span></span>
+<span id="cb19-46"><a href="#cb19-46" aria-hidden="true" tabindex="-1"></a><span class="co"># 「おまじない」を解除</span></span>
 <span id="cb19-47"><a href="#cb19-47" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
@@ -801,7 +801,7 @@ window.Quarto = {
 <section id="大規模学力調査の分析に向けて" class="level2" data-number="5.6">
 <h2 data-number="5.6" class="anchored" data-anchor-id="大規模学力調査の分析に向けて"><span class="header-section-number">5.6</span> 大規模学力調査の分析に向けて</h2>
 <p>ここまでに説明してきた考え方（母集団と標本，95%信頼区間）を使えば， LSAを分析し，その結果を読み解くことが可能になります。 ただし，ここで注意すべき点が二つあります。</p>
-<p>一つは，ここまでの説明が単純な無作為抽出を前提にしたものであるという点です。 LSAでは，層化多段抽出法や層化村落抽出法といった複雑な抽出法が採用されています。 そのため母数の推定方法が変わってきます。 とくに問題になるのが標準誤差の推定で，一般論としてLSAの方が 単純な無作為抽出に比べて標準誤差が大きくなる傾向が見られます。 標準誤差が大きくなるということは，単純な無作為抽出に比べて 95%信頼区間が大きくなるということです。</p>
+<p>一つは，ここまでの説明が単純な無作為抽出を前提にしたものであるという点です。 LSAでは，層化多段抽出法や層化集落抽出法といった複雑な抽出法が採用されています。 そのため母数の推定方法が変わってきます。 とくに問題になるのが標準誤差の推定で，一般論としてLSAの方が 単純な無作為抽出に比べて標準誤差が大きくなる傾向が見られます。 標準誤差が大きくなるということは，単純な無作為抽出に比べて 95%信頼区間が大きくなるということです。</p>
 <p>もう一つは，LSAで議論の対象になるのは，学力という目に見えないものだという点です。 目に見えない学力をテストで測る場合，これまで扱ってきた標本抽出に伴う誤差 （これを標本誤差と呼びましょう）に， 測定の誤差（これを測定誤差と呼びましょう）が加わってきます。 詳しくは理論編で説明しますが， LSAにおける標準誤差は，標本誤差と測定誤差の両方を併せたものになります。 つまり95%信頼区間は，ここまでに学んだものより更に大きくなるということです。</p>
 <p>以上の2点を頭に入れておかないと，誤った推定をしてしまう危険があります。 標準誤差が大きくなるということは，（約）95%信頼区間も大きくなるということです。 これは，「母平均は49点から51点のあいだにある！」と思っていたら， 正しく標準誤差を推定すると「実は48点から52点のあいだだった」といった事態が発生することを意味します。 学力が上がった（あるいは下がった）という議論をしているときに標準誤差を見誤ると影響が大きいので， LSAの標準誤差の算出法については，この後の章の内容を踏まえて議論する必要があります。</p>
 </section>

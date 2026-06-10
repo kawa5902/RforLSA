@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>6&nbsp; データフレーム – Rで学ぶ大規模学力調査（Version 1.2）</title>
+<title>6&nbsp; データフレーム – Rで学ぶ大規模学力調査（Version 1.3）</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -120,7 +120,7 @@ gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
 
 
 <link rel="stylesheet" href="style/styles.css">
-<meta name="twitter:title" content="6&nbsp; データフレーム – Rで学ぶ大規模学力調査（Version 1.2）">
+<meta name="twitter:title" content="6&nbsp; データフレーム – Rで学ぶ大規模学力調査（Version 1.3）">
 <meta name="twitter:description" content="">
 <meta name="twitter:image" content="https://kawa5902.github.io/RforLSA/dataframe_files/figure-html/unnamed-chunk-19-1.png">
 <meta name="twitter:image-height" content="960">
@@ -152,7 +152,7 @@ gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Rで学ぶ大規模学力調査（Version 1.2）</a> 
+      <a href="./">Rで学ぶ大規模学力調査（Version 1.3）</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/kawa5902/RforLSA" title="ソースコード" class="quarto-navigation-tool px-1" aria-label="ソースコード"><i class="bi bi-github"></i></a>
 </div>
@@ -473,7 +473,7 @@ gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
  3  3  1 </code></pre>
 </div>
 </div>
-<p>1が男子・2が女子・99は欠測ですから， 順に3・3・1で適切に入力できているようです。 一方で，成績変数（score）はこのままでは少々問題があります。 たとえば，成績の平均を計算することを考えましょう。 今のままでは，おかしな平均値が算出されてしまいます。</p>
+<p>1が女子・2が男子・99は欠測ですから， 順に3・3・1で適切に入力できているようです。 一方で，成績変数（score）はこのままでは少々問題があります。 たとえば，成績の平均を計算することを考えましょう。 今のままでは，おかしな平均値が算出されてしまいます。</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>score</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -484,7 +484,7 @@ gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
 <pre><code>[1] 327.5714</code></pre>
 </div>
 </div>
-<p>326という平均が出力される理由は，欠測の部分に 999を入力しているからです。 Rは999が欠測ということがわかりませんから，999点だと思って平均を計算してしまい， 数値がおかしくなっているのです。 これを防ぐには，Rにscoreの999は欠測であり，平均を計算するときは省いてほしい旨を 伝える必要があります。</p>
+<p>327.6という平均が出力される理由は，欠測の部分に 999を入力しているからです。 Rは999が欠測ということがわかりませんから，999点だと思って平均を計算してしまい， 数値がおかしくなっているのです。 これを防ぐには，Rにscoreの999は欠測であり，平均を計算するときは省いてほしい旨を 伝える必要があります。</p>
 <p>ただ，この処理は少々面倒です。 まず，<code>dat$score</code>の999の箇所を特定する必要があります。 ここで<a href="./r_basics.html#条件を付けて要素にアクセスする">条件を付けて要素にアクセスする</a> 方法を思い出してみてください。 <code>dat$score == 999</code>と入力すれば，<code>dat$score</code>というベクトルの中の999の要素の位置を特定できます。 そのため，<code>dat$score[dat$score == 999]</code>とすることで999の要素を特定できるのでした。 後は，ここにRで欠測を意味する<code>NA</code>という値を格納すれば， Rにデータに欠測があることを伝えられます。</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>score[dat<span class="sc">$</span>score <span class="sc">==</span> <span class="dv">999</span>]</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>

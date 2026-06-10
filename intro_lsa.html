@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>1&nbsp; なぜLSAを学ぶのか – Rで学ぶ大規模学力調査（Version 1.2）</title>
+<title>1&nbsp; なぜLSAを学ぶのか – Rで学ぶ大規模学力調査（Version 1.3）</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -105,7 +105,7 @@ gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
 
 
 <link rel="stylesheet" href="style/styles.css">
-<meta name="twitter:title" content="1&nbsp; なぜLSAを学ぶのか – Rで学ぶ大規模学力調査（Version 1.2）">
+<meta name="twitter:title" content="1&nbsp; なぜLSAを学ぶのか – Rで学ぶ大規模学力調査（Version 1.3）">
 <meta name="twitter:description" content="">
 <meta name="twitter:card" content="summary">
 </head>
@@ -134,7 +134,7 @@ gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Rで学ぶ大規模学力調査（Version 1.2）</a> 
+      <a href="./">Rで学ぶ大規模学力調査（Version 1.3）</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/kawa5902/RforLSA" title="ソースコード" class="quarto-navigation-tool px-1" aria-label="ソースコード"><i class="bi bi-github"></i></a>
 </div>
@@ -347,7 +347,7 @@ gtag('config', 'G-YPY43001RV', { 'anonymize_ip': true});
 <section id="lsalarge-scale-assessmentとは" class="level2" data-number="1.1">
 <h2 data-number="1.1" class="anchored" data-anchor-id="lsalarge-scale-assessmentとは"><span class="header-section-number">1.1</span> LSA（Large-Scale Assessment）とは？</h2>
 <p>大規模学力調査（Large-scale Assessment: LSA）とは， 集団レベルの学力を調査することを目的に設計された調査のことを指します<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>。 LSAでは，いわゆるComplex Survey<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>と呼ばれる複雑な標本抽出を行い， 標本ウェイトやレプリケーション法を利用します。 また，学力の推定には項目反応理論（Item Response Theory: IRT）<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>を利用する点も特徴です。</p>
-<p>LSAの例として，もっとも有名なのはOECDが実施する <a href="https://www.oecd.org/en/about/programmes/pisa.html" target="_blank">PISA</a> （Programme for International Student Assessment）でしょう。 PISAに知名度は劣りますが， <a href="https://timssandpirls.bc.edu/timss-landing.html" target="_blank">TIMSS</a> （Trend in International Mathematics and Science Study）も 国際的なLSAの代表格です。 また，現在もアメリカで行われている全米学力調査 （<a href="https://nces.ed.gov/nationsreportcard/" target="_blank">NAEP</a>） はLSAの「古典」です。 これらの調査は，いずれも複雑な標本抽出とそれに伴う標本ウェイト・レプリケーション法を使った推定， そして項目反応理論による学力推定が行われています。</p>
+<p>LSAの例として，もっとも有名なのはOECDが実施する <a href="https://www.oecd.org/en/about/programmes/pisa.html" target="_blank">PISA</a> （Programme for International Student Assessment）でしょう。 PISAに知名度は劣りますが， <a href="https://timssandpirls.bc.edu/timss-landing.html" target="_blank">TIMSS</a> （Trends in International Mathematics and Science Study）も 国際的なLSAの代表格です。 また，現在もアメリカで行われている全米学力調査 （<a href="https://nces.ed.gov/nationsreportcard/" target="_blank">NAEP</a>） はLSAの「古典」です。 これらの調査は，いずれも複雑な標本抽出とそれに伴う標本ウェイト・レプリケーション法を使った推定， そして項目反応理論による学力推定が行われています。</p>
 <p>大規模な学力調査というと，日本にも毎年度行われている <a href="https://www.nier.go.jp/kaihatsu/zenkokugakuryoku.html" target="_blank">全国学力・学習状況調査</a> （いわゆる悉皆調査）が存在します。 しかし悉皆調査はLSAの定義に該当しません。 少なくとも毎年度行われている悉皆調査は， 2024年時点ではIRTを採用していませんし，標本抽出も行っていないからです。 今後の悉皆調査はCBT化に伴いIRTを採用すると言われています<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>が， そこでもComplex Surveyへの言及はありません。</p>
 <p>むしろLSAに近いのは，3年に1度行われる <a href="https://www.nier.go.jp/21chousakekkahoukoku/kannren_chousa/keinen_chousa.htm" target="_blank">経年変化分析調査</a> や <a href="https://www.nier.go.jp/21chousakekkahoukoku/kannren_chousa/hogosya_chousa.html" target="_blank">保護者に対する調査</a> の方でしょう。 前者はIRTを採用していますし，後者はComplex Surveyの方法論に則っています。 その意味では，「経年変化分析調査＋保護者に対する調査が日本のLSAである」とは言えるかもしれません。</p>
 <p>だから何だ？という声が聞こえてきそうです。 悉皆調査がLSAでないとして，何が問題なのか。 LSAとは何で，どんな利点があるのか。 そもそもComplex SurveyやIRTといった難しそうな考え方が， 教育を考える上で本当に必要なのか。</p>
